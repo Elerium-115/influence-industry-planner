@@ -1,0 +1,22 @@
+{
+	"name": "influence-industry-planner",
+	"version": "0.0.1",
+	"description": "Industry Planner - production tool for Influence",
+	"main": "./src/test.ts",
+    "type": "module",
+	"scripts": {
+		"dev": "gulp watch",
+		"build": "gulp build"
+	},
+	"author": "@elerium115",
+	"license": "ISC",
+	"devDependencies": {
+		"del": "^7.1.0",
+		"gulp": "^5.0.0",
+		"gulp-sass": "^5.1.0",
+		"gulp-sourcemaps": "^3.0.0",
+		"gulp-typescript": "^6.0.0-alpha.1",
+		"sass": "^1.78.0",
+		"typescript": "^5.6.2"
+	}
+}
