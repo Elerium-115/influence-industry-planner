@@ -1,8 +1,4 @@
-import { Processor } from "./processor.js";
-
-export interface IndustryTier {
-    processors: Processor[];
-}
+import {IndustryTier} from "./industry-tier.js";
 
 class IndustryPlan {
     private industryTiers: IndustryTier[] = [];

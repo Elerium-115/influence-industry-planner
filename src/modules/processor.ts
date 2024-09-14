@@ -30,8 +30,8 @@ const PROCESSOR_NAMES = {
 
 class Processor {
     private id: TYPE_PROCESSOR_IDS;
-    private htmlElement: HTMLElement;
     private processes: Process[] = [];
+    private htmlElement: HTMLElement;
 
     constructor(id: TYPE_PROCESSOR_IDS) {
         this.id = id;
@@ -52,6 +52,11 @@ class Processor {
 
     public getHtmlElement(): HTMLElement {
         return this.htmlElement;
+    }
+
+    public remove(): void {
+        this.htmlElement.parentElement?.removeChild(this.htmlElement);
+        //// TO DO: also remove this class instance from the parent "IndustryTier"
     }
 
     public makeHtmlElement(): HTMLElement {
@@ -75,6 +80,7 @@ class Processor {
                 </div>
             </div>
         `;
+        el.querySelector('.remove-processor')?.addEventListener('click', this.remove.bind(this));
         return el;
     }
 }

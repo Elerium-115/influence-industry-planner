@@ -12,6 +12,24 @@ body {
     font-family: Jura, sans-serif;
     margin: 0;
     padding: 64px;
+    position: relative;
+
+    //// WIP
+    &::before {
+        align-items: center;
+        background-color: rgb(220, 180, 40);
+        color: black;
+        content: 'Work in progress';
+        display: flex;
+        font-size: 80%;
+        height: 64px;
+        justify-content: center;
+        left: 0;
+        position: absolute;
+        text-align: center;
+        top: 0;
+        width: 64px;
+    }
 }
 
 [data-tooltip] {
@@ -71,20 +89,29 @@ body {
         flex-direction: column;
         gap: 32px;
 
+        &::before {
+            content: attr(data-title);
+        }
+
         .processor {
             --rgb-processor: 160, 160, 160;
-            --color-processor-highlight: rgb(var(--rgb-processor));
-            --color-processor-header-bg: hsl(from var(--color-processor-highlight) h s calc(l * 0.5) / 0.15);
+            --color-processor: rgb(var(--rgb-processor));
+            --color-processor-header-bg: hsl(from var(--color-processor) h s calc(l * 0.5) / 0.15);
             --color-processor-highlight-bg: rgba(var(--rgb-processor), 0.2);
             --color-processor-highlight-subtle: rgba(var(--rgb-processor), 0.5);
             --color-processor-process-hover: rgba(var(--rgb-processor), 0.05);
-            --color-processor-processes-bg: hsl(from var(--color-processor-highlight) h s calc(l * 0.05) / 0.5);
+            --color-processor-processes-bg: hsl(from var(--color-processor) h s calc(l * 0.05) / 0.5);
             --processor-header-height: 32px;
             max-width: 240px;
 
             &.-extractor {
                 --rgb-processor: 220, 180, 40;
                 @include processor-icon('../assets/icons/buildings/Extraction.png');
+            }
+
+            &.-bioreactor {
+                --rgb-processor: 136, 230, 117;
+                @include processor-icon('../assets/icons/buildings/Agriculture.png');
             }
 
             &.-refinery {
@@ -95,11 +122,6 @@ body {
             &.-factory {
                 --rgb-processor: 40, 120, 255;
                 @include processor-icon('../assets/icons/buildings/Manufacturing.png');
-            }
-
-            &.-bioreactor {
-                --rgb-processor: 136, 230, 117;
-                @include processor-icon('../assets/icons/buildings/Agriculture.png');
             }
 
             &.-shipyard {
@@ -116,7 +138,7 @@ body {
                 --gap: 16px;
                 align-items: center;
                 background-color: var(--color-processor-header-bg);
-                color: var(--color-processor-highlight);
+                color: var(--color-processor);
                 display: flex;
                 gap: var(--gap);
                 height: var(--processor-header-height);
@@ -124,7 +146,6 @@ body {
                 position: relative;
 
                 &::before {
-                    background-blend-mode: multiply;
                     background-position: center;
                     background-repeat: no-repeat;
                     background-size: cover;
@@ -187,6 +208,8 @@ body {
                         color: white;
                     }
                 }
+
+                &:hover::before { background-blend-mode: color; }
 
                 &:not(:hover) .remove-processor { display: none; }
             }
