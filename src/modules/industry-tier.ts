@@ -2,10 +2,12 @@ import {createEl} from './dom-core.js';
 import {Processor} from "./processor.js";
 
 class IndustryTier {
+    private title: string;
     private processors: Processor[] = [];
     private htmlElement: HTMLElement;
 
-    constructor() {
+    constructor(title: string) {
+        this.title = title;
         this.htmlElement = this.makeHtmlElement();
     }
 
@@ -24,6 +26,7 @@ class IndustryTier {
 
     public makeHtmlElement(): HTMLElement {
         const el = createEl('div', null, ['industry-tier']);
+        el.dataset.title = this.title;
         return el;
     }
 }

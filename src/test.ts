@@ -3,9 +3,8 @@ import {IndustryTier} from "./modules/industry-tier.js";
 
 const elTestIndustryTiers = document.getElementById('industry-tiers');
 
-const testIndustryTier = new IndustryTier();
+const testIndustryTier = new IndustryTier('Dynamic Processors');
 const elTestIndustryTier = testIndustryTier.getHtmlElement();
-elTestIndustryTier.dataset.title = 'Dynamic Processors';
 if (elTestIndustryTiers) {
     elTestIndustryTiers.append(elTestIndustryTier);
 }

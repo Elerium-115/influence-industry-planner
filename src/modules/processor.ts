@@ -3,7 +3,7 @@ import {Process} from './process.js';
 
 /**
  * NOTE:
- * - This corresponds to the building IDs from the Influence SDK, not the processor IDs.
+ * - These correspond to the building IDs from the Influence SDK, not the processor IDs.
  * - The mapping between them is not formalized in the SDK, as of September 2024.
  * 
  * Source: Influence SDK - "src/lib/building.js"

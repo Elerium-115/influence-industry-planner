@@ -25,7 +25,7 @@ body {
         height: 64px;
         justify-content: center;
         left: 0;
-        position: absolute;
+        position: fixed;
         text-align: center;
         top: 0;
         width: 64px;
@@ -209,7 +209,11 @@ body {
                     }
                 }
 
-                &:hover::before { background-blend-mode: color; }
+                &:hover {
+                    color: white;
+
+                    &::before { background-blend-mode: color; }
+                }
 
                 &:not(:hover) .remove-processor { display: none; }
             }
@@ -325,6 +329,7 @@ body {
 
                                 &.-is-primary {
                                     border-color: var(--color-processor-highlight-subtle);
+                                    outline: 1px solid var(--color-processor-highlight-subtle);
                                 }
 
                                 &:hover {
