@@ -1,4 +1,5 @@
 import {defineConfig} from 'vite';
+import {nodePolyfills} from 'vite-plugin-node-polyfills';
 import path from 'path';
 import * as glob from 'glob';
 
@@ -20,5 +21,11 @@ export default defineConfig({
         },
         sourcemap: true,
     },
-    plugins: [],
+    plugins: [
+        nodePolyfills({
+            globals: {
+                Buffer: true, // fix for error "Buffer is not defined" from Influence SDK dependencies
+            }
+        }),
+    ],
 });

@@ -1,5 +1,8 @@
+import * as InfluenceSDK from '@influenceth/sdk';
 import {type TYPE_PROCESSOR_IDS, Processor} from "./modules/processor.js";
 import {IndustryTier} from "./modules/industry-tier.js";
+
+console.log(`--- InfluenceSDK:`, InfluenceSDK); //// TEST
 
 const elTestIndustryTiers = document.getElementById('industry-tiers');
 
