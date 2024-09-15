@@ -1,8 +1,12 @@
 import * as InfluenceSDK from '@influenceth/sdk';
-import {type TYPE_PROCESSOR_IDS, Processor} from "./modules/processor.js";
-import {IndustryTier} from "./modules/industry-tier.js";
+import {Processor} from './modules/processor.js';
+import {
+    PROCESSOR_BUILDING_IDS,
+    type TYPE_PROCESSOR_BUILDING_IDS,
+} from './modules/processor-service.js';
+import {IndustryTier} from './modules/industry-tier.js';
 
-console.log(`--- InfluenceSDK:`, InfluenceSDK); //// TEST
+// console.log(`--- InfluenceSDK:`, InfluenceSDK); //// TEST
 
 const elTestIndustryTiers = document.getElementById('industry-tiers');
 
@@ -12,7 +16,7 @@ if (elTestIndustryTiers) {
     elTestIndustryTiers.append(elTestIndustryTier);
 }
 
-function testAddBuildingById(processorId: TYPE_PROCESSOR_IDS): void {
+function testAddBuildingById(processorId: TYPE_PROCESSOR_BUILDING_IDS): void {
     if (!elTestIndustryTiers) {
         return;
     }
@@ -21,12 +25,12 @@ function testAddBuildingById(processorId: TYPE_PROCESSOR_IDS): void {
     testIndustryTier.getHtmlElement().append(elTestProcessor);
 }
 
-testAddBuildingById(2);
-testAddBuildingById(4);
-testAddBuildingById(3);
-testAddBuildingById(5);
-testAddBuildingById(6);
-testAddBuildingById(0);
+testAddBuildingById(PROCESSOR_BUILDING_IDS.EXTRACTOR);
+testAddBuildingById(PROCESSOR_BUILDING_IDS.BIOREACTOR);
+testAddBuildingById(PROCESSOR_BUILDING_IDS.REFINERY);
+testAddBuildingById(PROCESSOR_BUILDING_IDS.FACTORY);
+testAddBuildingById(PROCESSOR_BUILDING_IDS.SHIPYARD);
+testAddBuildingById(PROCESSOR_BUILDING_IDS.EMPTY_LOT);
 
 // Expose module logic for the DOM
 (globalThis as any).testAddBuildingById = testAddBuildingById;

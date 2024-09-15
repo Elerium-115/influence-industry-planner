@@ -14,7 +14,7 @@ body {
     padding: 64px;
     position: relative;
 
-    //// WIP
+    // WIP
     &::before {
         align-items: center;
         background-color: rgb(220, 180, 40);
@@ -57,11 +57,20 @@ body {
 @mixin data-tooltip-align-bottom-left { &::after { left: 0; top: calc(100% + 8px); } }
 @mixin data-tooltip-align-bottom-right { &::after { right: 0; top: calc(100% + 8px); } }
 
-@mixin processor-icon($bgImage) {
+@mixin processor-icon($processorCategory) {
     .processor-header::before {
-        background-image: linear-gradient(var(--color-processor-highlight-subtle), var(--color-processor-highlight-subtle)), url($bgImage);
+        background-image:
+            linear-gradient(var(--color-processor-highlight-subtle), var(--color-processor-highlight-subtle)),
+            url('../assets/icons/buildings/' + $processorCategory + '.png');
     }
 }
+
+.-extractor { --rgb-processor: 220, 180, 40; }
+.-bioreactor { --rgb-processor: 136, 230, 117; }
+.-refinery { --rgb-processor: 87, 213, 255; }
+.-factory { --rgb-processor: 40, 120, 255; }
+.-shipyard { --rgb-processor: 129, 129, 255; }
+.-empty-lot { --rgb-processor: 160, 160, 160; }
 
 #test-add-building {
     align-items: center;
@@ -70,12 +79,15 @@ body {
     margin-bottom: 64px;
 
     .button {
-        background-color: #444;
+        --color-processor: rgb(var(--rgb-processor));
+        --color-processor-header-bg: hsl(from var(--color-processor) h s calc(l * 0.5) / 0.15);
+        background-color: var(--color-processor-header-bg);
+        color: var(--color-processor);
         cursor: pointer;
         padding: 8px;
 
         &:hover {
-            background-color: #666;
+            color: white;
         }
     }
 }
@@ -94,7 +106,6 @@ body {
         }
 
         .processor {
-            --rgb-processor: 160, 160, 160;
             --color-processor: rgb(var(--rgb-processor));
             --color-processor-header-bg: hsl(from var(--color-processor) h s calc(l * 0.5) / 0.15);
             --color-processor-highlight-bg: rgba(var(--rgb-processor), 0.2);
@@ -104,35 +115,12 @@ body {
             --processor-header-height: 32px;
             max-width: 240px;
 
-            &.-extractor {
-                --rgb-processor: 220, 180, 40;
-                @include processor-icon('../assets/icons/buildings/Extraction.png');
-            }
-
-            &.-bioreactor {
-                --rgb-processor: 136, 230, 117;
-                @include processor-icon('../assets/icons/buildings/Agriculture.png');
-            }
-
-            &.-refinery {
-                --rgb-processor: 87, 213, 255;
-                @include processor-icon('../assets/icons/buildings/Refining.png');
-            }
-
-            &.-factory {
-                --rgb-processor: 40, 120, 255;
-                @include processor-icon('../assets/icons/buildings/Manufacturing.png');
-            }
-
-            &.-shipyard {
-                --rgb-processor: 129, 129, 255;
-                @include processor-icon('../assets/icons/buildings/Shipbuilding.png');
-            }
-
-            &.-empty-lot {
-                // default "--rgb-processor"
-                @include processor-icon('../assets/icons/buildings/Construction.png');
-            }
+            &.-extractor { @include processor-icon('Extraction'); }
+            &.-bioreactor { @include processor-icon('Agriculture'); }
+            &.-refinery { @include processor-icon('Refining'); }
+            &.-factory { @include processor-icon('Manufacturing'); }
+            &.-shipyard { @include processor-icon('Shipbuilding'); }
+            &.-empty-lot { @include processor-icon('Construction'); }
 
             .processor-header {
                 --gap: 16px;

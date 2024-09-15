@@ -1,4 +1,4 @@
-import {IndustryTier} from "./industry-tier.js";
+import {IndustryTier} from './industry-tier.js';
 
 class IndustryPlan {
     private industryTiers: IndustryTier[] = [];

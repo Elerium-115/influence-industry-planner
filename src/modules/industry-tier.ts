@@ -1,5 +1,5 @@
 import {createEl} from './dom-core.js';
-import {Processor} from "./processor.js";
+import {Processor} from './processor.js';
 
 class IndustryTier {
     private title: string;
