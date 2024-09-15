@@ -1,4 +1,12 @@
 .product-icon {
+    // NOTE: "--product-icon-size" must be set as needed for each context
+    background-color: black;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: var(--product-icon-size);
+    width: var(--product-icon-size);
+
     &.-p1 { background-image: url('../assets/products/thumb/water.png'); }
     &.-p3 { background-image: url('../assets/products/thumb/ammonia.png'); }
     &.-p6 { background-image: url('../assets/products/thumb/carbon-dioxide.png'); }
