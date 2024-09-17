@@ -1,5 +1,5 @@
 .product-icon {
-    // NOTE: "--product-icon-size" must be set as needed for each context
+    // NOTE: "--product-icon-size" must be set in each context where this class is used
     background-color: black;
     background-position: center;
     background-repeat: no-repeat;
@@ -31,6 +31,8 @@
     &.-p167 { background-image: url('../assets/products/thumb/cargo-ring.png'); }
     &.-p180 { background-image: url('../assets/products/thumb/pure-nitrogen.png'); }
     &.-p235 { background-image: url('../assets/products/thumb/habitation-module.png'); }
+    &.-p96 { background-image: url('../assets/products/thumb/yellowcake.png'); }
+    &.-p114 { background-image: url('../assets/products/thumb/leached-coffinite.png'); }
+    &.-p168 { background-image: url('../assets/products/thumb/heavy-transport-hull.png'); }
     &.-pB1 { background-image: url('../assets/products/thumb/warehouse.png'); }
-    &.-pS2 { background-image: url('../assets/products/thumb/heavy-transport.png'); }
 }

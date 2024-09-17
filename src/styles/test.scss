@@ -4,6 +4,7 @@
 
 :root {
     --color-warning: rgb(223, 67, 0);
+    --color-add-button: rgba(255, 255, 255, 0.25);
 }
 
 body {
@@ -118,7 +119,7 @@ body {
         display: flex;
         flex-direction: column;
 
-        #startup-products-title {
+        .startup-products-title {
             margin-bottom: 32px;
 
             &::before {
@@ -126,7 +127,7 @@ body {
             }
         }
 
-        #startup-products-list {
+        .startup-products-list {
             display: flex;
             flex-direction: column;
 
@@ -157,7 +158,7 @@ body {
         .add-products-button {
             align-items: center;
             background-color: var(--color-startup-products-bg);
-            color: rgba(255, 255, 255, 0.25);
+            color: var(--color-add-button);
             cursor: pointer;
             display: flex;
             gap: 8px;
@@ -190,241 +191,93 @@ body {
         gap: 64px;
 
         .industry-tier {
+            --processor-icon-size: 32px;
+            --process-icon-size: 20px;
             display: flex;
             flex-direction: column;
-            gap: 32px;
 
-            &::before {
-                content: attr(data-title);
+            .industry-tier-title {
+                margin-bottom: 32px;
+
+                &::before {
+                    content: attr(data-title);
+                }
             }
 
-            .processor {
-                --color-processor: rgb(var(--rgb-processor));
-                --color-processor-header-bg: hsl(from var(--color-processor) h s calc(l * 0.5) / 0.15);
-                --color-processor-highlight-bg: rgba(var(--rgb-processor), 0.2);
-                --color-processor-highlight-subtle: rgba(var(--rgb-processor), 0.5);
-                --color-processor-process-hover: rgba(var(--rgb-processor), 0.05);
-                --color-processor-processes-bg: hsl(from var(--color-processor) h s calc(l * 0.05) / 0.5);
-                --processor-header-height: 32px;
-                max-width: 240px;
+            .processors-list {
+                display: flex;
+                flex-direction: column;
+                gap: 32px;
 
-                &.-extractor { @include processor-icon('Extraction'); }
-                &.-bioreactor { @include processor-icon('Agriculture'); }
-                &.-refinery { @include processor-icon('Refining'); }
-                &.-factory { @include processor-icon('Manufacturing'); }
-                &.-shipyard { @include processor-icon('Shipbuilding'); }
-                &.-empty-lot { @include processor-icon('Construction'); }
+                .processor {
+                    --color-processor: rgb(var(--rgb-processor));
+                    --color-processor-header-bg: hsl(from var(--color-processor) h s calc(l * 0.5) / 0.15);
+                    --color-processor-highlight-bg: rgba(var(--rgb-processor), 0.2);
+                    --color-processor-highlight-subtle: rgba(var(--rgb-processor), 0.5);
+                    --color-processor-process-hover: rgba(var(--rgb-processor), 0.05);
+                    --color-processor-processes-bg: hsl(from var(--color-processor) h s calc(l * 0.05) / 0.5);
+                    max-width: 240px;
 
-                .processor-header {
-                    --gap: 16px;
-                    align-items: center;
-                    background-color: var(--color-processor-header-bg);
-                    color: var(--color-processor);
-                    display: flex;
-                    gap: var(--gap);
-                    height: var(--processor-header-height);
-                    padding-right: calc(var(--processor-header-height) + var(--gap));
-                    position: relative;
+                    &.-extractor { @include processor-icon('Extraction'); }
+                    &.-bioreactor { @include processor-icon('Agriculture'); }
+                    &.-refinery { @include processor-icon('Refining'); }
+                    &.-factory { @include processor-icon('Manufacturing'); }
+                    &.-shipyard { @include processor-icon('Shipbuilding'); }
+                    &.-empty-lot { @include processor-icon('Construction'); }
 
-                    &::before {
-                        background-position: center;
-                        background-repeat: no-repeat;
-                        background-size: cover;
-                        border: calc(var(--processor-header-height) * 0.25 / 2) solid var(--color-processor-highlight-subtle);
-                        content: '';
-                        cursor: grab;
-                        display: inline-block;
-                        height: calc(var(--processor-header-height) * 0.75);
-                        width: calc(var(--processor-header-height) * 0.75);
-                    }
-
-                    .processor-name {
-                        white-space: nowrap;
-                    }
-
-                    .processor-info {
-                        align-items: center;
-                        bottom: 0;
-                        cursor: pointer;
-                        display: flex;
-                        justify-content: center;
-                        position: absolute;
-                        right: 0;
-                        top: 0;
-                        width: var(--processor-header-height);
-
-                        @include data-tooltip-align-top-right;
-
-                        &::before {
-                            content: '#';
-                        }
-
-                        &:hover {
-                            background-color: var(--color-processor-highlight-bg);
-                            color: white;
-                        }
-                    }
-
-                    .remove-processor {
+                    .processor-header {
+                        --gap: 16px;
                         align-items: center;
                         background-color: var(--color-processor-header-bg);
-                        bottom: 0;
-                        cursor: pointer;
+                        color: var(--color-processor);
                         display: flex;
-                        left: 100%;
-                        position: absolute;
-                        top: 0;
-
-                        &::before {
-                            align-items: center;
-                            color: var(--color-warning);
-                            content: '✕';
-                            display: flex;
-                            height: 100%;
-                            padding: 0 8px;
-                        }
-
-                        &:hover::before {
-                            background-color: var(--color-warning);
-                            color: white;
-                        }
-                    }
-
-                    &:hover {
-                        color: white;
-
-                        &::before { background-blend-mode: color; }
-                    }
-
-                    &:not(:hover) .remove-processor { display: none; }
-                }
-
-                .processes {
-                    background-color: var(--color-processor-processes-bg);
-
-                    .process {
-                        cursor: pointer;
-                        display: flex;
-                        flex-direction: column;
-                        font-size: 90%;
-                        gap: 8px;
-                        padding: 8px;
+                        gap: var(--gap);
+                        height: var(--processor-icon-size);
+                        padding-right: calc(var(--processor-icon-size) + var(--gap));
                         position: relative;
 
-                        &:hover {
-                            background-color: var(--color-processor-process-hover);
-
-                            .process-header {
-                                color: white;
-
-                                @include data-tooltip-align-top-left;
-
-                                &::before {
-                                    opacity: 1;
-                                }
-                            }
-
-                            .process-materials {
-                                .separator {
-                                    &::after {
-                                        opacity: 1;
-                                    }
-                                }
-                            }
+                        &::before {
+                            background-position: center;
+                            background-repeat: no-repeat;
+                            background-size: cover;
+                            border: calc(var(--processor-icon-size) * 0.25 / 2) solid var(--color-processor-highlight-subtle);
+                            content: '';
+                            cursor: grab;
+                            display: inline-block;
+                            height: calc(var(--processor-icon-size) * 0.75);
+                            width: calc(var(--processor-icon-size) * 0.75);
                         }
 
-                        &:not(:first-child) {
-                            border-top: 1px solid var(--color-processor-highlight-bg);
+                        .processor-name {
+                            white-space: nowrap;
                         }
 
-                        &.add-process {
-                            &:not(:hover) {
-                                .process-header {
-                                    color: rgba(255, 255, 255, 0.25);
-
-                                    &::before {
-                                        opacity: 0.25;
-                                    }
-                                }
-                            }
-
-                            .process-header {
-                                .process-name {
-                                    &::before {
-                                        content: 'Add Process';
-                                    }
-                                }
-                            }
-                        }
-
-                        .process-header {
-                            --height: 20px;
+                        .processor-info {
                             align-items: center;
-                            color: rgba(255, 255, 255, 0.75);
+                            bottom: 0;
+                            cursor: pointer;
                             display: flex;
-                            gap: 8px;
-                            height: var(--height);
+                            justify-content: center;
+                            position: absolute;
+                            right: 0;
+                            top: 0;
+                            width: var(--processor-icon-size);
+
+                            @include data-tooltip-align-top-right;
 
                             &::before {
-                                background-image: url('../assets/icons/icon-process.svg');
-                                background-position: center;
-                                background-repeat: no-repeat;
-                                background-size: 24px;
-                                content: '';
-                                display: inline-block;
-                                height: var(--height);
-                                max-width: var(--height);
-                                min-width: var(--height);
-                                opacity: 0.75;
+                                content: '#';
                             }
 
-                            .process-name {
-                                @include single-line-with-ellipsis;
+                            &:hover {
+                                background-color: var(--color-processor-highlight-bg);
+                                color: white;
                             }
                         }
 
-                        .process-materials {
+                        .remove-processor {
                             align-items: center;
-                            display: flex;
-                            gap: 8px;
-                            justify-content: space-between;
-
-                            .inputs,
-                            .outputs {
-                                display: flex;
-                                flex-wrap: wrap;
-                                gap: 4px;
-
-                                .product-icon {
-                                    --product-icon-size: 24px;
-                                    border: 1px solid rgba(255, 255, 255, 0.2);
-                                    cursor: pointer;
-
-                                    &.-is-primary {
-                                        border-color: var(--color-processor-highlight-subtle);
-                                        outline: 1px solid var(--color-processor-highlight-subtle);
-                                    }
-
-                                    &:hover {
-                                        border-color: white;
-                                    }
-                                }
-                            }
-
-                            .inputs .product-icon { @include data-tooltip-align-bottom-left; }
-                            .outputs .product-icon { @include data-tooltip-align-bottom-right; }
-
-                            .separator {
-                                &::after {
-                                    content: '⮕';
-                                    opacity: 0.5;
-                                }
-                            }
-                        }
-
-                        .remove-process {
-                            align-items: center;
-                            background-color: var(--color-processor-processes-bg);
+                            background-color: var(--color-processor-header-bg);
                             bottom: 0;
                             cursor: pointer;
                             display: flex;
@@ -434,13 +287,11 @@ body {
 
                             &::before {
                                 align-items: center;
-                                background-color: var(--color-processor-process-hover);
                                 color: var(--color-warning);
                                 content: '✕';
                                 display: flex;
                                 height: 100%;
                                 padding: 0 8px;
-                                white-space: nowrap;
                             }
 
                             &:hover::before {
@@ -449,8 +300,222 @@ body {
                             }
                         }
 
-                        &:not(:hover) .remove-process { display: none; }
+                        &:hover {
+                            color: white;
+
+                            &::before { background-blend-mode: color; }
+                        }
+
+                        &:not(:hover) .remove-processor { display: none; }
                     }
+
+                    .processes-list {
+                        background-color: var(--color-processor-processes-bg);
+
+                        .process {
+                            cursor: pointer;
+                            display: flex;
+                            flex-direction: column;
+                            font-size: 90%;
+                            gap: 8px;
+                            padding: 8px;
+                            position: relative;
+
+                            &:hover {
+                                background-color: var(--color-processor-process-hover);
+
+                                .process-header {
+                                    color: white;
+
+                                    @include data-tooltip-align-top-left;
+
+                                    &::before {
+                                        opacity: 1;
+                                    }
+                                }
+
+                                .process-materials {
+                                    .separator {
+                                        &::after {
+                                            opacity: 1;
+                                        }
+                                    }
+                                }
+                            }
+
+                            &:not(:first-child) {
+                                border-top: 1px solid var(--color-processor-highlight-bg);
+                            }
+
+                            .process-header {
+                                align-items: center;
+                                color: rgba(255, 255, 255, 0.75);
+                                display: flex;
+                                gap: 8px;
+                                height: var(--process-icon-size);
+
+                                &::before {
+                                    background-image: url('../assets/icons/icon-process.svg');
+                                    background-position: center;
+                                    background-repeat: no-repeat;
+                                    background-size: 24px;
+                                    content: '';
+                                    display: inline-block;
+                                    height: var(--process-icon-size);
+                                    max-width: var(--process-icon-size);
+                                    min-width: var(--process-icon-size);
+                                    opacity: 0.75;
+                                }
+
+                                .process-name {
+                                    @include single-line-with-ellipsis;
+                                }
+                            }
+
+                            .process-materials {
+                                align-items: center;
+                                display: flex;
+                                gap: 8px;
+                                justify-content: space-between;
+
+                                .inputs,
+                                .outputs {
+                                    display: flex;
+                                    flex-wrap: wrap;
+                                    gap: 4px;
+
+                                    .product-icon {
+                                        --product-icon-size: 24px;
+                                        border: 1px solid rgba(255, 255, 255, 0.2);
+                                        cursor: pointer;
+
+                                        &.-is-primary {
+                                            border-color: var(--color-processor-highlight-subtle);
+                                            outline: 1px solid var(--color-processor-highlight-subtle);
+                                        }
+
+                                        &:hover {
+                                            border-color: white;
+                                        }
+                                    }
+                                }
+
+                                .inputs .product-icon { @include data-tooltip-align-bottom-left; }
+                                .outputs .product-icon { @include data-tooltip-align-bottom-right; }
+
+                                .separator {
+                                    &::after {
+                                        content: '⮕';
+                                        opacity: 0.5;
+                                    }
+                                }
+                            }
+
+                            .remove-process {
+                                align-items: center;
+                                background-color: var(--color-processor-processes-bg);
+                                bottom: 0;
+                                cursor: pointer;
+                                display: flex;
+                                left: 100%;
+                                position: absolute;
+                                top: 0;
+
+                                &::before {
+                                    align-items: center;
+                                    background-color: var(--color-processor-process-hover);
+                                    color: var(--color-warning);
+                                    content: '✕';
+                                    display: flex;
+                                    height: 100%;
+                                    padding: 0 8px;
+                                    white-space: nowrap;
+                                }
+
+                                &:hover::before {
+                                    background-color: var(--color-warning);
+                                    color: white;
+                                }
+                            }
+
+                            &:not(:hover) .remove-process { display: none; }
+                        }
+                    }
+
+                    .add-process-button {
+                        --padding: 8px;
+                        align-items: center;
+                        background-color: var(--color-processor-processes-bg);
+                        border-top: 1px solid var(--color-processor-highlight-bg);
+                        color: var(--color-add-button);
+                        cursor: pointer;
+                        display: flex;
+
+                        &::before {
+                            background-image: url('../assets/icons/icon-process.svg');
+                            background-position: center;
+                            background-repeat: no-repeat;
+                            background-size: 24px;
+                            content: '';
+                            display: inline-block;
+                            height: var(--process-icon-size);
+                            max-width: var(--process-icon-size);
+                            min-width: var(--process-icon-size);
+                            opacity: 0.25;
+                            padding: var(--padding);
+                        }
+
+                        &::after {
+                            content: 'Add Process';
+                            flex-grow: 1;
+                            font-size: 90%;
+                            line-height: calc(var(--process-icon-size) + (2 * var(--padding)));
+                        }
+
+                        &:hover {
+                            color: white;
+
+                            &::before,
+                            &::after {
+                                background-color: var(--color-processor-process-hover);
+                            }
+
+                            &::before {
+                                opacity: 1;
+                            }
+                        }
+                    }
+                }
+            }
+
+            .add-processor-button {
+                align-items: center;
+                background-color: #111;
+                color: var(--color-add-button);
+                cursor: pointer;
+                display: flex;
+                gap: 16px;
+                margin-top: 32px;
+
+                &::before {
+                    align-items: center;
+                    background-color: #333;
+                    content: '+';
+                    display: flex;
+                    font-size: 150%;
+                    height: var(--processor-icon-size);
+                    justify-content: center;
+                    width: var(--processor-icon-size);
+                }
+
+                &::after {
+                    content: 'Add Processor';
+                    font-size: 90%;
+                }
+
+                &:hover {
+                    @include hover-lighten-bg;
+                    color: white;
                 }
             }
         }
