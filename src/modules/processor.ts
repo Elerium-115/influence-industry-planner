@@ -1,9 +1,6 @@
 import {createEl} from './dom-core.js';
 import {Process} from './process.js';
-import {
-    type TYPE_PROCESSOR_BUILDING_IDS,
-    ProcessorService,
-} from './processor-service.js';
+import {type TYPE_PROCESSOR_BUILDING_IDS, ProcessorService} from './processor-service.js';
 
 class Processor {
     private processorService: ProcessorService = ProcessorService.getInstance(); // singleton
@@ -65,7 +62,7 @@ class Processor {
     public makeHtmlElement(): HTMLElement {
         const el = createEl('div', null, ['processor']);
         const asteroidName = 'Adalia Prime'; //// TEST
-        const lotId = 1234; //// TEST
+        const lotId = '...'; //// TEST
         const processorClassName = this.getName().toLowerCase().replace(/\s+/g, '-'); // e.g. "empty-lot"
         el.classList.add(`-${processorClassName}`);
         el.innerHTML = /*html*/ `

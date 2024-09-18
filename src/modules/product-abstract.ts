@@ -1,16 +1,8 @@
-import * as InfluenceSDK from '@influenceth/sdk';
-
-interface I_PRODUCT_DATA {
-    i: number, // NOTE: number in the SDK, but string in this app
-    name: string,
-    classification: string,
-    category: string,
-    massPerUnit: number,
-    volumePerUnit: number,
-    isAtomic: boolean,
-}
+import {I_PRODUCT_DATA, ProductService} from './product-service.js';
 
 class ProductAbstract {
+    private productService: ProductService = ProductService.getInstance(); // singleton
+
     /**
      * Product ID formats:
      * - '1', '2', '3' etc. for standard products
@@ -22,7 +14,7 @@ class ProductAbstract {
 
     constructor(id: string) {
         this.id = id;
-        this.data = InfluenceSDK.Product.TYPES[id];
+        this.data = this.productService.getProductDataById(id);
         if (!this.data) {
             console.error(`--- ERROR: [ProductAbstract] constructor called with invalid id = ${id}`);
             return;
@@ -43,6 +35,5 @@ class ProductAbstract {
 }
 
 export {
-    I_PRODUCT_DATA,
     ProductAbstract,
 }

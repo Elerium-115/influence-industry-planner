@@ -82,7 +82,7 @@ body {
 .-refinery { --rgb-processor: 87, 213, 255; }
 .-factory { --rgb-processor: 40, 120, 255; }
 .-shipyard { --rgb-processor: 129, 129, 255; }
-.-empty-lot { --rgb-processor: 160, 160, 160; }
+.-empty-lot { --rgb-processor: 241, 131, 97; }
 
 #test-add-building {
     align-items: center;
@@ -168,7 +168,7 @@ body {
                 align-items: center;
                 content: '+';
                 display: flex;
-                font-size: 150%;
+                font-size: 200%;
                 height: var(--product-icon-size);
                 justify-content: center;
                 width: var(--product-icon-size);
@@ -375,7 +375,7 @@ body {
                             .process-materials {
                                 align-items: center;
                                 display: flex;
-                                gap: 8px;
+                                gap: 16px;
                                 justify-content: space-between;
 
                                 .inputs,
@@ -398,6 +398,10 @@ body {
                                             border-color: white;
                                         }
                                     }
+                                }
+
+                                .outputs {
+                                    justify-content: flex-end;
                                 }
 
                                 .inputs .product-icon { @include data-tooltip-align-bottom-left; }
@@ -490,8 +494,8 @@ body {
 
             .add-processor-button {
                 align-items: center;
-                background-color: #111;
-                color: var(--color-add-button);
+                background-color: #2a2a2a; // avg. of grayscaled processor-header bg-colors
+                color: rgba(255, 255, 255, 0.6);
                 cursor: pointer;
                 display: flex;
                 gap: 16px;
@@ -499,10 +503,10 @@ body {
 
                 &::before {
                     align-items: center;
-                    background-color: #333;
+                    background-color: #6a6a6a; // avg. of grayscaled processor-icon bg-colors
                     content: '+';
                     display: flex;
-                    font-size: 150%;
+                    font-size: 200%;
                     height: var(--processor-icon-size);
                     justify-content: center;
                     width: var(--processor-icon-size);
@@ -510,7 +514,6 @@ body {
 
                 &::after {
                     content: 'Add Processor';
-                    font-size: 90%;
                 }
 
                 &:hover {

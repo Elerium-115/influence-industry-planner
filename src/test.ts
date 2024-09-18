@@ -1,8 +1,5 @@
 // import * as InfluenceSDK from '@influenceth/sdk'; //// TEST
-import {
-    PROCESSOR_BUILDING_IDS,
-    type TYPE_PROCESSOR_BUILDING_IDS,
-} from './modules/processor-service.js';
+import {PROCESSOR_BUILDING_IDS, type TYPE_PROCESSOR_BUILDING_IDS} from './modules/processor-service.js';
 import {IndustryPlan} from './modules/industry-plan.js';
 
 // global.InfluenceSDK = InfluenceSDK; //// TEST
@@ -21,7 +18,7 @@ const testProcessorsAndProcesses = [
     {id: PROCESSOR_BUILDING_IDS.BIOREACTOR, processIds: []},
     {id: PROCESSOR_BUILDING_IDS.REFINERY, processIds: [24, 91, 82]},
     {id: PROCESSOR_BUILDING_IDS.FACTORY, processIds: [57]},
-    {id: PROCESSOR_BUILDING_IDS.SHIPYARD, processIds: [155, 222]},
+    {id: PROCESSOR_BUILDING_IDS.SHIPYARD, processIds: [252, 222]},
     {id: PROCESSOR_BUILDING_IDS.EMPTY_LOT, processIds: [300]},
 ];
 testProcessorsAndProcesses.forEach(processorData => {
