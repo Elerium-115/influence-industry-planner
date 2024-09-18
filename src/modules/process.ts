@@ -2,7 +2,11 @@ import * as InfluenceSDK from '@influenceth/sdk';
 import {createEl} from './dom-core.js';
 import {ProductIcon} from './product-icon.js';
 import {productService} from './product-service.js';
-import {I_PROCESS_DATA} from './process-service.js';
+import {
+    EVENT_PROCESS,
+    I_PROCESS_DATA,
+    processService,
+} from './process-service.js';
 
 class Process {
     private id: number|null = null;
@@ -31,15 +35,11 @@ class Process {
         this.sortAndRenderInputsAndOutputs();
     }
 
-    public getId(): number|null {
-        return this.id;
-    }
-
     public getData(): I_PROCESS_DATA {
         return this.data;
     }
 
-    public getName(): string {
+    private getName(): string {
         return this.data.name;
     }
 
@@ -47,20 +47,20 @@ class Process {
         return this.htmlElement;
     }
 
-    public getInputProductIds(): string[] {
+    private getInputProductIds(): string[] {
         return Object.keys(this.data.inputs);
     }
 
-    public getOutputProductIds(): string[] {
+    private getOutputProductIds(): string[] {
         return Object.keys(this.data.outputs);
     }
 
-    public getElInputs(): HTMLElement {
+    private getElInputs(): HTMLElement {
         // Always "HTMLElement", never "null"
         return this.htmlElement.querySelector('.inputs') as HTMLElement;
     }
 
-    public getElOutputs(): HTMLElement {
+    private getElOutputs(): HTMLElement {
         // Always "HTMLElement", never "null"
         return this.htmlElement.querySelector('.outputs') as HTMLElement;
     }
@@ -136,12 +136,7 @@ class Process {
         return p1.getName().localeCompare(p2.getName());
     }
 
-    public remove(): void {
-        this.htmlElement.parentElement?.removeChild(this.htmlElement);
-        //// TO DO: also remove this class instance from the parent "Processor"
-    }
-
-    public makeHtmlElement(): HTMLElement {
+    private makeHtmlElement(): HTMLElement {
         const el = createEl('div', null, ['process']);
         el.innerHTML = /*html*/ `
             <div class="process-header" data-tooltip="${this.getName()}">
@@ -156,6 +151,11 @@ class Process {
         `;
         el.querySelector('.remove-process')?.addEventListener('click', this.remove.bind(this));
         return el;
+    }
+
+    private remove(): void {
+        this.htmlElement.parentElement?.removeChild(this.htmlElement);
+        processService.emit(EVENT_PROCESS.PROCESS_REMOVED, this);
     }
 }
 

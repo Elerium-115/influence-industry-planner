@@ -100,6 +100,7 @@ body {
 
     &::before {
         content: 'Add Processor Building:';
+        white-space: nowrap;
     }
 
     .button {
@@ -146,6 +147,8 @@ body {
                 display: flex;
                 gap: 8px;
                 padding: 2px 16px 2px 2px;
+                position: relative;
+
                 .product-icon {
                     @include data-tooltip-align-top-left;
                 }
@@ -156,14 +159,45 @@ body {
                     max-width: 200px;
                 }
 
+                .remove-product {
+                    align-items: center;
+                    background-color: var(--color-startup-products-bg);
+                    bottom: 0;
+                    cursor: pointer;
+                    display: flex;
+                    left: 100%;
+                    position: absolute;
+                    top: 0;
+
+                    &::before {
+                        align-items: center;
+                        color: var(--color-warning);
+                        content: '✕';
+                        display: flex;
+                        height: 100%;
+                        padding: 0 8px;
+                    }
+
+                    &:hover::before {
+                        background-color: var(--color-warning);
+                        color: white;
+                    }
+                }
+
                 &:hover {
                     @include hover-lighten-bg;
                     color: white !important;
+
+                    .remove-product {
+                        @include hover-lighten-bg;
+                    }
                 }
+
+                &:not(:hover) .remove-product { display: none; }
             }
         }
 
-        .add-products-button {
+        .add-startup-products-button {
             align-items: center;
             background-color: var(--color-startup-products-bg);
             color: var(--color-add-button);
@@ -185,6 +219,7 @@ body {
             &::after {
                 content: 'Add Products';
                 font-size: 90%;
+                white-space: nowrap;
             }
 
             &:hover {
@@ -197,6 +232,7 @@ body {
     #industry-tiers {
         display: flex;
         gap: 64px;
+        padding-right: 64px; // for body overflow beyond 100% width
 
         .industry-tier {
             --processor-icon-size: 32px;
@@ -216,6 +252,8 @@ body {
                 display: flex;
                 flex-direction: column;
                 gap: 32px;
+
+                &:not(:empty) { margin-bottom: 32px; }
 
                 .processor {
                     --color-processor: rgb(var(--rgb-processor));
@@ -329,28 +367,6 @@ body {
                             padding: 8px;
                             position: relative;
 
-                            &:hover {
-                                background-color: var(--color-processor-process-hover);
-
-                                .process-header {
-                                    color: white;
-
-                                    @include data-tooltip-align-top-left;
-
-                                    &::before {
-                                        opacity: 1;
-                                    }
-                                }
-
-                                .process-materials {
-                                    .separator {
-                                        &::after {
-                                            opacity: 1;
-                                        }
-                                    }
-                                }
-                            }
-
                             &:not(:first-child) {
                                 border-top: 1px solid var(--color-processor-highlight-bg);
                             }
@@ -450,6 +466,28 @@ body {
                                 }
                             }
 
+                            &:hover {
+                                background-color: var(--color-processor-process-hover);
+
+                                .process-header {
+                                    color: white;
+
+                                    @include data-tooltip-align-top-left;
+
+                                    &::before {
+                                        opacity: 1;
+                                    }
+                                }
+
+                                .process-materials {
+                                    .separator {
+                                        &::after {
+                                            opacity: 1;
+                                        }
+                                    }
+                                }
+                            }
+
                             &:not(:hover) .remove-process { display: none; }
                         }
                     }
@@ -482,6 +520,8 @@ body {
                             flex-grow: 1;
                             font-size: 90%;
                             line-height: calc(var(--process-icon-size) + (2 * var(--padding)));
+                            padding-right: 16px;
+                            white-space: nowrap;
                         }
 
                         &:hover {
@@ -507,7 +547,6 @@ body {
                 cursor: pointer;
                 display: flex;
                 gap: 16px;
-                margin-top: 32px;
 
                 &::before {
                     align-items: center;
@@ -522,6 +561,8 @@ body {
 
                 &::after {
                     content: 'Add Processor';
+                    padding-right: 16px;
+                    white-space: nowrap;
                 }
 
                 &:hover {

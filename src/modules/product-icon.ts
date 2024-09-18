@@ -12,10 +12,6 @@ class ProductIcon extends ProductAbstract {
         this.htmlElement = this.makeHtmlElement();
     }
 
-    public getQty(): number|null {
-        return this.qty;
-    }
-
     public getHtmlElement(): HTMLElement {
         return this.htmlElement;
     }
@@ -27,15 +23,15 @@ class ProductIcon extends ProductAbstract {
     public setQty(qty: number): void {
         this.qty = qty;
         // Also add / update the qty in the tooltip
-        this.getHtmlElement().dataset.tooltip = `${this.getName()}: ${getFormattedCeil(this.getQty() as number)}`;
+        this.getHtmlElement().dataset.tooltip = `${this.getName()}: ${getFormattedCeil(this.qty)}`;
     }
 
-    public onClickProductIcon(): void {
+    private onClickProductIcon(): void {
         console.log(`--- [onClickProductIcon]`); //// TEST
         //// TO DO: emit event => handle @ "Process" by (IFF output) un-marking the old primary output + marking this output as primary
     }
 
-    public makeHtmlElement(): HTMLElement {
+    private makeHtmlElement(): HTMLElement {
         const el = createEl('div', null, ['product-icon']);
         el.classList.add(`-p${this.id}`);
         el.dataset.tooltip = this.getName();

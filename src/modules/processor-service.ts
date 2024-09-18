@@ -1,4 +1,9 @@
 import * as InfluenceSDK from '@influenceth/sdk';
+import {EventEmitter} from './event-emitter.js';
+
+const EVENT_PROCESSOR = {
+    PROCESSOR_REMOVED: 'PROCESSOR_REMOVED',
+}
 
 const PROCESSOR_BUILDING_IDS = {
     EMPTY_LOT: InfluenceSDK.Building.IDS.EMPTY_LOT, // processor: CONSTRUCTION
@@ -14,10 +19,12 @@ type TYPE_PROCESSOR_BUILDING_IDS = typeof PROCESSOR_BUILDING_IDS[keyof typeof PR
 /**
  * Singleton
  */
-class ProcessorService {
+class ProcessorService extends EventEmitter {
     private static instance: ProcessorService;
 
-    private constructor() {}
+    constructor() {
+        super();
+    }
 
     public static getInstance(): ProcessorService {
         if (!ProcessorService.instance) {
@@ -37,6 +44,7 @@ class ProcessorService {
 const processorService: ProcessorService = ProcessorService.getInstance(); // singleton
 
 export {
+    EVENT_PROCESSOR,
     PROCESSOR_BUILDING_IDS,
     type TYPE_PROCESSOR_BUILDING_IDS,
     processorService,

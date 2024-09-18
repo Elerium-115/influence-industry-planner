@@ -22,7 +22,8 @@ const testProcessorsAndProcesses = [
     {id: PROCESSOR_BUILDING_IDS.EMPTY_LOT, processIds: [300]},
 ];
 testProcessorsAndProcesses.forEach(processorData => {
-    const processor = testIndustryPlan.getIndustryTierLast().addProcessorById(processorData.id);
+    const industryTier = testIndustryPlan.getIndustryTierLast();
+    const processor = industryTier.addProcessorById(processorData.id);
     processorData.processIds.forEach(processId => {
         processor.addProcessById(processId);
     });

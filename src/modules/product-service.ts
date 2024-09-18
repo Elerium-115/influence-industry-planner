@@ -1,6 +1,7 @@
 import * as InfluenceSDK from '@influenceth/sdk';
 import {getProductImageSrc} from './abstract-core.js';
 import {createEl} from './dom-core.js';
+import {EventEmitter} from './event-emitter.js';
 
 interface I_PRODUCT_DATA {
     i: number|string, // number in the SDK, but string in this app
@@ -12,15 +13,21 @@ interface I_PRODUCT_DATA {
     isAtomic?: boolean,
 }
 
+const EVENT_PRODUCT = {
+    STARTUP_PRODUCT_REMOVED: 'STARTUP_PRODUCT_REMOVED',
+}
+
 /**
  * Singleton
  */
-class ProductService {
+class ProductService extends EventEmitter {
     private static instance: ProductService;
 
     private allProductsData: {[key in string]: I_PRODUCT_DATA};
 
-    private constructor() {
+    constructor() {
+        super();
+
         // Add standard products
         this.allProductsData = {...InfluenceSDK.Product.TYPES};
         // Cast "i" (product ID) from number to string
@@ -103,5 +110,6 @@ const productService: ProductService = ProductService.getInstance(); // singleto
 
 export {
     I_PRODUCT_DATA,
+    EVENT_PRODUCT,
     productService,
 }

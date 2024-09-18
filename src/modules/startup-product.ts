@@ -2,6 +2,7 @@ import * as InfluenceSDK from '@influenceth/sdk';
 import {uniquePushToArray} from './abstract-core.js';
 import {createEl} from './dom-core.js';
 import {ProductAbstract} from './product-abstract.js';
+import {EVENT_PRODUCT, productService} from './product-service.js';
 
 /**
  * A product is eligible to be a "startup product"
@@ -31,13 +32,20 @@ class StartupProduct extends ProductAbstract {
         return this.htmlElement;
     }
 
-    public makeHtmlElement(): HTMLElement {
+    private makeHtmlElement(): HTMLElement {
         const el = createEl('div', null, ['startup-product']);
         el.innerHTML = /*html*/ `
             <div class="product-icon -p${this.id}" data-tooltip="${this.getName()}"></div>
             <div class="product-name">${this.getName()}</div>
+            <div class="remove-product"></div>
         `;
+        el.querySelector('.remove-product')?.addEventListener('click', this.remove.bind(this));
         return el;
+    }
+
+    private remove(): void {
+        this.htmlElement.parentElement?.removeChild(this.htmlElement);
+        productService.emit(EVENT_PRODUCT.STARTUP_PRODUCT_REMOVED, this);
     }
 }
 
