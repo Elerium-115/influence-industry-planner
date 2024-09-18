@@ -1,3 +1,4 @@
+import {getItemNameSafe} from './abstract-core.js';
 import {createEl} from './dom-core.js';
 import {Process} from './process.js';
 import {type TYPE_PROCESSOR_BUILDING_IDS, processorService} from './processor-service.js';
@@ -55,14 +56,13 @@ class Processor {
 
     public makeHtmlElement(): HTMLElement {
         const el = createEl('div', null, ['processor']);
-        const asteroidName = 'Adalia Prime'; //// TEST
-        const lotId = '...'; //// TEST
-        const processorClassName = this.getName().toLowerCase().replace(/\s+/g, '-'); // e.g. "empty-lot"
+        const processorClassName = getItemNameSafe(this.getName()); // e.g. "empty-lot"
+        const tooltipText = `In-game lot not yet linked`; //// TEST
         el.classList.add(`-${processorClassName}`);
         el.innerHTML = /*html*/ `
             <div class="processor-header">
                 <div class="processor-name">${this.getName()}</div>
-                <div class="processor-info" data-tooltip="Lot #${lotId} > ${asteroidName}"></div>
+                <div class="processor-info" data-tooltip="${tooltipText}"></div>
                 <div class="remove-processor"></div>
             </div>
             <div class="processes-list"></div>

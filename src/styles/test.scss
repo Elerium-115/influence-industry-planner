@@ -1,5 +1,3 @@
-@import './product-icon.scss';
-
 @import url(https://fonts.googleapis.com/css2?family=Jura:wght@300;400;700&family=JetBrains+Mono:wght@100&display=swap);
 
 :root {
@@ -83,6 +81,16 @@ body {
 .-factory { --rgb-processor: 40, 120, 255; }
 .-shipyard { --rgb-processor: 129, 129, 255; }
 .-empty-lot { --rgb-processor: 241, 131, 97; }
+
+.product-icon {
+    // NOTE: "--product-icon-size" must be set in each context where this class is used
+    background-color: black;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: var(--product-icon-size);
+    width: var(--product-icon-size);
+}
 
 #test-add-building {
     align-items: center;

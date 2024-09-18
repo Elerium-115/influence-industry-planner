@@ -1,4 +1,6 @@
 import * as InfluenceSDK from '@influenceth/sdk';
+import {getProductImageSrc} from './abstract-core.js';
+import {createEl} from './dom-core.js';
 
 interface I_PRODUCT_DATA {
     i: number|string, // number in the SDK, but string in this app
@@ -27,6 +29,7 @@ class ProductService {
         this.addShipsToAllProducts();
         // Add buildings
         this.addBuildingsToAllProducts();
+        this.injectStyleForProductIcons();
     }
 
     public static getInstance(): ProductService {
@@ -38,6 +41,14 @@ class ProductService {
 
     public getProductDataById(productId: string): I_PRODUCT_DATA {
         return this.allProductsData[productId];
+    }
+
+    public getProductDataForShipIntegration(integrationProcessName: string): I_PRODUCT_DATA|null {
+        return Object.values(this.allProductsData).find(productData => productData.name === integrationProcessName.split('Integration')[0].trim()) || null;
+    }
+
+    public getProductDataForBuildingConstruction(constructionProcessName: string): I_PRODUCT_DATA|null {
+        return Object.values(this.allProductsData).find(productData => productData.name === constructionProcessName.split('Construction')[0].trim()) || null;
     }
 
     private addShipsToAllProducts(): void {
@@ -70,12 +81,21 @@ class ProductService {
             });
     }
 
-    public getProductDataForShipIntegration(integrationProcessName: string): I_PRODUCT_DATA|null {
-        return Object.values(this.allProductsData).find(productData => productData.name === integrationProcessName.split('Integration')[0].trim()) || null;
-    }
-
-    public getProductDataForBuildingConstruction(constructionProcessName: string): I_PRODUCT_DATA|null {
-        return Object.values(this.allProductsData).find(productData => productData.name === constructionProcessName.split('Construction')[0].trim()) || null;
+    /**
+     * Inject "<style>" tag into the DOM, with product icon URLs for ".product-icon"
+     */
+    private injectStyleForProductIcons(): void {
+        let productIconImages: string = '';
+        Object.values(this.allProductsData).forEach(productData => {
+            productIconImages += `&.-p${productData.i} { background-image: url('${getProductImageSrc(productData.name, 'thumb')}'); }\n`;
+        });
+        const elStyle = createEl('style');
+        elStyle.innerHTML = /*html*/ `
+            .product-icon {
+                ${productIconImages}
+            }
+        `;
+        document.head.append(elStyle);
     }
 }
 
