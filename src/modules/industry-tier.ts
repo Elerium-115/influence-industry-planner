@@ -6,6 +6,7 @@ import {
     type TYPE_PROCESSOR_BUILDING_IDS,
     processorService,
 } from './processor-service.js';
+import {OverlayAddProcessor} from './overlays/overlay-add-processor.js';
 
 class IndustryTier {
     private title: string;
@@ -64,7 +65,7 @@ class IndustryTier {
     }
 
     private onClickAddProcessorButton(): void {
-        console.log(`--- [onClickAddProcessorButton]`); //// TEST
+        new OverlayAddProcessor(this);
     }
 
     private makeHtmlElement(): HTMLElement {

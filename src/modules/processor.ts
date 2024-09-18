@@ -66,10 +66,9 @@ class Processor {
     }
 
     private makeHtmlElement(): HTMLElement {
-        const el = createEl('div', null, ['processor']);
-        const processorClassName = getItemNameSafe(this.getName()); // e.g. "empty-lot"
+        const processorClassName = `-${getItemNameSafe(this.getName())}`; // e.g. "-empty-lot"
+        const el = createEl('div', null, ['processor', processorClassName]);
         const tooltipText = `In-game lot not yet linked`; //// TEST
-        el.classList.add(`-${processorClassName}`);
         el.innerHTML = /*html*/ `
             <div class="processor-header">
                 <div class="processor-name">${this.getName()}</div>

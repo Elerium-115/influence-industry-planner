@@ -1,0 +1,55 @@
+.overlay {
+    align-items: center;
+    backdrop-filter: blur(16px);
+    background-color: rgba(0, 0, 0, 0.5);
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    left: 0;
+    position: fixed;
+    right: 0;
+    top: 0;
+
+    .overlay-content {
+        background-color: #222;
+        padding: 32px;
+    }
+
+    .close-overlay-button {
+        cursor: pointer;
+        opacity: 0.5;
+        padding: 32px;
+        position: absolute;
+        right: 0;
+        top: 0;
+
+        &::before {
+            content: '✕';
+            font-size: 200%;
+        }
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+}
+
+.overlay-add-processor {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+
+    .button {
+        --color-processor: rgb(var(--rgb-processor));
+        --color-processor-header-bg: hsl(from var(--color-processor) h s calc(l * 0.5) / 0.15);
+        background-color: var(--color-processor-header-bg);
+        color: var(--color-processor);
+        cursor: pointer;
+        padding: 8px;
+
+        &:hover {
+            color: white;
+        }
+    }
+}

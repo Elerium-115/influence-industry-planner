@@ -32,8 +32,7 @@ class ProductIcon extends ProductAbstract {
     }
 
     private makeHtmlElement(): HTMLElement {
-        const el = createEl('div', null, ['product-icon']);
-        el.classList.add(`-p${this.id}`);
+        const el = createEl('div', null, ['product-icon', `-p${this.id}`]);
         el.dataset.tooltip = this.getName();
         el.addEventListener('click', this.onClickProductIcon.bind(this));
         return el;

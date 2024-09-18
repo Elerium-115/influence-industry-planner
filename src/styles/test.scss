@@ -92,31 +92,6 @@ body {
     width: var(--product-icon-size);
 }
 
-#test-add-building {
-    align-items: center;
-    display: flex;
-    gap: 32px;
-    margin-bottom: 64px;
-
-    &::before {
-        content: 'Add Processor Building:';
-        white-space: nowrap;
-    }
-
-    .button {
-        --color-processor: rgb(var(--rgb-processor));
-        --color-processor-header-bg: hsl(from var(--color-processor) h s calc(l * 0.5) / 0.15);
-        background-color: var(--color-processor-header-bg);
-        color: var(--color-processor);
-        cursor: pointer;
-        padding: 8px;
-
-        &:hover {
-            color: white;
-        }
-    }
-}
-
 #industry-plan {
     align-items: flex-start;
     display: flex;
