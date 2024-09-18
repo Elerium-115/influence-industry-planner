@@ -1,10 +1,8 @@
 import {createEl} from './dom-core.js';
 import {Process} from './process.js';
-import {type TYPE_PROCESSOR_BUILDING_IDS, ProcessorService} from './processor-service.js';
+import {type TYPE_PROCESSOR_BUILDING_IDS, processorService} from './processor-service.js';
 
 class Processor {
-    private processorService: ProcessorService = ProcessorService.getInstance(); // singleton
-
     private id: TYPE_PROCESSOR_BUILDING_IDS;
     private processes: Process[] = [];
     private htmlElement: HTMLElement;
@@ -19,11 +17,7 @@ class Processor {
     }
 
     public getName(): string {
-        return this.processorService.getBuildingName(this.id);
-    }
-
-    public getCategoryName(): string {
-        return this.processorService.getBuildingCategoryName(this.id);
+        return processorService.getBuildingName(this.id);
     }
 
     public getProcesses(): Process[] {

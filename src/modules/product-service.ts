@@ -1,7 +1,7 @@
 import * as InfluenceSDK from '@influenceth/sdk';
 
 interface I_PRODUCT_DATA {
-    i: string, // number in the SDK, but string in this app
+    i: number|string, // number in the SDK, but string in this app
     name: string,
     classification?: string,
     category?: string,
@@ -79,7 +79,9 @@ class ProductService {
     }
 }
 
+const productService: ProductService = ProductService.getInstance(); // singleton
+
 export {
     I_PRODUCT_DATA,
-    ProductService,
+    productService,
 }

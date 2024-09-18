@@ -32,17 +32,12 @@ class ProcessorService {
     public getBuildingName(buildingId: TYPE_PROCESSOR_BUILDING_IDS): string {
         return InfluenceSDK.Building.TYPES[buildingId].name;
     }
-
-    /**
-     * e.g. "Shipbuilding" for "buildingId" = 6 (Shipyard)
-     */
-    public getBuildingCategoryName(buildingId: TYPE_PROCESSOR_BUILDING_IDS): string {
-        return InfluenceSDK.Building.CATEGORY_TYPES[buildingId].name;
-    }
 }
+
+const processorService: ProcessorService = ProcessorService.getInstance(); // singleton
 
 export {
     PROCESSOR_BUILDING_IDS,
     type TYPE_PROCESSOR_BUILDING_IDS,
-    ProcessorService,
+    processorService,
 }

@@ -1,25 +1,14 @@
 import * as InfluenceSDK from '@influenceth/sdk';
-import {getFormattedCeil} from './abstract-core.js';
 import {createEl} from './dom-core.js';
 import {ProductIcon} from './product-icon.js';
-import {ProductService} from './product-service.js';
-
-interface I_PROCESS_DATA {
-    i: number,
-    name: string,
-    processorType: number,
-    setupTime: number,
-    recipeTime: number,
-    inputs: Object, //// TO DO: further detail this as key: string, value: number?
-    outputs: Object, //// TO DO: further detail this as key: string, value: number?
-    batched?: boolean, // NOT defined for ship integrations and building constructions
-};
+import {productService} from './product-service.js';
+import {I_PROCESS_DATA} from './process-service.js';
 
 class Process {
-    private productService: ProductService = ProductService.getInstance(); // singleton
-
     private id: number|null = null;
     private data: I_PROCESS_DATA;
+    private inputs: ProductIcon[] = [];
+    private outputs: ProductIcon[] = [];
     private htmlElement: HTMLElement;
 
     constructor(id: number) {
@@ -32,38 +21,14 @@ class Process {
         this.htmlElement = this.makeHtmlElement();
         // Add inputs
         this.getInputProductIds().forEach(productId => {
-            this.injectElProductIcon(productId, 'input');
+            this.addInputOrOutput(productId, 'input');
         });
         // Add outputs
         this.getOutputProductIds().forEach((productId, idx) => {
-            this.injectElProductIcon(productId, 'output', idx);
+            this.addInputOrOutput(productId, 'output', idx);
         });
-        if (!this.getOutputProductIds().length) {
-            // Output is ship or building
-            switch(this.data.processorType) {
-                case InfluenceSDK.Processor.IDS.DRY_DOCK: {
-                    // Ship
-                    const productData = this.productService.getProductDataForShipIntegration(this.data.name);
-                    if (productData) {
-                        // qty = 1
-                        this.data.outputs = {[productData.i]: 1};
-                        this.injectElProductIcon(productData.i as string, 'output');
-                    }
-                    break;
-                }
-                case InfluenceSDK.Processor.IDS.CONSTRUCTION: {
-                    // Building
-                    const productData = this.productService.getProductDataForBuildingConstruction(this.data.name);
-                    if (productData) {
-                        // qty = 1
-                        this.data.outputs = {[productData.i]: 1};
-                        this.injectElProductIcon(productData.i as string, 'output');
-                    }
-                    break;
-                }
-            }
-        }
-        //// TO DO: add output for ship integrations and building constructions
+        this.handleEmptyOutputsIfAny();
+        this.sortAndRenderInputsAndOutputs();
     }
 
     public getId(): number|null {
@@ -100,7 +65,7 @@ class Process {
         return this.htmlElement.querySelector('.outputs') as HTMLElement;
     }
 
-    public injectElProductIcon(productId: string, inputOrOutput: 'input'|'output', idx = 0): void {
+    private addInputOrOutput(productId: string, inputOrOutput: 'input'|'output', idx = 0): void {
         const productIcon = new ProductIcon(productId);
         if (!productIcon.getData()) {
             // Invalid product / ID
@@ -112,20 +77,63 @@ class Process {
         }
         switch (inputOrOutput) {
             case 'input':
-                // Inject qty in tooltip
-                const inputQty = getFormattedCeil(this.data.inputs[productId]);
-                productIcon.getHtmlElement().dataset.tooltip += `: ${inputQty}`;
-                // Inject input-product icon
-                this.getElInputs().append(productIcon.getHtmlElement());
+                productIcon.setQty(this.data.inputs[productId]);
+                this.inputs.push(productIcon);
                 break;
             case 'output':
-                // Inject qty in tooltip
-                const outputQty = getFormattedCeil(this.data.outputs[productId]);
-                productIcon.getHtmlElement().dataset.tooltip += `: ${outputQty}`;
-                // Inject output-product icon
-                this.getElOutputs().append(productIcon.getHtmlElement());
+                productIcon.setQty(this.data.outputs[productId]);
+                this.outputs.push(productIcon);
                 break;
         }
+    }
+
+    /**
+     * Handle empty outputs in the SDK data (for ships and buildings)
+     */
+    private handleEmptyOutputsIfAny(): void {
+        if (this.outputs.length) {
+            return;
+        }
+        switch (this.data.processorType) {
+            case InfluenceSDK.Processor.IDS.DRY_DOCK: {
+                // Hardcode output = ship
+                const productData = productService.getProductDataForShipIntegration(this.data.name);
+                if (productData) {
+                    // Hardcode qty = 1
+                    this.data.outputs = {[productData.i]: 1};
+                    this.addInputOrOutput(productData.i as string, 'output');
+                }
+                break;
+            }
+            case InfluenceSDK.Processor.IDS.CONSTRUCTION: {
+                // Hardcode output = building
+                const productData = productService.getProductDataForBuildingConstruction(this.data.name);
+                if (productData) {
+                    // Hardcode qty = 1
+                    this.data.outputs = {[productData.i]: 1};
+                    this.addInputOrOutput(productData.i as string, 'output');
+                }
+                break;
+            }
+        }
+    }
+
+    private sortAndRenderInputsAndOutputs(): void {
+        // Sort inputs and outputs alphabetically
+        this.inputs.sort(this.compareProductsByName);
+        this.outputs.sort(this.compareProductsByName);
+        // Add input-product icons into the DOM
+        this.inputs.forEach((inputProductIcon: ProductIcon) => {
+            this.getElInputs().append(inputProductIcon.getHtmlElement());
+        });
+        // Add output-product icons into the DOM
+        this.outputs.forEach((outputProductIcon: ProductIcon) => {
+            this.getElOutputs().append(outputProductIcon.getHtmlElement());
+        });
+    }
+
+    private compareProductsByName(p1: ProductIcon, p2: ProductIcon): number {
+        return p1.getName().localeCompare(p2.getName());
     }
 
     public remove(): void {

@@ -1,8 +1,6 @@
-import {I_PRODUCT_DATA, ProductService} from './product-service.js';
+import {I_PRODUCT_DATA, productService} from './product-service.js';
 
 class ProductAbstract {
-    private productService: ProductService = ProductService.getInstance(); // singleton
-
     /**
      * Product ID formats:
      * - '1', '2', '3' etc. for standard products
@@ -14,7 +12,7 @@ class ProductAbstract {
 
     constructor(id: string) {
         this.id = id;
-        this.data = this.productService.getProductDataById(id);
+        this.data = productService.getProductDataById(id);
         if (!this.data) {
             console.error(`--- ERROR: [ProductAbstract] constructor called with invalid id = ${id}`);
             return;
