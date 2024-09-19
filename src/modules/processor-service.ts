@@ -6,12 +6,12 @@ const EVENT_PROCESSOR = {
 }
 
 const PROCESSOR_BUILDING_IDS = {
-    EMPTY_LOT: InfluenceSDK.Building.IDS.EMPTY_LOT, // processor: CONSTRUCTION
     EXTRACTOR: InfluenceSDK.Building.IDS.EXTRACTOR, // processor: N/A
-    REFINERY: InfluenceSDK.Building.IDS.REFINERY, // processor: REFINERY
     BIOREACTOR: InfluenceSDK.Building.IDS.BIOREACTOR, // processor: BIOREACTOR
+    REFINERY: InfluenceSDK.Building.IDS.REFINERY, // processor: REFINERY
     FACTORY: InfluenceSDK.Building.IDS.FACTORY, // processor: FACTORY
     SHIPYARD: InfluenceSDK.Building.IDS.SHIPYARD, // processors: SHIPYARD, DRY_DOCK
+    EMPTY_LOT: InfluenceSDK.Building.IDS.EMPTY_LOT, // processor: CONSTRUCTION
 };
 
 type TYPE_PROCESSOR_BUILDING_IDS = typeof PROCESSOR_BUILDING_IDS[keyof typeof PROCESSOR_BUILDING_IDS];

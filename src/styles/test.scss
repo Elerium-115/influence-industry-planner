@@ -62,11 +62,16 @@ body {
     white-space: nowrap;
 }
 
-@mixin processor-icon($processorCategory) {
-    .processor-header::before {
+@mixin processor-icon-before($processorCategory) {
+    &::before {
         background-image:
             linear-gradient(var(--color-processor-highlight-subtle), var(--color-processor-highlight-subtle)),
             url('../assets/icons/buildings/' + $processorCategory + '.png');
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        content: '';
+        display: block;
     }
 }
 
@@ -74,6 +79,8 @@ body {
     $bgColor: rgba(255, 255, 255, 0.05);
     background-image: linear-gradient($bgColor, $bgColor);
 }
+
+.hidden { display: none; }
 
 .-extractor { --rgb-processor: 220, 180, 40; }
 .-bioreactor { --rgb-processor: 136, 230, 117; }
@@ -239,12 +246,12 @@ body {
                     --color-processor-processes-bg: hsl(from var(--color-processor) h s calc(l * 0.05) / 0.5);
                     max-width: 240px;
 
-                    &.-extractor { @include processor-icon('Extraction'); }
-                    &.-bioreactor { @include processor-icon('Agriculture'); }
-                    &.-refinery { @include processor-icon('Refining'); }
-                    &.-factory { @include processor-icon('Manufacturing'); }
-                    &.-shipyard { @include processor-icon('Shipbuilding'); }
-                    &.-empty-lot { @include processor-icon('Construction'); }
+                    &.-extractor .processor-header { @include processor-icon-before('Extraction'); }
+                    &.-bioreactor .processor-header { @include processor-icon-before('Agriculture'); }
+                    &.-refinery .processor-header { @include processor-icon-before('Refining'); }
+                    &.-factory .processor-header { @include processor-icon-before('Manufacturing'); }
+                    &.-shipyard .processor-header { @include processor-icon-before('Shipbuilding'); }
+                    &.-empty-lot .processor-header { @include processor-icon-before('Construction'); }
 
                     .processor-header {
                         --gap: 16px;
@@ -258,13 +265,8 @@ body {
                         position: relative;
 
                         &::before {
-                            background-position: center;
-                            background-repeat: no-repeat;
-                            background-size: cover;
                             border: calc(var(--processor-icon-size) * 0.25 / 2) solid var(--color-processor-highlight-subtle);
-                            content: '';
                             cursor: grab;
-                            display: inline-block;
                             height: calc(var(--processor-icon-size) * 0.75);
                             width: calc(var(--processor-icon-size) * 0.75);
                         }
@@ -515,13 +517,15 @@ body {
                 }
             }
 
-            .add-processor-button {
+            .add-processor-panel {
+                --color-panel-bg: #2a2a2a; // avg. of grayscaled processor-header bg-colors
                 align-items: center;
-                background-color: #2a2a2a; // avg. of grayscaled processor-header bg-colors
+                background-color: var(--color-panel-bg);
                 color: rgba(255, 255, 255, 0.6);
                 cursor: pointer;
                 display: flex;
                 gap: 16px;
+                position: relative;
 
                 &::before {
                     align-items: center;
@@ -540,10 +544,31 @@ body {
                     white-space: nowrap;
                 }
 
+                .add-processor-dropdown {
+                    background-color: var(--color-panel-bg);
+                    left: 0;
+                    position: absolute;
+                    right: 0;
+                    top: 100%;
+
+                    .option {
+                        color: rgb(var(--rgb-processor));
+                        cursor: pointer;
+                        padding: 8px 8px 8px calc(var(--processor-icon-size) + 16px);
+
+                        &:hover {
+                            @include hover-lighten-bg;
+                            color: white;
+                        }
+                    }
+                }
+
                 &:hover {
                     @include hover-lighten-bg;
                     color: white;
                 }
+
+                &:not(:hover) .add-processor-dropdown { display: none; }
             }
         }
     }

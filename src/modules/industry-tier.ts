@@ -6,11 +6,12 @@ import {
     type TYPE_PROCESSOR_BUILDING_IDS,
     processorService,
 } from './processor-service.js';
-import {OverlayAddProcessor} from './overlays/overlay-add-processor.js';
+import {AddProcessorPanel} from './add-processor-panel.js';
 
 class IndustryTier {
     private title: string;
     private processors: Processor[] = [];
+    private addProcessorPanel: AddProcessorPanel;
     private htmlElement: HTMLElement;
 
     constructor(title: string) {
@@ -64,18 +65,15 @@ class IndustryTier {
         }
     }
 
-    private onClickAddProcessorButton(): void {
-        new OverlayAddProcessor(this);
-    }
-
     private makeHtmlElement(): HTMLElement {
         const el = createEl('div', null, ['industry-tier']);
         el.innerHTML = /*html*/ `
             <div class="industry-tier-title" data-title="${this.title}"></div>
             <div class="processors-list"></div>
-            <div class="add-processor-button"></div>
         `;
-        el.querySelector('.add-processor-button')?.addEventListener('click', this.onClickAddProcessorButton.bind(this));
+        // Inject add-processor panel
+        this.addProcessorPanel = new AddProcessorPanel(this);
+        el.append(this.addProcessorPanel.getHtmlElement());
         return el;
     }
 
