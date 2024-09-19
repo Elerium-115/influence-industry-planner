@@ -1,19 +1,8 @@
-import {EventEmitter} from './event-emitter.js';
-
-const EVENT_INDUSTRY_TIER = {
-    INDUSTRY_TIER_POPULATED: 'INDUSTRY_TIER_POPULATED',
-    INDUSTRY_TIER_REMOVED: 'INDUSTRY_TIER_REMOVED',
-}
-
 /**
  * Singleton
  */
-class IndustryTierService extends EventEmitter {
+class IndustryTierService {
     private static instance: IndustryTierService;
-
-    constructor() {
-        super();
-    }
 
     public static getInstance(): IndustryTierService {
         if (!IndustryTierService.instance) {
@@ -26,6 +15,5 @@ class IndustryTierService extends EventEmitter {
 const industryTierService: IndustryTierService = IndustryTierService.getInstance(); // singleton
 
 export {
-    EVENT_INDUSTRY_TIER,
     industryTierService,
 }

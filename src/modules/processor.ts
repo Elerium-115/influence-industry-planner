@@ -1,26 +1,19 @@
 import {getItemNameSafe} from './abstract-core.js';
 import {createEl} from './dom-core.js';
-import {
-    EVENT_PROCESSOR,
-    type TYPE_PROCESSOR_BUILDING_IDS,
-    processorService,
-} from './processor-service.js';
+import {IndustryTier} from './industry-tier.js';
+import {type TYPE_PROCESSOR_BUILDING_IDS, processorService} from './processor-service.js';
 import {Process} from './process.js';
-import {EVENT_PROCESS, processService} from './process-service.js';
 
 class Processor {
     private id: TYPE_PROCESSOR_BUILDING_IDS;
+    private parentIndustryTier: IndustryTier;
     private processes: Process[] = [];
     private htmlElement: HTMLElement;
 
-    constructor(id: TYPE_PROCESSOR_BUILDING_IDS) {
+    constructor(id: TYPE_PROCESSOR_BUILDING_IDS, parentIndustryTier: IndustryTier) {
         this.id = id;
+        this.parentIndustryTier = parentIndustryTier;
         this.htmlElement = this.makeHtmlElement();
-        // Listen for events
-        processService.addEventListener(
-            EVENT_PROCESS.PROCESS_REMOVED,
-            this.onProcessRemoved.bind(this)
-        );
     }
 
     private getName(): string {
@@ -37,7 +30,7 @@ class Processor {
     }
 
     public addProcessById(processId: number): void {
-        const process = new Process(processId);
+        const process = new Process(processId, this);
         if (!process.getData()) {
             // Invalid process / ID
             return;
@@ -52,16 +45,7 @@ class Processor {
         console.log(`--- [onClickAddProcessButton]`); //// TEST
     }
 
-    private onProcessRemoved(event: CustomEvent): void {
-        /**
-         * NOTE: This is triggered in ALL processors,
-         * when a process from ANY processor is removed.
-         */
-        const processRemoved = event.detail;
-        if (!this.processes.includes(processRemoved)) {
-            // Event irrelevant for this processor
-            return;
-        }
+    public onProcessRemoved(processRemoved: Process): void {
         this.processes = this.processes.filter(process => process !== processRemoved);
     }
 
@@ -85,7 +69,7 @@ class Processor {
 
     private remove(): void {
         this.htmlElement.parentElement?.removeChild(this.htmlElement);
-        processorService.emit(EVENT_PROCESSOR.PROCESSOR_REMOVED, this);
+        this.parentIndustryTier.onProcessorRemoved(this);
     }
 }
 

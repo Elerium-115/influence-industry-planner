@@ -1,28 +1,27 @@
 import * as InfluenceSDK from '@influenceth/sdk';
 import {createEl} from './dom-core.js';
+import {Processor} from './processor.js';
+import {I_PROCESS_DATA} from './process-service.js';
 import {ProductIcon} from './product-icon.js';
 import {productService} from './product-service.js';
-import {
-    EVENT_PROCESS,
-    I_PROCESS_DATA,
-    processService,
-} from './process-service.js';
 
 class Process {
     private id: number|null = null;
     private data: I_PROCESS_DATA;
+    private parentProcessor: Processor;
     private inputs: ProductIcon[] = [];
     private outputs: ProductIcon[] = [];
     private primaryOutput: ProductIcon;
     private htmlElement: HTMLElement;
 
-    constructor(id: number) {
+    constructor(id: number, parentProcessor: Processor) {
         this.id = id;
         this.data = InfluenceSDK.Process.TYPES[id];
         if (!this.data) {
             console.error(`--- ERROR: [Process] constructor called with invalid id = ${id}`);
             return;
         }
+        this.parentProcessor = parentProcessor;
         this.htmlElement = this.makeHtmlElement();
         // Add inputs
         this.getInputProductIds().forEach(productId => {
@@ -172,7 +171,7 @@ class Process {
 
     private remove(): void {
         this.htmlElement.parentElement?.removeChild(this.htmlElement);
-        processService.emit(EVENT_PROCESS.PROCESS_REMOVED, this);
+        this.parentProcessor.onProcessRemoved(this);
     }
 }
 

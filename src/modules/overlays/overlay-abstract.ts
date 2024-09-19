@@ -1,5 +1,11 @@
 import {createEl} from '../dom-core.js';
 
+/**
+ * Usage:
+ * - extend this class from e.g. `OverlayExample`
+ * - implement `OverlayExample.makeContentHtmlElement`
+ * - trigger that overlay from other modules / services, by creating an instance `new OverlayExample()`
+ */
 abstract class OverlayAbstract {
     private htmlElement: HTMLElement;
     protected elOverlayContent: HTMLElement;

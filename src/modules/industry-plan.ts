@@ -1,8 +1,6 @@
 import {createEl} from './dom-core.js';
-import {StartupProduct} from './startup-product.js';
-import {EVENT_PRODUCT, productService} from './product-service.js';
 import {IndustryTier} from './industry-tier.js';
-import {EVENT_INDUSTRY_TIER, industryTierService} from './industry-tier-service.js';
+import {StartupProduct} from './startup-product.js';
 
 class IndustryPlan {
     private startupProducts: StartupProduct[] = [];
@@ -23,19 +21,6 @@ class IndustryPlan {
         this.industryPlanHtmlElement.append(this.industryTiersHtmlElement);
         // Add initial industry tier
         this.addIndustryTier();
-        // Listen for events
-        productService.addEventListener(
-            EVENT_PRODUCT.STARTUP_PRODUCT_REMOVED,
-            this.onStartupProductRemoved.bind(this)
-        );
-        industryTierService.addEventListener(
-            EVENT_INDUSTRY_TIER.INDUSTRY_TIER_POPULATED,
-            this.onIndustryTierPopulated.bind(this)
-        );
-        industryTierService.addEventListener(
-            EVENT_INDUSTRY_TIER.INDUSTRY_TIER_REMOVED,
-            this.onIndustryTierRemoved.bind(this)
-        );
     }
 
     //// TO DO: remove this function after no longer needed for "test.ts"
@@ -53,7 +38,7 @@ class IndustryPlan {
             // Startup product already added
             return;
         }
-        const startupProduct = new StartupProduct(id);
+        const startupProduct = new StartupProduct(id, this);
         if (!startupProduct.getId()) {
             // Invalid startup product / ID
             return;
@@ -72,14 +57,13 @@ class IndustryPlan {
 
     private addIndustryTier(): void {
         const industryTierTitle = `Industry Tier #${this.industryTiers.length + 1}`;
-        const industryTier = new IndustryTier(industryTierTitle);
+        const industryTier = new IndustryTier(industryTierTitle, this);
         this.industryTiers.push(industryTier);
         // Add new industry tier into the DOM
         this.industryTiersHtmlElement.append(industryTier.getHtmlElement());
     }
 
-    private onStartupProductRemoved(event: CustomEvent): void {
-        const startupProductRemoved = event.detail;
+    public onStartupProductRemoved(startupProductRemoved: StartupProduct): void {
         this.startupProducts = this.startupProducts.filter(startupProduct => startupProduct !== startupProductRemoved);
     }
 
@@ -104,18 +88,16 @@ class IndustryPlan {
         console.log(`--- [onClickAddStartupProductsButton]`); //// TEST
     }
 
-    private onIndustryTierPopulated(event: CustomEvent): void {
-        const industryTierPopulated = event.detail;
+    public onIndustryTierPopulated(industryTierPopulated: IndustryTier): void {
         if (industryTierPopulated === this.getIndustryTierLast()) {
             // Processor added to last industry tier => add new (empty) industry tier
             this.addIndustryTier();
         }
     }
 
-    private onIndustryTierRemoved(event: CustomEvent): void {
-        const industryTierRemoved = event.detail;
+    public onIndustryTierRemoved(industryTierRemoved: IndustryTier): void {
         this.industryTiers = this.industryTiers.filter(industryTier => industryTier !== industryTierRemoved);
-        // Update the title of all industry tiers
+        // Update the title of all remaining industry tiers
         this.industryTiers.forEach((industryTier: IndustryTier, idx: number) => {
             industryTier.setTitle(`Industry Tier #${idx + 1}`);
         });

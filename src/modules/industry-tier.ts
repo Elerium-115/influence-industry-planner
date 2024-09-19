@@ -1,27 +1,20 @@
 import {createEl} from './dom-core.js';
-import {EVENT_INDUSTRY_TIER, industryTierService} from './industry-tier-service.js';
+import {IndustryPlan} from './industry-plan.js';
 import {Processor} from './processor.js';
-import {
-    EVENT_PROCESSOR,
-    type TYPE_PROCESSOR_BUILDING_IDS,
-    processorService,
-} from './processor-service.js';
+import {type TYPE_PROCESSOR_BUILDING_IDS} from './processor-service.js';
 import {AddProcessorPanel} from './add-processor-panel.js';
 
 class IndustryTier {
     private title: string;
+    private parentIndustryPlan: IndustryPlan;
     private processors: Processor[] = [];
     private addProcessorPanel: AddProcessorPanel;
     private htmlElement: HTMLElement;
 
-    constructor(title: string) {
+    constructor(title: string, parentIndustryPlan: IndustryPlan) {
         this.title = title;
+        this.parentIndustryPlan = parentIndustryPlan;
         this.htmlElement = this.makeHtmlElement();
-        // Listen for events
-        processorService.addEventListener(
-            EVENT_PROCESSOR.PROCESSOR_REMOVED,
-            this.onProcessorRemoved.bind(this)
-        );
     }
 
     public getHtmlElement(): HTMLElement {
@@ -40,24 +33,15 @@ class IndustryTier {
     }
 
     public addProcessorById(processorId: TYPE_PROCESSOR_BUILDING_IDS): Processor {
-        const processor = new Processor(processorId);
+        const processor = new Processor(processorId, this);
         this.processors.push(processor);
         // Add new processor into the DOM
         this.getElProcessorsList().append(processor.getHtmlElement());
-        industryTierService.emit(EVENT_INDUSTRY_TIER.INDUSTRY_TIER_POPULATED, this);
+        this.parentIndustryPlan.onIndustryTierPopulated(this);
         return processor; //// TO DO: remove this "return" after no longer needed for "test.ts"
     }
 
-    private onProcessorRemoved(event: CustomEvent): void {
-        /**
-         * NOTE: This is triggered in ALL industry tiers,
-         * when a processor from ANY industry tier is removed.
-         */
-        const processorRemoved = event.detail;
-        if (!this.processors.includes(processorRemoved)) {
-            // Event irrelevant for this industry tier
-            return;
-        }
+    public onProcessorRemoved(processorRemoved: Processor): void {
         this.processors = this.processors.filter(processor => processor !== processorRemoved);
         if (!this.processors.length) {
             // All processors removed => remove this industry tier
@@ -79,7 +63,7 @@ class IndustryTier {
 
     private remove(): void {
         this.htmlElement.parentElement?.removeChild(this.htmlElement);
-        industryTierService.emit(EVENT_INDUSTRY_TIER.INDUSTRY_TIER_REMOVED, this);
+        this.parentIndustryPlan.onIndustryTierRemoved(this);
     }
 }
 

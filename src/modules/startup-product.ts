@@ -1,8 +1,8 @@
 import * as InfluenceSDK from '@influenceth/sdk';
 import {uniquePushToArray} from './abstract-core.js';
 import {createEl} from './dom-core.js';
+import {IndustryPlan} from './industry-plan.js';
 import {ProductAbstract} from './product-abstract.js';
-import {EVENT_PRODUCT, productService} from './product-service.js';
 
 /**
  * A product is eligible to be a "startup product"
@@ -16,15 +16,17 @@ Object.values(InfluenceSDK.Process.TYPES).forEach((processData: any) => {
 });
 
 class StartupProduct extends ProductAbstract {
+    private parentIndustryPlan: IndustryPlan;
     private htmlElement: HTMLElement;
 
-    constructor(id: string) {
+    constructor(id: string, parentIndustryPlan: IndustryPlan) {
         super(id);
 
         if (!ELIGIBLE_STARTUP_PRODUCT_IDS.includes(id)) {
             console.error(`--- ERROR: [StartupProduct] constructor called with invalid id = ${id}`);
             return;
         }
+        this.parentIndustryPlan = parentIndustryPlan;
         this.htmlElement = this.makeHtmlElement();
     }
 
@@ -45,7 +47,7 @@ class StartupProduct extends ProductAbstract {
 
     private remove(): void {
         this.htmlElement.parentElement?.removeChild(this.htmlElement);
-        productService.emit(EVENT_PRODUCT.STARTUP_PRODUCT_REMOVED, this);
+        this.parentIndustryPlan.onStartupProductRemoved(this);
     }
 }
 

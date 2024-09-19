@@ -1,9 +1,3 @@
-import {EventEmitter} from './event-emitter.js';
-
-const EVENT_PROCESS = {
-    PROCESS_REMOVED: 'PROCESS_REMOVED',
-}
-
 interface I_PROCESS_DATA {
     i: number,
     name: string,
@@ -18,12 +12,8 @@ interface I_PROCESS_DATA {
 /**
  * Singleton
  */
-class ProcessService extends EventEmitter {
+class ProcessService {
     private static instance: ProcessService;
-
-    constructor() {
-        super();
-    }
 
     public static getInstance(): ProcessService {
         if (!ProcessService.instance) {
@@ -37,6 +27,5 @@ const processService: ProcessService = ProcessService.getInstance(); // singleto
 
 export {
     I_PROCESS_DATA,
-    EVENT_PROCESS,
     processService,
 }
