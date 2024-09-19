@@ -9,9 +9,19 @@ abstract class OverlayAbstract {
         this.elOverlayContent = this.makeContentHtmlElement();
         this.htmlElement.querySelector('.overlay-content')?.append(this.elOverlayContent);
         document.body.append(this.htmlElement);
+        // Listen for key strokes
+        window.addEventListener('keydown', this.onKeydown);
     }
 
     protected abstract makeContentHtmlElement(): HTMLElement;
+
+    private onKeydown = (event: KeyboardEvent) => {
+        // Pressing "Escape" while this overlay is visible, closes this overlay
+        if (event.key === 'Escape') {
+            window.removeEventListener('keydown', this.onKeydown);
+            this.remove();
+        }
+    }
 
     private makeHtmlElement(): HTMLElement {
         const el = createEl('div', null, ['overlay']);
