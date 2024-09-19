@@ -20,7 +20,13 @@ class ProductIcon extends ProductAbstract {
     }
 
     public toggleIsPrimary(isPrimary: boolean): void {
-        this.htmlElement.classList.toggle('-is-primary', isPrimary);
+        this.htmlElement.classList.toggle('is-primary', isPrimary);
+        if (isPrimary) {
+            this.htmlElement.classList.add('flash-primary');
+            setTimeout(() => {
+                this.htmlElement.classList.remove('flash-primary');
+            }, 500); // match the animation duration for "flash-primary"
+        }
     }
 
     public setQty(qty: number): void {

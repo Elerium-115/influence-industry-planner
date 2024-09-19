@@ -390,14 +390,20 @@ body {
                                         border: 1px solid rgba(255, 255, 255, 0.2);
                                         cursor: pointer;
 
-                                        &.-is-primary {
+                                        &.is-primary {
                                             border-color: var(--color-processor-highlight-subtle);
                                             outline: 1px solid var(--color-processor-highlight-subtle);
                                         }
 
-                                        &:hover {
-                                            border-color: white;
+                                        &.flash-primary { animation: flash-primary 500ms; }
+
+                                        @keyframes flash-primary {
+                                            25% { background-color: var(--color-processor-highlight-subtle); }
+                                            50% { background-color: unset; }
+                                            75% { background-color: var(--color-processor-highlight-subtle); }
                                         }
+
+                                        &:hover { border-color: white; }
                                     }
                                 }
 
