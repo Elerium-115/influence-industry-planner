@@ -1,7 +1,7 @@
 import * as InfluenceSDK from '@influenceth/sdk';
 import {createEl} from './dom-core.js';
 import {Processor} from './processor.js';
-import {I_PROCESS_DATA} from './process-service.js';
+import {I_PROCESS_DATA, processService} from './process-service.js';
 import {ProductIcon} from './product-icon.js';
 import {productService} from './product-service.js';
 
@@ -88,14 +88,6 @@ class Process {
         }
     }
 
-    private setPrimaryOutput(output: ProductIcon): void {
-        // Unset old primary output
-        this.primaryOutput?.toggleIsPrimary(false);
-        // Set new primary output
-        this.primaryOutput = output;
-        output.toggleIsPrimary(true);
-    }
-
     /**
      * Handle empty outputs in the SDK data (for ships and buildings)
      */
@@ -143,6 +135,30 @@ class Process {
 
     private compareProductsByName(p1: ProductIcon, p2: ProductIcon): number {
         return p1.getName().localeCompare(p2.getName());
+    }
+
+    private setPrimaryOutput(output: ProductIcon): void {
+        // Unset old primary output
+        this.primaryOutput?.toggleIsPrimary(false);
+        // Set new primary output
+        this.primaryOutput = output;
+        output.toggleIsPrimary(true);
+        /**
+         * Update qty for all outputs, based on:
+         * - current primary output
+         * - global penalty for secondary outputs
+         */
+        this.outputs.forEach(output => {
+            const penalty = output === this.primaryOutput ? 0 : processService.getPenaltyForSecondaryOutputs();
+            const outputProductId = output.getId();
+            if (!outputProductId) {
+                return;
+            }
+            const qtyRaw: number = this.data.outputs[outputProductId];
+            const qtyWithPenalty = qtyRaw * (1 - penalty);
+            // Round down the output qty
+            output.setQty(qtyWithPenalty, false);
+        });
     }
 
     public onInputOrOutputClicked(inputOrOutput: ProductIcon): void {

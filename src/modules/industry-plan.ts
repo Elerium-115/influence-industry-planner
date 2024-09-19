@@ -1,8 +1,10 @@
 import {createEl} from './dom-core.js';
-import {IndustryTier} from './industry-tier.js';
+import {RefiningPenalty} from './refining-penalty.js';
 import {StartupProduct} from './startup-product.js';
+import {IndustryTier} from './industry-tier.js';
 
 class IndustryPlan {
+    private refiningPenalty: RefiningPenalty;
     private startupProducts: StartupProduct[] = [];
     private industryTiers: IndustryTier[] = [];
     private industryPlanHtmlElement: HTMLElement;
@@ -10,13 +12,21 @@ class IndustryPlan {
     private industryTiersHtmlElement: HTMLElement;
 
     constructor() {
+        // Default penalty for secondary outputs
+        this.refiningPenalty = new RefiningPenalty();
         // Always "HTMLElement", never "null"
         this.industryPlanHtmlElement = document.getElementById('industry-plan') as HTMLElement;
         // Empty old industry plan in the DOM
         this.industryPlanHtmlElement.textContent = '';
-        // Add wrappers for startup products and industry tiers (both initially empty) into the DOM
+        /**
+         * Add wrappers for main components into the DOM:
+         * - refining penalty
+         * - startup products (initially empty)
+         * - industry tiers (initially empty)
+         */
         this.startupProductsHtmlElement = this.makeStartupProductsHtmlElement();
         this.industryTiersHtmlElement = this.makeIndustryTiersHtmlElement();
+        this.industryPlanHtmlElement.append(this.refiningPenalty.getHtmlElement());
         this.industryPlanHtmlElement.append(this.startupProductsHtmlElement);
         this.industryPlanHtmlElement.append(this.industryTiersHtmlElement);
         // Add initial industry tier

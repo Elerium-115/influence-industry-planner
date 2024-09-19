@@ -13,8 +13,8 @@ function getProductImageSrc(productName: string, format: 'thumb'|'default'|'orig
     return `../assets/products/${format}/${getItemNameSafe(productName)}.png`;
 }
 
-function getFormattedCeil(num: number): string {
-    return Intl.NumberFormat().format(Math.ceil(num));
+function getFormattedRoundNumber(num: number, roundUp: boolean = true): string {
+    return Intl.NumberFormat().format(roundUp ? Math.ceil(num) : Math.floor(num));
 }
 
 function uniquePushToArray(arr: any[], value: any): void {
@@ -24,7 +24,7 @@ function uniquePushToArray(arr: any[], value: any): void {
 }
 
 export {
-    getFormattedCeil,
+    getFormattedRoundNumber,
     getProductImageSrc,
     getItemNameSafe,
     uniquePushToArray,

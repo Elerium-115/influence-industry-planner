@@ -1,4 +1,4 @@
-import {getFormattedCeil} from './abstract-core.js';
+import {getFormattedRoundNumber} from './abstract-core.js';
 import {createEl} from './dom-core.js';
 import {Process} from './process.js';
 import {ProductAbstract} from './product-abstract.js';
@@ -29,10 +29,11 @@ class ProductIcon extends ProductAbstract {
         }
     }
 
-    public setQty(qty: number): void {
+    public setQty(qty: number, roundUpInTooltip: boolean = true): void {
         this.qty = qty;
         // Also add / update the qty in the tooltip
-        this.getHtmlElement().dataset.tooltip = `${this.getName()}: ${getFormattedCeil(this.qty)}`;
+        const qtyInTooltip = getFormattedRoundNumber(qty, roundUpInTooltip);
+        this.getHtmlElement().dataset.tooltip = `${this.getName()}: ${qtyInTooltip}`;
     }
 
     private onClickProductIcon(): void {

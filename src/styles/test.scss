@@ -103,6 +103,24 @@ body {
     align-items: flex-start;
     display: flex;
     gap: 64px;
+    position: relative;
+
+    #refining-penalty {
+        color: rgb(var(--rgb-processor));
+        display: flex;
+        gap: 16px;
+        height: 64px;
+        justify-content: center;
+        left: 0;
+        padding: 8px;
+        position: absolute;
+        top: -64px;
+        white-space: nowrap;
+        width: 100%;
+
+        &::before { content: 'Refining Penalty:'; opacity: 0.5; }
+        &::after { content: 'for secondary outputs'; opacity: 0.5; }
+    }
 
     #startup-products {
         --product-icon-size: 32px;
@@ -113,9 +131,7 @@ body {
         .startup-products-title {
             margin-bottom: 32px;
 
-            &::before {
-                content: 'Startup Products';
-            }
+            &::before { content: 'Startup Products'; }
         }
 
         .startup-products-list {
@@ -225,9 +241,7 @@ body {
             .industry-tier-title {
                 margin-bottom: 32px;
 
-                &::before {
-                    content: attr(data-title);
-                }
+                &::before { content: attr(data-title); }
             }
 
             .processors-list {
@@ -288,9 +302,7 @@ body {
 
                             @include data-tooltip-align-top-right;
 
-                            &::before {
-                                content: '#';
-                            }
+                            &::before { content: '#'; }
 
                             &:hover {
                                 background-color: var(--color-processor-highlight-bg);
@@ -457,18 +469,10 @@ body {
 
                                     @include data-tooltip-align-top-left;
 
-                                    &::before {
-                                        opacity: 1;
-                                    }
+                                    &::before { opacity: 1; }
                                 }
 
-                                .process-materials {
-                                    .separator {
-                                        &::after {
-                                            opacity: 1;
-                                        }
-                                    }
-                                }
+                                .process-materials .separator::after { opacity: 1; }
                             }
 
                             &:not(:hover) .remove-process { display: none; }

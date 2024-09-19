@@ -15,11 +15,21 @@ interface I_PROCESS_DATA {
 class ProcessService {
     private static instance: ProcessService;
 
+    private penaltyForSecondaryOutputs: number;
+
     public static getInstance(): ProcessService {
         if (!ProcessService.instance) {
             ProcessService.instance = new ProcessService();
         }
         return ProcessService.instance;
+    }
+
+    public getPenaltyForSecondaryOutputs(): number {
+        return this.penaltyForSecondaryOutputs;
+    }
+
+    public setPenaltyForSecondaryOutputs(penalty: number): void {
+        this.penaltyForSecondaryOutputs = penalty;
     }
 }
 
