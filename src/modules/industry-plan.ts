@@ -78,8 +78,8 @@ class IndustryPlan {
         this.industryTiersHtmlElement.append(industryTier.getHtmlElement());
     }
 
-    private onStartupProductRemoved(event: Event) {
-        const startupProductRemoved = (event as CustomEvent).detail;
+    private onStartupProductRemoved(event: CustomEvent): void {
+        const startupProductRemoved = event.detail;
         this.startupProducts = this.startupProducts.filter(startupProduct => startupProduct !== startupProductRemoved);
     }
 
@@ -104,16 +104,16 @@ class IndustryPlan {
         console.log(`--- [onClickAddStartupProductsButton]`); //// TEST
     }
 
-    private onIndustryTierPopulated(event: Event) {
-        const industryTierPopulated = (event as CustomEvent).detail;
+    private onIndustryTierPopulated(event: CustomEvent): void {
+        const industryTierPopulated = event.detail;
         if (industryTierPopulated === this.getIndustryTierLast()) {
             // Processor added to last industry tier => add new (empty) industry tier
             this.addIndustryTier();
         }
     }
 
-    private onIndustryTierRemoved(event: Event) {
-        const industryTierRemoved = (event as CustomEvent).detail;
+    private onIndustryTierRemoved(event: CustomEvent): void {
+        const industryTierRemoved = event.detail;
         this.industryTiers = this.industryTiers.filter(industryTier => industryTier !== industryTierRemoved);
         // Update the title of all industry tiers
         this.industryTiers.forEach((industryTier: IndustryTier, idx: number) => {

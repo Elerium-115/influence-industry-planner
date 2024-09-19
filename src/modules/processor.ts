@@ -1,11 +1,11 @@
 import {getItemNameSafe} from './abstract-core.js';
 import {createEl} from './dom-core.js';
-import {Process} from './process.js';
 import {
     EVENT_PROCESSOR,
     type TYPE_PROCESSOR_BUILDING_IDS,
     processorService,
 } from './processor-service.js';
+import {Process} from './process.js';
 import {EVENT_PROCESS, processService} from './process-service.js';
 
 class Processor {
@@ -52,12 +52,12 @@ class Processor {
         console.log(`--- [onClickAddProcessButton]`); //// TEST
     }
 
-    private onProcessRemoved(event: Event): void {
+    private onProcessRemoved(event: CustomEvent): void {
         /**
          * NOTE: This is triggered in ALL processors,
          * when a process from ANY processor is removed.
          */
-        const processRemoved = (event as CustomEvent).detail;
+        const processRemoved = event.detail;
         if (!this.processes.includes(processRemoved)) {
             // Event irrelevant for this processor
             return;

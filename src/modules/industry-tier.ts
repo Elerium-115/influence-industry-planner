@@ -48,12 +48,12 @@ class IndustryTier {
         return processor; //// TO DO: remove this "return" after no longer needed for "test.ts"
     }
 
-    private onProcessorRemoved(event: Event) {
+    private onProcessorRemoved(event: CustomEvent): void {
         /**
          * NOTE: This is triggered in ALL industry tiers,
          * when a processor from ANY industry tier is removed.
          */
-        const processorRemoved = (event as CustomEvent).detail;
+        const processorRemoved = event.detail;
         if (!this.processors.includes(processorRemoved)) {
             // Event irrelevant for this industry tier
             return;

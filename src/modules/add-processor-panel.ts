@@ -8,12 +8,12 @@ import {
 } from './processor-service.js';
 
 class AddProcessorPanel {
-    private industryTier: IndustryTier;
+    private parentIndustryTier: IndustryTier;
     private dropdownHtmlElement: HTMLElement;
     private htmlElement: HTMLElement;
 
-    constructor(industryTier: IndustryTier) {
-        this.industryTier = industryTier;
+    constructor(parentIndustryTier: IndustryTier) {
+        this.parentIndustryTier = parentIndustryTier;
         this.htmlElement = this.makeHtmlElement();
     }
 
@@ -24,7 +24,7 @@ class AddProcessorPanel {
     private onClickDropdownOption(buildingId: TYPE_PROCESSOR_BUILDING_IDS): void {
         // Force the dropdown to be hidden, before adding the new processor
         this.dropdownHtmlElement.classList.add('hidden');
-        this.industryTier.addProcessorById(buildingId);
+        this.parentIndustryTier.addProcessorById(buildingId);
         // Stop forcing the dropdown to be hidden (via setTimeout to allow it time to first become hidden)
         setTimeout(() => this.dropdownHtmlElement.classList.remove('hidden'));
     }

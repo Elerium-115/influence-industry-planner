@@ -1,14 +1,17 @@
 import {getFormattedCeil} from './abstract-core.js';
 import {createEl} from './dom-core.js';
+import {Process} from './process.js';
 import {ProductAbstract} from './product-abstract.js';
 
 class ProductIcon extends ProductAbstract {
+    private parentProcess: Process;
     private qty: number|null = null; // null for startup products
     private htmlElement: HTMLElement;
 
-    constructor(id: string) {
+    constructor(id: string, parentProcess: Process) {
         super(id);
 
+        this.parentProcess = parentProcess;
         this.htmlElement = this.makeHtmlElement();
     }
 
@@ -16,8 +19,8 @@ class ProductIcon extends ProductAbstract {
         return this.htmlElement;
     }
 
-    public setAsPrimary(): void {
-        this.htmlElement.classList.add('-is-primary');
+    public toggleIsPrimary(isPrimary: boolean): void {
+        this.htmlElement.classList.toggle('-is-primary', isPrimary);
     }
 
     public setQty(qty: number): void {
@@ -27,8 +30,7 @@ class ProductIcon extends ProductAbstract {
     }
 
     private onClickProductIcon(): void {
-        console.log(`--- [onClickProductIcon]`); //// TEST
-        //// TO DO: emit event => handle @ "Process" by (IFF output) un-marking the old primary output + marking this output as primary
+        this.parentProcess.onInputOrOutputClicked(this);
     }
 
     private makeHtmlElement(): HTMLElement {

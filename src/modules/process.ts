@@ -13,6 +13,7 @@ class Process {
     private data: I_PROCESS_DATA;
     private inputs: ProductIcon[] = [];
     private outputs: ProductIcon[] = [];
+    private primaryOutput: ProductIcon;
     private htmlElement: HTMLElement;
 
     constructor(id: number) {
@@ -28,11 +29,16 @@ class Process {
             this.addInputOrOutput(productId, 'input');
         });
         // Add outputs
-        this.getOutputProductIds().forEach((productId, idx) => {
-            this.addInputOrOutput(productId, 'output', idx);
+        this.getOutputProductIds().forEach((productId) => {
+            this.addInputOrOutput(productId, 'output');
         });
         this.handleEmptyOutputsIfAny();
         this.sortAndRenderInputsAndOutputs();
+        // The first output is primary by default
+        const firstOutput = this.outputs[0];
+        if (firstOutput) {
+            this.setPrimaryOutput(firstOutput);
+        }
     }
 
     public getData(): I_PROCESS_DATA {
@@ -65,15 +71,11 @@ class Process {
         return this.htmlElement.querySelector('.outputs') as HTMLElement;
     }
 
-    private addInputOrOutput(productId: string, inputOrOutput: 'input'|'output', idx = 0): void {
-        const productIcon = new ProductIcon(productId);
+    private addInputOrOutput(productId: string, inputOrOutput: 'input'|'output'): void {
+        const productIcon = new ProductIcon(productId, this);
         if (!productIcon.getData()) {
             // Invalid product / ID
             return;
-        }
-        if (inputOrOutput === 'output' && idx === 0) {
-            // The first output is primary by default
-            productIcon.setAsPrimary();
         }
         switch (inputOrOutput) {
             case 'input':
@@ -85,6 +87,14 @@ class Process {
                 this.outputs.push(productIcon);
                 break;
         }
+    }
+
+    private setPrimaryOutput(output: ProductIcon): void {
+        // Unset old primary output
+        this.primaryOutput?.toggleIsPrimary(false);
+        // Set new primary output
+        this.primaryOutput = output;
+        output.toggleIsPrimary(true);
     }
 
     /**
@@ -134,6 +144,13 @@ class Process {
 
     private compareProductsByName(p1: ProductIcon, p2: ProductIcon): number {
         return p1.getName().localeCompare(p2.getName());
+    }
+
+    public onInputOrOutputClicked(inputOrOutput: ProductIcon): void {
+        if (this.outputs.includes(inputOrOutput)) {
+            // Output product clicked => set as primary output
+            this.setPrimaryOutput(inputOrOutput);
+        }
     }
 
     private makeHtmlElement(): HTMLElement {
