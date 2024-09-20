@@ -3,6 +3,7 @@ import {createEl} from './dom-core.js';
 import {IndustryTier} from './industry-tier.js';
 import {type TYPE_PROCESSOR_BUILDING_IDS, processorService} from './processor-service.js';
 import {Process} from './process.js';
+import {OverlayAddProcess} from './overlays/overlay-add-process.js';
 
 class Processor {
     private id: TYPE_PROCESSOR_BUILDING_IDS;
@@ -16,8 +17,12 @@ class Processor {
         this.htmlElement = this.makeHtmlElement();
     }
 
-    private getName(): string {
+    public getName(): string {
         return processorService.getBuildingName(this.id);
+    }
+
+    public getProcessorClassName(): string {
+        return `-${getItemNameSafe(this.getName())}`; // e.g. "-empty-lot"
     }
 
     public getHtmlElement(): HTMLElement {
@@ -42,7 +47,8 @@ class Processor {
     }
 
     private onClickAddProcessButton(): void {
-        console.log(`--- [onClickAddProcessButton]`); //// TEST
+        new OverlayAddProcess(this, this.parentIndustryTier);
+        //// TO DO: custom overlay for adding an extraction process: no filters, no inputs, group by type (Volatiles etc.)
     }
 
     public onProcessRemoved(processRemoved: Process): void {
@@ -50,8 +56,7 @@ class Processor {
     }
 
     private makeHtmlElement(): HTMLElement {
-        const processorClassName = `-${getItemNameSafe(this.getName())}`; // e.g. "-empty-lot"
-        const el = createEl('div', null, ['processor', processorClassName]);
+        const el = createEl('div', null, ['processor', this.getProcessorClassName()]);
         const tooltipText = `In-game lot not yet linked`; //// TEST
         el.innerHTML = /*html*/ `
             <div class="processor-header">

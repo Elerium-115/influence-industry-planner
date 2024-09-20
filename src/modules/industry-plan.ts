@@ -1,5 +1,6 @@
 import {createEl} from './dom-core.js';
 import {RefiningPenalty} from './refining-penalty.js';
+import {industryPlanService} from './industry-plan-service.js';
 import {StartupProduct} from './startup-product.js';
 import {IndustryTier} from './industry-tier.js';
 
@@ -12,6 +13,7 @@ class IndustryPlan {
     private industryTiersHtmlElement: HTMLElement;
 
     constructor() {
+        industryPlanService.setIndustryPlan(this);
         // Default penalty for secondary outputs
         this.refiningPenalty = new RefiningPenalty();
         // Always "HTMLElement", never "null"
@@ -33,7 +35,10 @@ class IndustryPlan {
         this.addIndustryTier();
     }
 
-    //// TO DO: remove this function after no longer needed for "test.ts"
+    public getStartupProducts(): StartupProduct[] {
+        return this.startupProducts;
+    }
+
     public getIndustryTierLast(): IndustryTier {
         return this.industryTiers.slice(-1)[0];
     }

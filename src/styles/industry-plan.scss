@@ -1,114 +1,7 @@
-@import url(https://fonts.googleapis.com/css2?family=Jura:wght@300;400;700&family=JetBrains+Mono:wght@100&display=swap);
-
-:root {
-    --color-warning: rgb(223, 67, 0);
-    --color-add-button: rgba(255, 255, 255, 0.25);
-}
-
-body {
-    background-color: #222;
-    color: white;
-    font-family: Jura, sans-serif;
-    margin: 0;
-    padding: 64px;
-    position: relative;
-
-    // WIP
-    &::before {
-        align-items: center;
-        background-color: rgb(220, 180, 40);
-        color: black;
-        content: 'Work in progress';
-        display: flex;
-        font-size: 60%;
-        height: 48px;
-        justify-content: center;
-        left: 0;
-        position: fixed;
-        text-align: center;
-        top: 0;
-        width: 48px;
-        z-index: 1;
-    }
-}
-
-[data-tooltip] {
-    position: relative;
-
-    &::after {
-        background-color: black;
-        color: white;
-        content: attr(data-tooltip);
-        font-size: 90%;
-        outline: 4px solid rgba(255, 255, 255, 0.2);
-        padding: 4px 8px;
-        pointer-events: none; // prevent hover on tooltip
-        position: absolute;
-        white-space: nowrap;
-        z-index: 99;
-    }
-
-    &:not(:hover)::after { display: none; }
-}
-
-// NOTE: Any element with "[data-tooltip]" must also "@include" one of these mixins
-@mixin data-tooltip-align-top-left { &::after { bottom: calc(100% + 8px); left: 0; } }
-@mixin data-tooltip-align-top-right { &::after { bottom: calc(100% + 8px); right: 0; } }
-@mixin data-tooltip-align-bottom-left { &::after { left: 0; top: calc(100% + 8px); } }
-@mixin data-tooltip-align-bottom-right { &::after { right: 0; top: calc(100% + 8px); } }
-
-@mixin flash-tooltip($color) {
-    animation: flash-tooltip 500ms;
-
-    @keyframes flash-tooltip {
-        25% { color: $color; }
-        50% { color: unset; }
-        75% { color: $color; }
-    }
-}
-
-@mixin single-line-with-ellipsis {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-@mixin processor-icon-before($processorCategory) {
-    &::before {
-        background-image:
-            linear-gradient(var(--color-processor-highlight-subtle), var(--color-processor-highlight-subtle)),
-            url('../assets/icons/buildings/' + $processorCategory + '.png');
-        background-position: center;
-        background-repeat: no-repeat;
-        background-size: cover;
-        content: '';
-        display: block;
-    }
-}
-
-@mixin hover-lighten-bg {
-    $bgColor: rgba(255, 255, 255, 0.05);
-    background-image: linear-gradient($bgColor, $bgColor);
-}
-
-.hidden { display: none; }
-
-.-extractor { --rgb-processor: 220, 180, 40; }
-.-bioreactor { --rgb-processor: 136, 230, 117; }
-.-refinery { --rgb-processor: 87, 213, 255; }
-.-factory { --rgb-processor: 40, 120, 255; }
-.-shipyard { --rgb-processor: 129, 129, 255; }
-.-empty-lot { --rgb-processor: 241, 131, 97; }
-
-.product-icon {
-    // NOTE: "--product-icon-size" must be set in each context where this class is used
-    background-color: black;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: contain;
-    height: var(--product-icon-size);
-    width: var(--product-icon-size);
-}
+@import './_core.scss';
+@import './_processor.scss';
+// Above imports required for below imports
+@import './overlay.scss';
 
 #industry-plan {
     align-items: flex-start;
@@ -160,14 +53,12 @@ body {
                 padding: 2px 16px 2px 2px;
                 position: relative;
 
-                .product-icon {
-                    @include data-tooltip-align-top-left;
-                }
+                .product-icon { @include data-tooltip-align-top-left; }
 
                 .product-name {
                     @include single-line-with-ellipsis;
                     font-size: 90%;
-                    max-width: 200px;
+                    max-width: 160px;
                 }
 
                 .remove-product {
@@ -199,9 +90,7 @@ body {
                     @include hover-lighten-bg;
                     color: white !important;
 
-                    .remove-product {
-                        @include hover-lighten-bg;
-                    }
+                    .remove-product { @include hover-lighten-bg; }
                 }
 
                 &:not(:hover) .remove-product { display: none; }
@@ -265,42 +154,13 @@ body {
                 &:not(:empty) { margin-bottom: 32px; }
 
                 .processor {
-                    --color-processor: rgb(var(--rgb-processor));
-                    --color-processor-header-bg: hsl(from var(--color-processor) h s calc(l * 0.5) / 0.15);
-                    --color-processor-highlight-bg: rgba(var(--rgb-processor), 0.2);
-                    --color-processor-highlight-subtle: rgba(var(--rgb-processor), 0.5);
-                    --color-processor-process-hover: rgba(var(--rgb-processor), 0.05);
-                    --color-processor-processes-bg: hsl(from var(--color-processor) h s calc(l * 0.05) / 0.5);
                     max-width: 240px;
 
-                    &.-extractor .processor-header { @include processor-icon-before('Extraction'); }
-                    &.-bioreactor .processor-header { @include processor-icon-before('Agriculture'); }
-                    &.-refinery .processor-header { @include processor-icon-before('Refining'); }
-                    &.-factory .processor-header { @include processor-icon-before('Manufacturing'); }
-                    &.-shipyard .processor-header { @include processor-icon-before('Shipbuilding'); }
-                    &.-empty-lot .processor-header { @include processor-icon-before('Construction'); }
-
                     .processor-header {
-                        --gap: 16px;
-                        align-items: center;
-                        background-color: var(--color-processor-header-bg);
-                        color: var(--color-processor);
-                        display: flex;
-                        gap: var(--gap);
-                        height: var(--processor-icon-size);
-                        padding-right: calc(var(--processor-icon-size) + var(--gap));
+                        padding-right: calc(var(--processor-icon-size) + var(--processor-header-gap));
                         position: relative;
 
-                        &::before {
-                            border: calc(var(--processor-icon-size) * 0.25 / 2) solid var(--color-processor-highlight-subtle);
-                            cursor: grab;
-                            height: calc(var(--processor-icon-size) * 0.75);
-                            width: calc(var(--processor-icon-size) * 0.75);
-                        }
-
-                        .processor-name {
-                            white-space: nowrap;
-                        }
+                        &::before { cursor: grab; }
 
                         .processor-info {
                             align-items: center;
@@ -369,9 +229,7 @@ body {
                             padding: 8px;
                             position: relative;
 
-                            &:not(:first-child) {
-                                border-top: 1px solid var(--color-processor-highlight-bg);
-                            }
+                            &:not(:first-child) { border-top: 1px solid var(--color-processor-highlight-bg); }
 
                             .process-header {
                                 align-items: center;
@@ -393,9 +251,7 @@ body {
                                     opacity: 0.75;
                                 }
 
-                                .process-name {
-                                    @include single-line-with-ellipsis;
-                                }
+                                .process-name { @include single-line-with-ellipsis; }
                             }
 
                             .process-materials {
@@ -436,9 +292,7 @@ body {
                                     }
                                 }
 
-                                .outputs {
-                                    justify-content: flex-end;
-                                }
+                                .outputs { justify-content: flex-end; }
 
                                 .inputs .product-icon { @include data-tooltip-align-bottom-left; }
                                 .outputs .product-icon { @include data-tooltip-align-bottom-right; }
@@ -536,9 +390,7 @@ body {
                                 background-color: var(--color-processor-process-hover);
                             }
 
-                            &::before {
-                                opacity: 1;
-                            }
+                            &::before { opacity: 1; }
                         }
                     }
                 }

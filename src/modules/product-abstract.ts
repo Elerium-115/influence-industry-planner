@@ -1,6 +1,6 @@
 import {I_PRODUCT_DATA, productService} from './product-service.js';
 
-class ProductAbstract {
+abstract class ProductAbstract {
     /**
      * Product ID formats:
      * - '1', '2', '3' etc. for standard products

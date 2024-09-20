@@ -1,17 +1,20 @@
 .overlay {
-    align-items: center;
+    align-items: flex-start;
     backdrop-filter: blur(16px);
     background-color: rgba(0, 0, 0, 0.5);
     bottom: 0;
     display: flex;
     justify-content: center;
     left: 0;
+    overflow: auto;
     position: fixed;
     right: 0;
     top: 0;
+    z-index: 1;
 
     .overlay-content {
         background-color: #222;
+        margin: 64px 0;
         padding: 32px;
     }
 
@@ -28,28 +31,132 @@
             font-size: 200%;
         }
 
-        &:hover {
-            opacity: 1;
-        }
+        &:hover { opacity: 1; }
     }
 }
 
-.overlay-add-processor {
+.overlay-add-process {
     align-items: center;
     display: flex;
     flex-direction: column;
     gap: 32px;
 
-    .button {
-        --color-processor: rgb(var(--rgb-processor));
-        --color-processor-header-bg: hsl(from var(--color-processor) h s calc(l * 0.5) / 0.15);
-        background-color: var(--color-processor-header-bg);
-        color: var(--color-processor);
-        cursor: pointer;
-        padding: 8px;
+    > * { width: 100%; }
 
-        &:hover {
-            color: white;
+    .overlay-header {
+        align-items: center;
+        display: flex;
+        gap: 64px;
+        justify-content: space-between;
+
+        .overlay-title { font-size: 150%; }
+    }
+
+    .overlay-filters {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+
+        .filter-checkboxes {
+            display: flex;
+            margin: -8px -16px;
+
+            label {
+                display: flex;
+                font-size: 90%;
+                gap: 8px;
+                padding: 8px 16px;
+            }
+        }
+
+        .filter-search {
+            width: 100%;
+
+            input { width: 100%; }
+        }
+    }
+
+    .overlay-lists {
+        display: flex;
+        gap: 64px;
+        justify-content: space-between;
+
+        .overlay-list {
+            .overlay-list-title {
+                display: inline-block;
+                position: relative;
+
+                &::before { // "::after" reserved for tooltip
+                    --offset: 6px;
+                    content: 'ⓘ';
+                    left: calc(100% + var(--offset));
+                    opacity: 0.5;
+                    position: absolute;
+                    top: calc(0px - var(--offset));
+                }
+            }
+
+            &.available-inputs {
+                label {
+                    align-items: center;
+                    display: flex;
+                    gap: 8px;
+                }
+
+                .overlay-list-title {
+                    display: inline-flex;
+
+                    @include data-tooltip-align-top-left;
+                }
+
+                .available-inputs-list {
+                    display: flex;
+                    flex-direction: column;
+                    margin-top: 16px;
+
+                    label {
+                        background-color: #111;
+                        color: rgba(255, 255, 255, 0.75);
+                        margin-left: -2px;
+                        padding: 2px 16px 2px 2px;
+
+                        .product-icon {
+                            --product-icon-size: 24px;
+
+                            @include data-tooltip-align-top-left;
+                        }
+
+                        .product-name {
+                            @include single-line-with-ellipsis;
+                            font-size: 90%;
+                            max-width: 160px;
+                        }
+
+                        &:hover {
+                            @include hover-lighten-bg;
+                            color: white;
+                        }
+
+                        &:has(input:not(:checked)) {
+                            background-color: unset;
+
+                            .product-name { opacity: 0.25; }
+                        }
+                    }
+                }
+            }
+
+            &.eligible-processes {
+                text-align: right;
+
+                .overlay-list-title {
+                    color: rgb(var(--rgb-processor));
+
+                    @include data-tooltip-align-top-right;
+                }
+
+                .eligible-processes-list { margin-top: 16px; }
+            }
         }
     }
 }
