@@ -1,19 +1,7 @@
-import * as InfluenceSDK from '@influenceth/sdk';
-import {uniquePushToArray} from './abstract-core.js';
 import {createEl} from './dom-core.js';
 import {IndustryPlan} from './industry-plan.js';
 import {ProductAbstract} from './product-abstract.js';
-
-/**
- * A product is eligible to be a "startup product"
- * only if it can be used as an input for a process.
- */
-const ELIGIBLE_STARTUP_PRODUCT_IDS: string[] = [];
-Object.values(InfluenceSDK.Process.TYPES).forEach((processData: any) => {
-    Object.keys(processData.inputs).forEach((idNumeric: any) => {
-        uniquePushToArray(ELIGIBLE_STARTUP_PRODUCT_IDS, idNumeric.toString());
-    });
-});
+import {productService} from './product-service.js';
 
 class StartupProduct extends ProductAbstract {
     private parentIndustryPlan: IndustryPlan;
@@ -22,7 +10,11 @@ class StartupProduct extends ProductAbstract {
     constructor(id: string, parentIndustryPlan: IndustryPlan) {
         super(id);
 
-        if (!ELIGIBLE_STARTUP_PRODUCT_IDS.includes(id)) {
+        /**
+         * A product is eligible to be a "startup product"
+         * only if it can be used as an input for a process.
+         */
+        if (!productService.getInputProductIds().includes(id)) {
             console.error(`--- ERROR: [StartupProduct] constructor called with invalid id = ${id}`);
             return;
         }
@@ -52,6 +44,5 @@ class StartupProduct extends ProductAbstract {
 }
 
 export {
-    ELIGIBLE_STARTUP_PRODUCT_IDS,
     StartupProduct,
 }

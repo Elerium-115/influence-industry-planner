@@ -17,6 +17,10 @@ class IndustryTier {
         this.htmlElement = this.makeHtmlElement();
     }
 
+    public getProcessors(): Processor[] {
+        return this.processors;
+    }
+
     public getHtmlElement(): HTMLElement {
         return this.htmlElement;
     }

@@ -66,6 +66,8 @@
                 font-size: 90%;
                 gap: 8px;
                 padding: 8px 16px;
+
+                &:hover { @include hover-lighten-bg; }
             }
         }
 

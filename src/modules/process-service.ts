@@ -4,8 +4,8 @@ interface I_PROCESS_DATA {
     processorType: number,
     setupTime: number,
     recipeTime: number,
-    inputs: Object, //// TO DO: further detail this as key: string, value: number?
-    outputs: Object, //// TO DO: further detail this as key: string, value: number?
+    inputs: {[key in number]: number},
+    outputs: {[key in number]: number},
     batched?: boolean, // NOT defined for ship integrations and building constructions
 };
 

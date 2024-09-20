@@ -69,8 +69,6 @@ body {
 label {
     cursor: pointer;
     user-select: none;
- 
-    &:hover { @include hover-lighten-bg; }
 }
 
 input[type='text'] {

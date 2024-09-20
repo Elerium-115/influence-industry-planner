@@ -17,6 +17,10 @@ class Processor {
         this.htmlElement = this.makeHtmlElement();
     }
 
+    public getProcesses(): Process[] {
+        return this.processes;
+    }
+
     public getName(): string {
         return processorService.getBuildingName(this.id);
     }

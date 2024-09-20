@@ -1,6 +1,9 @@
 import * as InfluenceSDK from '@influenceth/sdk';
-import {getProductImageSrc} from './abstract-core.js';
+import {getProductImageSrc, uniquePushToArray} from './abstract-core.js';
 import {createEl} from './dom-core.js';
+import {StartupProduct} from './startup-product.js';
+import {ProductIcon} from './product-icon.js';
+import {ProductAbstract} from './product-abstract.js';
 
 interface I_PRODUCT_DATA {
     i: number|string, // number in the SDK, but string in this app
@@ -12,6 +15,8 @@ interface I_PRODUCT_DATA {
     isAtomic?: boolean,
 }
 
+type ProductAny = StartupProduct|ProductIcon|ProductAbstract;
+
 /**
  * Singleton
  */
@@ -19,6 +24,11 @@ class ProductService {
     private static instance: ProductService;
 
     private allProductsData: {[key in string]: I_PRODUCT_DATA};
+
+    /**
+     * Unsorted IDs of products which are used as inputs for at least one process
+     */
+    private inputProductIds: string[] = [];
 
     constructor() {
         // Add standard products
@@ -29,7 +39,10 @@ class ProductService {
         this.addShipsToAllProducts();
         // Add buildings
         this.addBuildingsToAllProducts();
+        // Inject style with background-images for all product icons
         this.injectStyleForProductIcons();
+        // Determine IDs of products which are used as inputs for at least one process
+        this.populateInputProductIds();
     }
 
     public static getInstance(): ProductService {
@@ -37,6 +50,14 @@ class ProductService {
             ProductService.instance = new ProductService();
         }
         return ProductService.instance;
+    }
+
+    public getInputProductIds(): string[] {
+        return this.inputProductIds;
+    }
+
+    public isInputProductId(productId: string): boolean {
+        return this.inputProductIds.includes(productId);
     }
 
     public getProductDataById(productId: string): I_PRODUCT_DATA {
@@ -96,6 +117,22 @@ class ProductService {
             }
         `;
         document.head.append(elStyle);
+    }
+
+    private populateInputProductIds(): void {
+        Object.values(InfluenceSDK.Process.TYPES).forEach(processData => {
+            Object.keys(processData.inputs).forEach(inputProductId => {
+                uniquePushToArray(this.inputProductIds, inputProductId);
+            });
+        });
+    }
+
+    public sortProductsByName(products: (ProductAny)[]): void {
+        products.sort(this.compareProductsByName);
+    }
+
+    private compareProductsByName(p1: ProductAny, p2: ProductAny): number {
+        return p1.getName().localeCompare(p2.getName());
     }
 }
 

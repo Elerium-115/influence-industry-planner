@@ -8,7 +8,7 @@ import {IndustryPlan} from './modules/industry-plan.js';
 const testIndustryPlan = new IndustryPlan();
 
 // Test add startup products
-const testStartupProductIds = ['1', '3', '15', '23', '44', '48', '52', '55', '69', '70',  '81'];
+const testStartupProductIds = ['1', '3', '15', '23', '44', '48', '52', '55', '81'];
 testIndustryPlan.batchAddStartupProductsByIds(testStartupProductIds);
 console.log(`--- testIndustryPlan:`, testIndustryPlan); //// TEST
 
@@ -17,7 +17,7 @@ const testProcessorsAndProcesses = [
     {id: PROCESSOR_BUILDING_IDS.EXTRACTOR, processIds: []},
     {id: PROCESSOR_BUILDING_IDS.BIOREACTOR, processIds: []},
     {id: PROCESSOR_BUILDING_IDS.REFINERY, processIds: [24, 91, 82]},
-    {id: PROCESSOR_BUILDING_IDS.FACTORY, processIds: [57]},
+    {id: PROCESSOR_BUILDING_IDS.FACTORY, processIds: [57, 161]},
     {id: PROCESSOR_BUILDING_IDS.SHIPYARD, processIds: [252, 222]},
     {id: PROCESSOR_BUILDING_IDS.EMPTY_LOT, processIds: [300]},
 ];

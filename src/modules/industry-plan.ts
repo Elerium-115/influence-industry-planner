@@ -3,6 +3,7 @@ import {RefiningPenalty} from './refining-penalty.js';
 import {industryPlanService} from './industry-plan-service.js';
 import {StartupProduct} from './startup-product.js';
 import {IndustryTier} from './industry-tier.js';
+import {productService} from './product-service.js';
 
 class IndustryPlan {
     private refiningPenalty: RefiningPenalty;
@@ -37,6 +38,10 @@ class IndustryPlan {
 
     public getStartupProducts(): StartupProduct[] {
         return this.startupProducts;
+    }
+
+    public getIndustryTiers(): IndustryTier[] {
+        return this.industryTiers;
     }
 
     public getIndustryTierLast(): IndustryTier {
@@ -84,7 +89,7 @@ class IndustryPlan {
 
     private onUpdatedStartupProducts(): void {
         // Sort startup products alphabetically
-        this.startupProducts.sort(this.compareStartupProductsByName);
+        productService.sortProductsByName(this.startupProducts);
         // Update startup products in the DOM
         const elStartupProdutsList = this.getElStartupProdutsList();
         // -- Remove old startup products from the DOM
@@ -93,10 +98,6 @@ class IndustryPlan {
         this.startupProducts.forEach(startupProduct => {
             elStartupProdutsList.append(startupProduct.getHtmlElement());
         });
-    }
-
-    private compareStartupProductsByName(p1: StartupProduct, p2: StartupProduct): number {
-        return p1.getName().localeCompare(p2.getName());
     }
 
     private onClickAddStartupProductsButton(): void {

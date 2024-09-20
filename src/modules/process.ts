@@ -40,6 +40,10 @@ class Process {
         }
     }
 
+    public getOutputs(): ProductIcon[] {
+        return this.outputs;
+    }
+
     public getData(): I_PROCESS_DATA {
         return this.data;
     }
