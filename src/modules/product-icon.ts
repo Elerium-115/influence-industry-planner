@@ -19,9 +19,9 @@ class ProductIcon extends ProductAbstract {
         return this.htmlElement;
     }
 
-    public toggleIsPrimary(isPrimary: boolean): void {
+    public toggleIsPrimary(isPrimary: boolean, isPrimaryChanged: boolean = true): void {
         this.htmlElement.classList.toggle('is-primary', isPrimary);
-        if (isPrimary) {
+        if (isPrimary && isPrimaryChanged) {
             this.htmlElement.classList.add('flash-primary');
             setTimeout(() => {
                 this.htmlElement.classList.remove('flash-primary');
@@ -40,10 +40,20 @@ class ProductIcon extends ProductAbstract {
         this.parentProcess.onInputOrOutputClicked(this);
     }
 
+    private onMouseenterProductIcon(): void {
+        this.parentProcess.onInputOrOutputMouseenter(this);
+    }
+
+    private onMouseleaveProductIcon(): void {
+        this.parentProcess.onInputOrOutputMouseleave(this);
+    }
+
     private makeHtmlElement(): HTMLElement {
         const el = createEl('div', null, ['product-icon', `-p${this.id}`]);
         el.dataset.tooltip = this.getName();
         el.addEventListener('click', this.onClickProductIcon.bind(this));
+        el.addEventListener('mouseenter', this.onMouseenterProductIcon.bind(this));
+        el.addEventListener('mouseleave', this.onMouseleaveProductIcon.bind(this));
         return el;
     }
 }

@@ -20,14 +20,15 @@ body {
         color: black;
         content: 'Work in progress';
         display: flex;
-        font-size: 80%;
-        height: 64px;
+        font-size: 60%;
+        height: 48px;
         justify-content: center;
         left: 0;
         position: fixed;
         text-align: center;
         top: 0;
-        width: 64px;
+        width: 48px;
+        z-index: 1;
     }
 }
 
@@ -55,6 +56,16 @@ body {
 @mixin data-tooltip-align-top-right { &::after { bottom: calc(100% + 8px); right: 0; } }
 @mixin data-tooltip-align-bottom-left { &::after { left: 0; top: calc(100% + 8px); } }
 @mixin data-tooltip-align-bottom-right { &::after { right: 0; top: calc(100% + 8px); } }
+
+@mixin flash-tooltip($color) {
+    animation: flash-tooltip 500ms;
+
+    @keyframes flash-tooltip {
+        25% { color: $color; }
+        50% { color: unset; }
+        75% { color: $color; }
+    }
+}
 
 @mixin single-line-with-ellipsis {
     overflow: hidden;
@@ -103,23 +114,25 @@ body {
     align-items: flex-start;
     display: flex;
     gap: 64px;
-    position: relative;
 
     #refining-penalty {
-        color: rgb(var(--rgb-processor));
+        align-items: center;
+        color: rgb(220, 180, 40);
         display: flex;
+        font-size: 90%;
         gap: 16px;
-        height: 64px;
+        height: 48px;
         justify-content: center;
-        left: 0;
-        padding: 8px;
+        left: 48px;
+        opacity: 0.75;
+        padding: 0 16px;
         position: absolute;
-        top: -64px;
+        top: 0;
         white-space: nowrap;
-        width: 100%;
+        z-index: 1;
 
-        &::before { content: 'Refining Penalty:'; opacity: 0.5; }
-        &::after { content: 'for secondary outputs'; opacity: 0.5; }
+        &::before { content: 'Refining Penalty'; }
+        &::after { content: 'for secondary outputs'; }
     }
 
     #startup-products {
@@ -407,7 +420,11 @@ body {
                                             outline: 1px solid var(--color-processor-highlight-subtle);
                                         }
 
-                                        &.flash-primary { animation: flash-primary 500ms; }
+                                        &.flash-primary {
+                                            animation: flash-primary 500ms;
+
+                                            &::after { @include flash-tooltip(var(--color-processor)); }
+                                        }
 
                                         @keyframes flash-primary {
                                             25% { background-color: var(--color-processor-highlight-subtle); }

@@ -138,6 +138,10 @@ class Process {
     }
 
     private setPrimaryOutput(output: ProductIcon): void {
+        if (this.primaryOutput === output) {
+            // Primary output did not change
+            return;
+        }
         // Unset old primary output
         this.primaryOutput?.toggleIsPrimary(false);
         // Set new primary output
@@ -166,6 +170,14 @@ class Process {
             // Output product clicked => set as primary output
             this.setPrimaryOutput(inputOrOutput);
         }
+    }
+
+    public onInputOrOutputMouseenter(inputOrOutput: ProductIcon): void {
+        //// TO DO: show connections to inputs / outputs from other processes
+    }
+
+    public onInputOrOutputMouseleave(inputOrOutput: ProductIcon): void {
+        //// TO DO: hide connections to inputs / outputs from other processes
     }
 
     private makeHtmlElement(): HTMLElement {
