@@ -1,7 +1,9 @@
+import * as InfluenceSDK from '@influenceth/sdk';
 import {IndustryPlan} from './industry-plan.js';
 import {IndustryTier} from './industry-tier.js';
 import {Processor} from './processor.js';
-import {Process} from './process.js';
+import {SDK_PROCESSOR_IDS_BY_BUILDING_ID} from './processor-service.js';
+import {I_PROCESS_DATA} from './process-service.js';
 import {ProductAbstract} from './product-abstract.js';
 import {productService} from './product-service.js';
 
@@ -25,7 +27,7 @@ class IndustryPlanService {
     }
 
     public getAvailableInputsForIndustryTier(targetIndustryTier: IndustryTier): ProductAbstract[] {
-        const products: ProductAbstract[] = [];
+        const availableInputs: ProductAbstract[] = [];
         // Add startup products
         this.industryPlan.getStartupProducts().forEach(startupProduct => {
             const startupProductId = startupProduct.getId() as string;
@@ -33,7 +35,7 @@ class IndustryPlanService {
                 // Product not an input for any process
                 return;
             }
-            products.push(new ProductAbstract(startupProductId));
+            availableInputs.push(new ProductAbstract(startupProductId));
         });
         // Add outputs from lower industry tiers
         this.industryPlan.getIndustryTiers().some(industryTier => {
@@ -46,7 +48,7 @@ class IndustryPlanService {
                 processor.getProcesses().forEach(process => {
                     process.getOutputs().forEach(outputProduct => {
                         const outputProductId = outputProduct.getId() as string;
-                        if (products.find(product => product.getId() === outputProductId)) {
+                        if (availableInputs.find(product => product.getId() === outputProductId)) {
                             // Product already added
                             return ;
                         }
@@ -54,18 +56,27 @@ class IndustryPlanService {
                             // Product not an input for any process
                             return;
                         }
-                        products.push(new ProductAbstract(outputProduct.getId() as string));
+                        availableInputs.push(new ProductAbstract(outputProduct.getId() as string));
                     });
                 });
             });
         });
-        productService.sortProductsByName(products);
-        return products;
+        productService.sortProductsByName(availableInputs);
+        return availableInputs;
     }
 
-    public getEligibleProcessesForProcessorWithAvailableInputs(processor: Processor, inputs: ProductAbstract): Process[] {
-        return []; //// TEST
-        //// TO DO: exclude processes already assigned to this processor
+    public getEligibleProcessesForProcessorUsingInputs(processor: Processor, availableInputs: ProductAbstract[]): I_PROCESS_DATA[] {
+        const assignedProcessIds = processor.getProcesses().map(assignedProcess => assignedProcess.getId());
+        const availableInputsProductIds = availableInputs.map(availableInput => availableInput.getId());
+        // SDK-processors associated with this processor-building
+        const sdkProcessorIds = SDK_PROCESSOR_IDS_BY_BUILDING_ID[processor.getId()];
+        return Object.values(InfluenceSDK.Process.TYPES)
+            // Exclude processes already assigned to this processor-building
+            .filter(processData => !assignedProcessIds.includes(processData.i))
+            // Keep only processes that can be run by one of the SDK-processors
+            .filter(processData => sdkProcessorIds.includes(processData.processorType))
+            // Keep only processes that can be run with the available inputs
+            .filter(processData => Object.keys(processData.inputs).every(inputProductId => availableInputsProductIds.includes(inputProductId)));
     }
 }
 

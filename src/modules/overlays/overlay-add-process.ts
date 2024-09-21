@@ -3,16 +3,23 @@ import {OverlayAbstract} from './overlay-abstract';
 import {industryPlanService} from '../industry-plan-service.js';
 import {IndustryTier} from '../industry-tier.js';
 import {Processor} from '../processor.js';
+import {I_PROCESS_DATA} from '../process-service.js';
+import {ProductAbstract} from '../product-abstract.js';
+import {productService} from '../product-service.js';
 
 class OverlayAddProcess extends OverlayAbstract {
     private parentIndustryTier: IndustryTier;
     private parentProcessor: Processor;
+    private availableInputs: ProductAbstract[] = [];
+    private eligibleProcesses: I_PROCESS_DATA[] = [];
 
     constructor(parentProcessor: Processor, parentIndustryTier: IndustryTier) {
         super();
 
         this.parentIndustryTier = parentIndustryTier;
         this.parentProcessor = parentProcessor;
+        this.availableInputs = industryPlanService.getAvailableInputsForIndustryTier(this.parentIndustryTier);
+        this.eligibleProcesses = industryPlanService.getEligibleProcessesForProcessorUsingInputs(this.parentProcessor, this.availableInputs);
         this.populateElOverlayContent();
     }
 
@@ -28,7 +35,7 @@ class OverlayAddProcess extends OverlayAbstract {
 
     private populateElAvailableInputsList(): void {
         let listHtml = '';
-        industryPlanService.getAvailableInputsForIndustryTier(this.parentIndustryTier).forEach(product => {
+        this.availableInputs.forEach(product => {
             listHtml += /*html*/ `
                 <label>
                     <input type="checkbox" checked>
@@ -38,13 +45,45 @@ class OverlayAddProcess extends OverlayAbstract {
             `;
         });
         this.getElAvailableInputsList().innerHTML = listHtml;
-        //// TO DO: add logic for toggling checkboxes => filter eligible processes
+        //// TO DO: add logic for toggling inputs-checkboxes + filters-checkboxes + search =>  filter eligible processes
     }
 
     private populateElEligibleProcessesList(): void {
-        let listHtml = '';
-        //// TO DO: ...
-        this.getElEligibleProcessesList().innerHTML = listHtml;
+        this.eligibleProcesses.forEach(processData => {
+            this.getElEligibleProcessesList().append(this.makeElEligibleProcess(processData));
+        });
+    }
+
+    private makeElEligibleProcess(processData: I_PROCESS_DATA): HTMLElement {
+        let inputsHtml = '';
+        let outputsHtml = '';
+        for (const [productId, qty] of Object.entries(processData.inputs)) {
+            inputsHtml += this.makeInputOrOutputHtml(productId, qty);
+        }
+        for (const [productId, qty] of Object.entries(processData.outputs)) {
+            outputsHtml += this.makeInputOrOutputHtml(productId, qty);
+        }
+        const el = createEl('div', null, ['process']);
+        el.innerHTML = /*html*/ `
+            <div class="process-header">
+                <div class="process-name">${processData.name}</div>
+            </div>
+            <div class="process-materials">
+                <div class="inputs">${inputsHtml}</div>
+                <div class="separator"></div>
+                <div class="outputs">${outputsHtml}</div>
+            </div>
+        `;
+        //// TO DO: on click => ADD this process into "parentProcessor"
+        return el;
+    }
+
+    //// TO DO: rework this function by appending elements, instead of injecting HTML
+    private makeInputOrOutputHtml(productId: string, qty: number): string {
+        const productData = productService.getProductDataById(productId);
+        const el = createEl('div', null, ['product-icon', `-p${productId}`]);
+        el.dataset.tooltip = `${productData.name}: ${qty}`;
+        return el.outerHTML;
     }
 
     private populateElOverlayContent(): void {

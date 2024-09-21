@@ -40,6 +40,10 @@ class Process {
         }
     }
 
+    public getId(): number|null {
+        return this.id;
+    }
+
     public getOutputs(): ProductIcon[] {
         return this.outputs;
     }

@@ -11,6 +11,15 @@ const PROCESSOR_BUILDING_IDS = {
 
 type TYPE_PROCESSOR_BUILDING_IDS = typeof PROCESSOR_BUILDING_IDS[keyof typeof PROCESSOR_BUILDING_IDS];
 
+const SDK_PROCESSOR_IDS_BY_BUILDING_ID = {
+    [PROCESSOR_BUILDING_IDS.EXTRACTOR]: [],
+    [PROCESSOR_BUILDING_IDS.BIOREACTOR]: [InfluenceSDK.Processor.IDS.BIOREACTOR],
+    [PROCESSOR_BUILDING_IDS.REFINERY]: [InfluenceSDK.Processor.IDS.REFINERY],
+    [PROCESSOR_BUILDING_IDS.FACTORY]: [InfluenceSDK.Processor.IDS.FACTORY],
+    [PROCESSOR_BUILDING_IDS.SHIPYARD]: [InfluenceSDK.Processor.IDS.SHIPYARD, InfluenceSDK.Processor.IDS.DRY_DOCK],
+    [PROCESSOR_BUILDING_IDS.EMPTY_LOT]: [InfluenceSDK.Processor.IDS.CONSTRUCTION],
+};
+
 /**
  * Singleton
  */
@@ -37,5 +46,6 @@ const processorService: ProcessorService = ProcessorService.getInstance(); // si
 export {
     PROCESSOR_BUILDING_IDS,
     type TYPE_PROCESSOR_BUILDING_IDS,
+    SDK_PROCESSOR_IDS_BY_BUILDING_ID,
     processorService,
 }

@@ -17,6 +17,10 @@ class Processor {
         this.htmlElement = this.makeHtmlElement();
     }
 
+    public getId(): TYPE_PROCESSOR_BUILDING_IDS {
+        return this.id;
+    }
+
     public getProcesses(): Process[] {
         return this.processes;
     }
