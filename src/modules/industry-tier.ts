@@ -42,7 +42,7 @@ class IndustryTier {
         // Add new processor into the DOM
         this.getElProcessorsList().append(processor.getHtmlElement());
         this.parentIndustryPlan.onIndustryTierPopulated(this);
-        return processor; //// TO DO: remove this "return" after no longer needed for "test.ts"
+        return processor;
     }
 
     public onProcessorRemoved(processorRemoved: Processor): void {

@@ -30,7 +30,6 @@
 
     #startup-products {
         --product-icon-size: 32px;
-        --color-startup-products-bg: #111;
         display: flex;
         flex-direction: column;
 
@@ -46,7 +45,7 @@
 
             .startup-product {
                 align-items: center;
-                background-color: var(--color-startup-products-bg);
+                background-color: var(--color-available-products-bg);
                 color: rgba(255, 255, 255, 0.75);
                 display: flex;
                 gap: 8px;
@@ -63,7 +62,7 @@
 
                 .remove-product {
                     align-items: center;
-                    background-color: var(--color-startup-products-bg);
+                    background-color: var(--color-available-products-bg);
                     bottom: 0;
                     cursor: pointer;
                     display: flex;
@@ -99,7 +98,7 @@
 
         .add-startup-products-button {
             align-items: center;
-            background-color: var(--color-startup-products-bg);
+            background-color: var(--color-available-products-bg);
             color: var(--color-add-button);
             cursor: pointer;
             display: flex;
@@ -268,6 +267,7 @@
 
                                     .product-icon {
                                         --product-icon-size: 24px;
+                                        background-color: black;
                                         border: 1px solid rgba(255, 255, 255, 0.2);
                                         cursor: pointer;
 

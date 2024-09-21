@@ -69,7 +69,6 @@ class IndustryPlan {
         }
     };
 
-    //// TO DO: remove this function after no longer needed for "test.ts"
     public batchAddStartupProductsByIds(ids: string[]): void {
         ids.forEach(id => this.addStartupProductById(id, false));
         this.onUpdatedStartupProducts();
@@ -85,6 +84,8 @@ class IndustryPlan {
 
     public onStartupProductRemoved(startupProductRemoved: StartupProduct): void {
         this.startupProducts = this.startupProducts.filter(startupProduct => startupProduct !== startupProductRemoved);
+        //// TO DO: highlight processes whose inputs are no longer available
+        //// -- mark them as "disabled" + exclude their outputs from "getAvailableInputsForIndustryTier"
     }
 
     private onUpdatedStartupProducts(): void {

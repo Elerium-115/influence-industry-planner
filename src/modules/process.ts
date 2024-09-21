@@ -1,4 +1,3 @@
-import * as InfluenceSDK from '@influenceth/sdk';
 import {createEl} from './dom-core.js';
 import {Processor} from './processor.js';
 import {I_PROCESS_DATA, processService} from './process-service.js';
@@ -16,7 +15,7 @@ class Process {
 
     constructor(id: number, parentProcessor: Processor) {
         this.id = id;
-        this.data = InfluenceSDK.Process.TYPES[id];
+        this.data = processService.getProcessDataById(id);
         if (!this.data) {
             console.error(`--- ERROR: [Process] constructor called with invalid id = ${id}`);
             return;
@@ -31,7 +30,6 @@ class Process {
         this.getOutputProductIds().forEach((productId) => {
             this.addInputOrOutput(productId, 'output');
         });
-        this.handleEmptyOutputsIfAny();
         this.sortAndRenderInputsAndOutputs();
         // The first output is primary by default
         const firstOutput = this.outputs[0];
@@ -96,41 +94,10 @@ class Process {
         }
     }
 
-    /**
-     * Handle empty outputs in the SDK data (for ships and buildings)
-     */
-    private handleEmptyOutputsIfAny(): void {
-        if (this.outputs.length) {
-            return;
-        }
-        switch (this.data.processorType) {
-            case InfluenceSDK.Processor.IDS.DRY_DOCK: {
-                // Hardcode output = ship
-                const productData = productService.getProductDataForShipIntegration(this.data.name);
-                if (productData) {
-                    // Hardcode qty = 1
-                    this.data.outputs = {[productData.i]: 1};
-                    this.addInputOrOutput(productData.i as string, 'output');
-                }
-                break;
-            }
-            case InfluenceSDK.Processor.IDS.CONSTRUCTION: {
-                // Hardcode output = building
-                const productData = productService.getProductDataForBuildingConstruction(this.data.name);
-                if (productData) {
-                    // Hardcode qty = 1
-                    this.data.outputs = {[productData.i]: 1};
-                    this.addInputOrOutput(productData.i as string, 'output');
-                }
-                break;
-            }
-        }
-    }
-
     private sortAndRenderInputsAndOutputs(): void {
         // Sort inputs and outputs alphabetically
-        this.inputs.sort(this.compareProductsByName);
-        this.outputs.sort(this.compareProductsByName);
+        productService.sortProductsByName(this.inputs);
+        productService.sortProductsByName(this.outputs);
         // Add input-product icons into the DOM
         this.inputs.forEach((inputProductIcon: ProductIcon) => {
             this.getElInputs().append(inputProductIcon.getHtmlElement());
@@ -139,10 +106,6 @@ class Process {
         this.outputs.forEach((outputProductIcon: ProductIcon) => {
             this.getElOutputs().append(outputProductIcon.getHtmlElement());
         });
-    }
-
-    private compareProductsByName(p1: ProductIcon, p2: ProductIcon): number {
-        return p1.getName().localeCompare(p2.getName());
     }
 
     private setPrimaryOutput(output: ProductIcon): void {

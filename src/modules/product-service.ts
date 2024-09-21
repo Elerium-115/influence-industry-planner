@@ -1,5 +1,5 @@
 import * as InfluenceSDK from '@influenceth/sdk';
-import {getProductImageSrc, uniquePushToArray} from './abstract-core.js';
+import {getProductImageSrc} from './abstract-core.js';
 import {createEl} from './dom-core.js';
 import {StartupProduct} from './startup-product.js';
 import {ProductIcon} from './product-icon.js';
@@ -41,8 +41,6 @@ class ProductService {
         this.addBuildingsToAllProducts();
         // Inject style with background-images for all product icons
         this.injectStyleForProductIcons();
-        // Determine IDs of products which are used as inputs for at least one process
-        this.populateInputProductIds();
     }
 
     public static getInstance(): ProductService {
@@ -117,14 +115,6 @@ class ProductService {
             }
         `;
         document.head.append(elStyle);
-    }
-
-    private populateInputProductIds(): void {
-        Object.values(InfluenceSDK.Process.TYPES).forEach(processData => {
-            Object.keys(processData.inputs).forEach(inputProductId => {
-                uniquePushToArray(this.inputProductIds, inputProductId);
-            });
-        });
     }
 
     public sortProductsByName(products: (ProductAny)[]): void {

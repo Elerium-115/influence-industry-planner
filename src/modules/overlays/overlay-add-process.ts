@@ -1,3 +1,4 @@
+import {getFormattedRoundNumber} from '../abstract-core.js';
 import {createEl} from '../dom-core.js';
 import {OverlayAbstract} from './overlay-abstract';
 import {industryPlanService} from '../industry-plan-service.js';
@@ -6,6 +7,12 @@ import {Processor} from '../processor.js';
 import {I_PROCESS_DATA} from '../process-service.js';
 import {ProductAbstract} from '../product-abstract.js';
 import {productService} from '../product-service.js';
+
+interface I_INPUT_OR_OUTPUT_DATA {
+    name: string,
+    productId: string,
+    qty: number,
+}
 
 class OverlayAddProcess extends OverlayAbstract {
     private parentIndustryTier: IndustryTier;
@@ -33,6 +40,11 @@ class OverlayAddProcess extends OverlayAbstract {
         return this.elOverlayContent.querySelector('.eligible-processes-list') as HTMLElement;
     }
 
+    private onClickProcess(processId: number): void {
+        this.parentProcessor.addProcessById(processId);
+        this.remove();
+    }
+
     private populateElAvailableInputsList(): void {
         let listHtml = '';
         this.availableInputs.forEach(product => {
@@ -45,7 +57,7 @@ class OverlayAddProcess extends OverlayAbstract {
             `;
         });
         this.getElAvailableInputsList().innerHTML = listHtml;
-        //// TO DO: add logic for toggling inputs-checkboxes + filters-checkboxes + search =>  filter eligible processes
+        //// TO DO: add logic for toggling inputs-checkboxes + filters-checkboxes + search => filter eligible processes
     }
 
     private populateElEligibleProcessesList(): void {
@@ -55,42 +67,61 @@ class OverlayAddProcess extends OverlayAbstract {
     }
 
     private makeElEligibleProcess(processData: I_PROCESS_DATA): HTMLElement {
+        // Sort inputs and outputs alphabetically before parsing them
+        const inputsDataList: I_INPUT_OR_OUTPUT_DATA[] = Object.keys(processData.inputs).map(productId => ({
+            name: productService.getProductDataById(productId).name,
+            productId,
+            qty: processData.inputs[productId],
+        }));
+        const outputsDataList: I_INPUT_OR_OUTPUT_DATA[] = Object.keys(processData.outputs).map(productId => ({
+            name: productService.getProductDataById(productId).name,
+            productId,
+            qty: processData.outputs[productId],
+        }));
+        inputsDataList.sort(this.compareProductsByName);
+        outputsDataList.sort(this.compareProductsByName);
+        // Generate HTML for inputs and outputs
         let inputsHtml = '';
         let outputsHtml = '';
-        for (const [productId, qty] of Object.entries(processData.inputs)) {
-            inputsHtml += this.makeInputOrOutputHtml(productId, qty);
-        }
-        for (const [productId, qty] of Object.entries(processData.outputs)) {
-            outputsHtml += this.makeInputOrOutputHtml(productId, qty);
-        }
+        inputsDataList.forEach(inputData => {
+            inputsHtml += this.makeInputOrOutputHtml(inputData.productId, inputData.qty);
+        });
+        outputsDataList.forEach(outputData => {
+            outputsHtml += this.makeInputOrOutputHtml(outputData.productId, outputData.qty);
+        });
         const el = createEl('div', null, ['process']);
         el.innerHTML = /*html*/ `
             <div class="process-header">
                 <div class="process-name">${processData.name}</div>
-            </div>
-            <div class="process-materials">
-                <div class="inputs">${inputsHtml}</div>
-                <div class="separator"></div>
-                <div class="outputs">${outputsHtml}</div>
+                <div class="process-materials">
+                    <div class="inputs">${inputsHtml}</div>
+                    <div class="separator"></div>
+                    <div class="outputs">${outputsHtml}</div>
+                </div>
             </div>
         `;
-        //// TO DO: on click => ADD this process into "parentProcessor"
+        el.addEventListener('click', () => this.onClickProcess(processData.i));
         return el;
+    }
+
+    private compareProductsByName(p1: I_INPUT_OR_OUTPUT_DATA, p2: I_INPUT_OR_OUTPUT_DATA): number {
+        return p1.name.localeCompare(p2.name);
     }
 
     //// TO DO: rework this function by appending elements, instead of injecting HTML
     private makeInputOrOutputHtml(productId: string, qty: number): string {
         const productData = productService.getProductDataById(productId);
         const el = createEl('div', null, ['product-icon', `-p${productId}`]);
-        el.dataset.tooltip = `${productData.name}: ${qty}`;
+        el.dataset.tooltip = `${productData.name}: ${getFormattedRoundNumber(qty)}`;
         return el.outerHTML;
     }
 
     private populateElOverlayContent(): void {
+        const processorClassName = this.parentProcessor.getProcessorClassName();
         this.elOverlayContent.innerHTML = /*html*/ `
             <div class="overlay-header">
                 <div class="overlay-title">Add Process</div>
-                <div class="processor ${this.parentProcessor.getProcessorClassName()}">
+                <div class="processor ${processorClassName}">
                     <div class="processor-header">
                         <div class="processor-name">${this.parentProcessor.getName()}</div>
                     </div>
@@ -112,8 +143,8 @@ class OverlayAddProcess extends OverlayAbstract {
                     </label>
                     <div class="available-inputs-list"></div>
                 </div>
-                <div class="overlay-list eligible-processes">
-                    <div class="overlay-list-title ${this.parentProcessor.getProcessorClassName()}" data-tooltip="Using only the available inputs for this ${this.parentProcessor.getName()}">
+                <div class="overlay-list eligible-processes processor ${processorClassName}">
+                    <div class="overlay-list-title" data-tooltip="Using only the available inputs for this ${this.parentProcessor.getName()}">
                         Eligible Processes
                     </div>
                     <div class="eligible-processes-list"></div>

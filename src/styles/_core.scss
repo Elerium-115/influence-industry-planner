@@ -28,8 +28,10 @@
 }
 
 :root {
-    --color-warning: rgb(223, 67, 0);
     --color-add-button: rgba(255, 255, 255, 0.25);
+    --color-available-products-bg: #1a1a1a;
+    --color-body-bg: #222;
+    --color-warning: rgb(223, 67, 0);
 }
 
 * {
@@ -41,7 +43,7 @@
 }
 
 body {
-    background-color: #222;
+    background-color: var(--color-body-bg);
     color: white;
     margin: 0;
     padding: 64px;
@@ -86,7 +88,6 @@ input[type='checkbox'] { margin: 0; }
 
 .product-icon {
     // NOTE: "--product-icon-size" must be set in each context where this class is used
-    background-color: black;
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
