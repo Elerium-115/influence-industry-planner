@@ -62,6 +62,10 @@ class ProductService {
         return this.allProductsData[productId];
     }
 
+    public getProductNameById(productId: string): string {
+        return this.allProductsData[productId].name;
+    }
+
     public getProductDataForShipIntegration(integrationProcessName: string): I_PRODUCT_DATA|null {
         return Object.values(this.allProductsData).find(productData => productData.name === integrationProcessName.split('Integration')[0].trim()) || null;
     }
