@@ -39,6 +39,10 @@ class ProcessService {
         return this.allProcessesData[processId];
     }
 
+    public setProcessDataById(processData: I_PROCESS_DATA): void {
+        this.allProcessesData[processData.i] = processData;
+    }
+
     public getPenaltyForSecondaryOutputs(): number {
         return this.penaltyForSecondaryOutputs;
     }

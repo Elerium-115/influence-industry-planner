@@ -9,7 +9,7 @@ testIndustryPlan.batchAddStartupProductsByIds(testStartupProductIds);
 
 // Test add processors + processes into the last industry tier
 const testProcessorsAndProcesses = [
-    {id: PROCESSOR_BUILDING_IDS.EXTRACTOR, processIds: []},
+    {id: PROCESSOR_BUILDING_IDS.EXTRACTOR, processIds: [1, 5, 6, 8, 19]},
     {id: PROCESSOR_BUILDING_IDS.BIOREACTOR, processIds: []},
     {id: PROCESSOR_BUILDING_IDS.REFINERY, processIds: [24, 91, 82]},
     {id: PROCESSOR_BUILDING_IDS.FACTORY, processIds: [57, 58, 161]},

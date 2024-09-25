@@ -26,8 +26,8 @@ class IndustryPlanService {
         this.updateProcessesWithEmptyOutputs();
         // Generate IDs of products which are used as inputs for at least one process
         this.populateInputProductIds();
-        // Add extractions as processes
-        //// TO DO: to be determined if required re: custom overlay for adding extractions into the industry plan
+        // Add extractions into processes
+        this.addExtractionsIntoProcesses();
     }
 
     public static getInstance(): IndustryPlanService {
@@ -132,6 +132,47 @@ class IndustryPlanService {
             Object.keys(processData.inputs).forEach(inputProductId => {
                 uniquePushToArray(inputProductIds, inputProductId);
             });
+        });
+    }
+
+    private addExtractionsIntoProcesses(): void {
+        // Determine min / max ID of standard processes (non-extraction)
+        let minProcessId: number|null = null;
+        let maxProcessId = 0;
+        Object.values(processService.getAllProcessesData()).forEach(processData => {
+            minProcessId = minProcessId !== null ? Math.min(minProcessId, processData.i) : processData.i;
+            maxProcessId = Math.max(maxProcessId, processData.i);
+        });
+        /**
+         * Add extractions into processes
+         * - e.g. raw material "Water" => process "Water Extraction"
+         *
+         * NOTE:
+         * - Ideally, the extraction processes are injected before the standard processes.
+         *   This requires the number of extraction processes to be smaller than "minProcessId"
+         *   (e.g. if there are 22 extraction processes, "minProcessId" should be at least 23).
+         *   In this case, the IDs of extraction processes are incremented starting from 1.
+         * - Otherwise, the extraction processes are injected after the standard processes,
+         *   and their IDs are incremented starting from "maxProcessId" + 1.
+         */
+        const rawMaterialProductIds = InfluenceSDK.Product.getListByClassification(InfluenceSDK.Product.CLASSIFICATIONS.RAW_MATERIAL);
+        rawMaterialProductIds.forEach((productId, idx) => {
+            const productName = productService.getProductNameById(productId.toString());
+            const processData: I_PROCESS_DATA = {
+                i: 0, // to be updated below
+                name: `${productName} Extraction`, // e.g. "Water Extraction"
+                processorType: -1, // no processor for "Extraction" in the SDK, as of Sep 2024
+                setupTime: 0,
+                recipeTime: 0,
+                inputs: {},
+                outputs: {[productId]: 1}, // output qty = 1
+            };
+            if (minProcessId !== null && rawMaterialProductIds.length < minProcessId) {
+                processData.i = idx + 1;
+            } else {
+                processData.i = ++maxProcessId;
+            }
+            processService.setProcessDataById(processData);
         });
     }
 }

@@ -1,9 +1,14 @@
 import {getItemNameSafe} from './abstract-core.js';
 import {createEl} from './dom-core.js';
 import {IndustryTier} from './industry-tier.js';
-import {type TYPE_PROCESSOR_BUILDING_IDS, processorService} from './processor-service.js';
+import {
+    PROCESSOR_BUILDING_IDS,
+    type TYPE_PROCESSOR_BUILDING_IDS,
+    processorService,
+} from './processor-service.js';
 import {Process} from './process.js';
 import {OverlayAddProcess} from './overlays/overlay-add-process.js';
+import {OverlayAddExtraction} from './overlays/overlay-add-extraction.js';
 
 class Processor {
     private id: TYPE_PROCESSOR_BUILDING_IDS;
@@ -55,8 +60,11 @@ class Processor {
     }
 
     private onClickAddProcessButton(): void {
-        new OverlayAddProcess(this, this.parentIndustryTier);
-        //// TO DO: custom overlay for adding an extraction process: no filters, no inputs, group by type (Volatiles etc.)
+        if (this.id === PROCESSOR_BUILDING_IDS.EXTRACTOR) {
+            new OverlayAddExtraction(this);
+        } else {
+            new OverlayAddProcess(this, this.parentIndustryTier);
+        }
     }
 
     public onProcessRemoved(processRemoved: Process): void {
