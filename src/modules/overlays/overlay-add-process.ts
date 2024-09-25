@@ -5,7 +5,7 @@ import {industryPlanService} from '../industry-plan-service.js';
 import {IndustryTier} from '../industry-tier.js';
 import {Processor} from '../processor.js';
 import {I_PROCESS_DATA} from '../process-service.js';
-import {ProductAbstract} from '../product-abstract.js';
+import {ProductSelectable} from '../product-selectable.js';
 import {productService} from '../product-service.js';
 
 interface I_INPUT_OR_OUTPUT_DATA {
@@ -17,10 +17,11 @@ interface I_INPUT_OR_OUTPUT_DATA {
 class OverlayAddProcess extends OverlayAbstract {
     private parentIndustryTier: IndustryTier;
     private parentProcessor: Processor;
-    private availableInputs: ProductAbstract[] = [];
+    private availableInputs: ProductSelectable[] = [];
     private eligibleProcesses: I_PROCESS_DATA[] = [];
     private elAvailableInputsList: HTMLElement;
     private elEligibleProcessesList: HTMLElement;
+    private elInputToggleAllAvailableInputs: HTMLInputElement;
     private elInputFilterByProcess: HTMLInputElement;
     private elInputFilterByOutput: HTMLInputElement;
     private elInputFilterSearch: HTMLInputElement;
@@ -31,7 +32,6 @@ class OverlayAddProcess extends OverlayAbstract {
         this.parentIndustryTier = parentIndustryTier;
         this.parentProcessor = parentProcessor;
         this.availableInputs = industryPlanService.getAvailableInputsForIndustryTier(this.parentIndustryTier);
-        this.eligibleProcesses = industryPlanService.getEligibleProcessesForProcessorUsingInputs(this.parentProcessor, this.availableInputs);
         this.populateElOverlayContent();
     }
 
@@ -42,7 +42,7 @@ class OverlayAddProcess extends OverlayAbstract {
 
     private onChangeFilterByProcess(): void {
         if (!this.elInputFilterByProcess.checked) {
-            // Force-check the other checkbox (this will NOT trigger its "oninput" handler)
+            // Force-check the other checkbox (this will NOT trigger its "onchange" handler)
             this.elInputFilterByOutput.checked = true;
         }
         this.filterProcesses();
@@ -50,7 +50,7 @@ class OverlayAddProcess extends OverlayAbstract {
 
     private onChangeFilterByOutput(): void {
         if (!this.elInputFilterByOutput.checked) {
-            // Force-check the other checkbox (this will NOT trigger its "oninput" handler)
+            // Force-check the other checkbox (this will NOT trigger its "onchange" handler)
             this.elInputFilterByProcess.checked = true;
         }
         this.filterProcesses();
@@ -88,22 +88,49 @@ class OverlayAddProcess extends OverlayAbstract {
         });
     }
 
-    private populateElAvailableInputsList(): void {
-        let listHtml = '';
-        this.availableInputs.forEach(product => {
-            listHtml += /*html*/ `
-                <label>
-                    <input type="checkbox" checked>
-                    <div class="product-icon -p${product.getId()}" data-tooltip="${product.getName()}"></div>
-                    <div class="product-name">${product.getName()}</div>
-                </label>
-            `;
+    private onChangeToggleAllAvailableInputs(event: InputEvent) {
+        const elToggleAllInput = event.target as HTMLInputElement;
+        // Force-check/uncheck each available input (this will NOT trigger its "onchange" handler)
+        this.elAvailableInputsList.querySelectorAll('input[type="checkbox"]').forEach((elInput: any) => {
+            elInput.checked = elToggleAllInput.checked;
+            // Manually trigger the "onchange" handler, without updating the processes
+            (elInput as HTMLElement).dispatchEvent(new InputEvent('change'));
         });
-        this.elAvailableInputsList.innerHTML = listHtml;
-        //// TO DO: add logic for toggling inputs-checkboxes + filters-checkboxes + search => filter eligible processes
+        // Update the processes only after all inputs have been checked/unchecked
+        this.updateAndRenderEligibleProcesses();
+        this.filterProcesses();
     }
 
-    private populateElEligibleProcessesList(): void {
+    private onChangeAvailableInput(event: InputEvent, shouldUpdateProcesses: boolean = true) {
+        const elInput = event.target as HTMLInputElement;
+        const productId = (elInput.closest('label') as HTMLElement).dataset.productId as string;
+        const availableInput = this.availableInputs.find(product => product.getId() === productId);
+        availableInput?.setIsSelected(elInput.checked);
+        if (shouldUpdateProcesses) {
+            this.updateAndRenderEligibleProcesses();
+            this.filterProcesses();
+        }
+    }
+
+    private populateElAvailableInputsList(): void {
+        this.availableInputs.forEach(product => {
+            const el = createEl('label');
+            el.dataset.productId = product.getId()?.toString();
+            el.innerHTML += /*html*/ `
+                <input type="checkbox" checked>
+                <div class="product-icon -p${product.getId()}" data-tooltip="${product.getName()}"></div>
+                <div class="product-name">${product.getName()}</div>
+            `;
+            el.querySelector('input[type="checkbox"]')?.addEventListener('change', this.onChangeAvailableInput.bind(this));
+            this.elAvailableInputsList.append(el);
+        });
+    }
+
+    private updateAndRenderEligibleProcesses(): void {
+        // Update the eligible processes, using the currently-selected available-inputs
+        this.eligibleProcesses = industryPlanService.getEligibleProcessesForProcessorUsingInputs(this.parentProcessor, this.availableInputs);
+        // (Re-)render the list of eligible processes
+        this.elEligibleProcessesList.textContent = '';
         this.eligibleProcesses.forEach(processData => {
             this.elEligibleProcessesList.append(this.makeElEligibleProcess(processData));
         });
@@ -183,7 +210,7 @@ class OverlayAddProcess extends OverlayAbstract {
             <div class="overlay-lists">
                 <div class="overlay-list available-inputs">
                     <label class="overlay-list-title" data-tooltip="Startup products, plus outputs from lower industry tiers">
-                        <input type="checkbox" checked>Available Inputs
+                        <input type="checkbox" name="toggle-all-available-inputs" checked>Available Inputs
                     </label>
                     <div class="available-inputs-list"></div>
                 </div>
@@ -195,16 +222,18 @@ class OverlayAddProcess extends OverlayAbstract {
                 </div>
             </div>
         `;
+        this.elInputToggleAllAvailableInputs = this.elOverlayContent.querySelector('input[name="toggle-all-available-inputs"]') as HTMLInputElement;
         this.elAvailableInputsList = this.elOverlayContent.querySelector('.available-inputs-list') as HTMLElement;
         this.elEligibleProcessesList = this.elOverlayContent.querySelector('.eligible-processes-list') as HTMLElement;
         this.elInputFilterByProcess = this.elOverlayContent.querySelector('input[name="filter-by-process"]') as HTMLInputElement;
         this.elInputFilterByOutput = this.elOverlayContent.querySelector('input[name="filter-by-output"]') as HTMLInputElement;
         this.elInputFilterSearch = this.elOverlayContent.querySelector('input[name="filter-search"]') as HTMLInputElement;
+        this.elInputToggleAllAvailableInputs.addEventListener('change', this.onChangeToggleAllAvailableInputs.bind(this));
         this.elInputFilterByProcess.addEventListener('change', this.onChangeFilterByProcess.bind(this));
         this.elInputFilterByOutput.addEventListener('change', this.onChangeFilterByOutput.bind(this));
         this.elInputFilterSearch.addEventListener('input', this.onInputFilterSearch.bind(this));
         this.populateElAvailableInputsList();
-        this.populateElEligibleProcessesList();
+        this.updateAndRenderEligibleProcesses();
     }
 
     protected makeElOverlayContent(): HTMLElement {

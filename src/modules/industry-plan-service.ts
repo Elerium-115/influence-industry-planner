@@ -5,7 +5,7 @@ import {IndustryTier} from './industry-tier.js';
 import {Processor} from './processor.js';
 import {SDK_PROCESSOR_IDS_BY_BUILDING_ID} from './processor-service.js';
 import {I_PROCESS_DATA, processService} from './process-service.js';
-import {ProductAbstract} from './product-abstract.js';
+import {ProductSelectable} from './product-selectable.js';
 import {productService} from './product-service.js';
 
 /**
@@ -41,8 +41,8 @@ class IndustryPlanService {
         this.industryPlan = industryPlan;
     }
 
-    public getAvailableInputsForIndustryTier(targetIndustryTier: IndustryTier): ProductAbstract[] {
-        const availableInputs: ProductAbstract[] = [];
+    public getAvailableInputsForIndustryTier(targetIndustryTier: IndustryTier): ProductSelectable[] {
+        const availableInputs: ProductSelectable[] = [];
         // Add startup products
         this.industryPlan.getStartupProducts().forEach(startupProduct => {
             const startupProductId = startupProduct.getId() as string;
@@ -50,7 +50,7 @@ class IndustryPlanService {
                 // Product not an input for any process
                 return;
             }
-            availableInputs.push(new ProductAbstract(startupProductId));
+            availableInputs.push(new ProductSelectable(startupProductId));
         });
         // Add outputs from lower industry tiers
         this.industryPlan.getIndustryTiers().some(industryTier => {
@@ -71,7 +71,7 @@ class IndustryPlanService {
                             // Product not an input for any process
                             return;
                         }
-                        availableInputs.push(new ProductAbstract(outputProduct.getId() as string));
+                        availableInputs.push(new ProductSelectable(outputProduct.getId() as string));
                     });
                 });
             });
@@ -80,9 +80,11 @@ class IndustryPlanService {
         return availableInputs;
     }
 
-    public getEligibleProcessesForProcessorUsingInputs(processor: Processor, availableInputs: ProductAbstract[]): I_PROCESS_DATA[] {
+    public getEligibleProcessesForProcessorUsingInputs(processor: Processor, availableInputs: ProductSelectable[]): I_PROCESS_DATA[] {
         const assignedProcessIds = processor.getProcesses().map(assignedProcess => assignedProcess.getId());
-        const availableInputsProductIds = availableInputs.map(availableInput => availableInput.getId());
+        const selectedInputsProductIds = availableInputs
+            .filter(availableInput => availableInput.getIsSelected())
+            .map(availableInput => availableInput.getId());
         // SDK-processors associated with this processor-building
         const sdkProcessorIds = SDK_PROCESSOR_IDS_BY_BUILDING_ID[processor.getId()];
         const eligibleProcesses = Object.values(processService.getAllProcessesData())
@@ -90,8 +92,8 @@ class IndustryPlanService {
             .filter(processData => !assignedProcessIds.includes(processData.i))
             // Keep only processes that can be run by one of the SDK-processors
             .filter(processData => sdkProcessorIds.includes(processData.processorType))
-            // Keep only processes that can be run with the available inputs
-            .filter(processData => Object.keys(processData.inputs).every(inputProductId => availableInputsProductIds.includes(inputProductId)));
+            // Keep only processes that can be run with the selected inputs
+            .filter(processData => Object.keys(processData.inputs).every(inputProductId => selectedInputsProductIds.includes(inputProductId)));
         processService.sortProcessesByName(eligibleProcesses);
         return eligibleProcesses;
     }

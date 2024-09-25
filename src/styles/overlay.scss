@@ -159,12 +159,21 @@
 
                 .eligible-processes-list {
                     background-color: var(--color-processor-processes-bg);
+                    font-size: 90%;
                     margin-top: 16px;
+
+                    &:empty {
+                        background-color: unset;
+
+                        &::before {
+                            content: 'No matching process';
+                            opacity: 0.5;
+                        }
+                    }
 
                     // NOTE: most of these styles are duplicated from ".process" @ "industry-plan.scss"
                     .process {
                         cursor: pointer;
-                        font-size: 90%;
                         padding: 8px;
 
                         &:not(:first-child) { border-top: 1px solid var(--color-body-bg); }
