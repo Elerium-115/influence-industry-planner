@@ -54,8 +54,74 @@
 }
 
 .overlay-add-extraction {
-    .extractions-list {
-        //// TO BE IMPLEMENTED
+    .raw-materials-list {
+        display: flex;
+        flex-direction: column;
+        gap: 32px;
+
+        .category {
+            color: var(--color-category);
+
+            &::before {
+                content: attr(data-name);
+                display: block;
+                font-size: 120%;
+                margin-bottom: 16px;
+            }
+
+            &.-volatile { --color-category: var(--color-category-volatile); --color-category-bg: var(--color-category-volatile-bg); }
+            &.-organic { --color-category: var(--color-category-organic); --color-category-bg: var(--color-category-organic-bg); }
+            &.-metal { --color-category: var(--color-category-metal); --color-category-bg: var(--color-category-metal-bg); }
+            &.-rare-earth { --color-category: var(--color-category-rare-earth); --color-category-bg: var(--color-category-rare-earth-bg); }
+            &.-fissile { --color-category: var(--color-category-fissile); --color-category-bg: var(--color-category-fissile-bg); }
+
+            .category-list {
+                display: grid;
+                gap: 16px;
+                grid-template-columns: repeat(4, 1fr);
+
+                .raw-material {
+                    align-items: center;
+                    background-color: var(--color-available-products-bg);
+                    cursor: pointer;
+                    display: flex;
+                    font-size: 90%;
+                    gap: 8px;
+                    padding: 4px 8px;
+
+                    .product-icon { --product-icon-size: 32px; }
+
+                    .product-name { opacity: 0.75; }
+
+                    .spectral-types {
+                        display: flex;
+                        flex-grow: 1;
+                        gap: 4px;
+                        justify-content: flex-end;
+                        padding: 0 8px;
+
+                        .spectral-type {
+                            border: 1px solid var(--color-category);
+                            border-radius: 50%;
+                            display: flex;
+                            font-size: 80%;
+                            height: 16px;
+                            justify-content: center;
+                            line-height: 12px;
+                            opacity: 0.75;
+                            width: 16px;
+                        }
+                    }
+
+                    &:hover {
+                        background-color: var(--color-category-bg);
+                        color: white;
+
+                        .product-name, .spectral-type { opacity: 1; }
+                    }
+                }
+            }
+        }
     }
 }
 

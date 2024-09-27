@@ -18,6 +18,7 @@ class ProcessService {
     private static instance: ProcessService;
 
     private allProcessesData: {[key in number]: I_PROCESS_DATA};
+    private extractionProcessIdByRawMaterialId: {[key in string]: number} = {};
     private penaltyForSecondaryOutputs: number;
 
     constructor() {
@@ -41,6 +42,14 @@ class ProcessService {
 
     public setProcessDataById(processData: I_PROCESS_DATA): void {
         this.allProcessesData[processData.i] = processData;
+    }
+
+    public getExtractionProcessIdByRawMaterialId(rawMaterialId: string): number {
+        return this.extractionProcessIdByRawMaterialId[rawMaterialId];
+    }
+
+    public setExtractionProcessIdByRawMaterialId(rawMaterialId: string, extractionProcessId: number): void {
+        this.extractionProcessIdByRawMaterialId[rawMaterialId] = extractionProcessId;
     }
 
     public getPenaltyForSecondaryOutputs(): number {

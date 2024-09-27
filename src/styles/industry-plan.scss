@@ -393,6 +393,9 @@
                             &::before { opacity: 1; }
                         }
                     }
+
+                    &.-extractor .add-process-button::after { content: 'Add Extraction'; }
+                    &.-empty-lot .add-process-button::after { content: 'Add Construction'; }
                 }
             }
 

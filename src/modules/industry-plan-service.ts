@@ -18,16 +18,17 @@ class IndustryPlanService {
 
     constructor() {
         /**
-         * Populate empty outputs in the SDK data (for ships and buildings).
-         * 
-         * NOTE: This can not be done from "ProductService" or "ProcessService",
-         * as that would lead to a circular dependency between those services.
+         * NOTE: These operations can not be done from "ProductService" or "ProcessService",
+         * as that would lead to a circular dependency between those services and/or other classes.
          */
+        // Populate empty outputs in the SDK data (for ships and buildings)
         this.updateProcessesWithEmptyOutputs();
         // Generate IDs of products which are used as inputs for at least one process
         this.populateInputProductIds();
         // Add extractions into processes
         this.addExtractionsIntoProcesses();
+        // Map raw materials to their category (Volatile etc.)
+        productService.mapRawMaterialsToCategories();
     }
 
     public static getInstance(): IndustryPlanService {
@@ -45,7 +46,7 @@ class IndustryPlanService {
         const availableInputs: ProductSelectable[] = [];
         // Add startup products
         this.industryPlan.getStartupProducts().forEach(startupProduct => {
-            const startupProductId = startupProduct.getId() as string;
+            const startupProductId = startupProduct.getId();
             if (!productService.isInputProductId(startupProductId)) {
                 // Product not an input for any process
                 return;
@@ -62,7 +63,7 @@ class IndustryPlanService {
             industryTier.getProcessors().forEach(processor => {
                 processor.getProcesses().forEach(process => {
                     process.getOutputs().forEach(outputProduct => {
-                        const outputProductId = outputProduct.getId() as string;
+                        const outputProductId = outputProduct.getId();
                         if (availableInputs.find(product => product.getId() === outputProductId)) {
                             // Product already added
                             return ;
@@ -71,7 +72,7 @@ class IndustryPlanService {
                             // Product not an input for any process
                             return;
                         }
-                        availableInputs.push(new ProductSelectable(outputProduct.getId() as string));
+                        availableInputs.push(new ProductSelectable(outputProduct.getId()));
                     });
                 });
             });
@@ -155,7 +156,7 @@ class IndustryPlanService {
          * - Otherwise, the extraction processes are injected after the standard processes,
          *   and their IDs are incremented starting from "maxProcessId" + 1.
          */
-        const rawMaterialProductIds = InfluenceSDK.Product.getListByClassification(InfluenceSDK.Product.CLASSIFICATIONS.RAW_MATERIAL);
+        const rawMaterialProductIds = productService.getRawMaterialProductIds();
         rawMaterialProductIds.forEach((productId, idx) => {
             const productName = productService.getProductNameById(productId.toString());
             const processData: I_PROCESS_DATA = {
@@ -173,6 +174,8 @@ class IndustryPlanService {
                 processData.i = ++maxProcessId;
             }
             processService.setProcessDataById(processData);
+            // Also map extraction process IDs to raw material IDs, for convenience
+            processService.setExtractionProcessIdByRawMaterialId(productId, processData.i);
         });
     }
 }

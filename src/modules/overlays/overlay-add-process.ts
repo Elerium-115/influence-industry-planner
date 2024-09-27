@@ -4,6 +4,7 @@ import {OverlayAbstract} from './overlay-abstract';
 import {industryPlanService} from '../industry-plan-service.js';
 import {IndustryTier} from '../industry-tier.js';
 import {Processor} from '../processor.js';
+import {PROCESSOR_BUILDING_IDS} from '../processor-service.js';
 import {I_PROCESS_DATA} from '../process-service.js';
 import {ProductSelectable} from '../product-selectable.js';
 import {productService} from '../product-service.js';
@@ -188,10 +189,11 @@ class OverlayAddProcess extends OverlayAbstract {
     }
 
     private populateElOverlayContent(): void {
+        const overlayTitle = this.parentProcessor.getId() === PROCESSOR_BUILDING_IDS.EMPTY_LOT ? 'Add Construction' : 'Add Process';
         const processorClassName = this.parentProcessor.getProcessorClassName();
         this.elOverlayContent.innerHTML = /*html*/ `
             <div class="overlay-header">
-                <div class="overlay-title">Add Process</div>
+                <div class="overlay-title">${overlayTitle}</div>
                 <div class="processor ${processorClassName}">
                     <div class="processor-header">
                         <div class="processor-name">${this.parentProcessor.getName()}</div>

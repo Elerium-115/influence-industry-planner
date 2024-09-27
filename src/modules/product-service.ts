@@ -17,6 +17,14 @@ interface I_PRODUCT_DATA {
 
 type ProductAny = StartupProduct|ProductIcon|ProductAbstract;
 
+const SDK_RAW_MATERIAL_CATEGORIES_SORTED = [
+    InfluenceSDK.Product.CATEGORIES.VOLATILE,
+    InfluenceSDK.Product.CATEGORIES.ORGANIC,
+    InfluenceSDK.Product.CATEGORIES.METAL,
+    InfluenceSDK.Product.CATEGORIES.RARE_EARTH,
+    InfluenceSDK.Product.CATEGORIES.FISSILE,
+];
+
 /**
  * Singleton
  */
@@ -24,6 +32,7 @@ class ProductService {
     private static instance: ProductService;
 
     private allProductsData: {[key in string]: I_PRODUCT_DATA};
+    private rawMaterialsByCategory: {[key in string]: ProductAbstract[]} = {};
 
     /**
      * Unsorted IDs of products which are used as inputs for at least one process
@@ -74,6 +83,30 @@ class ProductService {
         return Object.values(this.allProductsData).find(productData => productData.name === constructionProcessName.split('Construction')[0].trim()) || null;
     }
 
+    public getRawMaterialProductIds(): string[] {
+        return InfluenceSDK.Product
+            .getListByClassification(InfluenceSDK.Product.CLASSIFICATIONS.RAW_MATERIAL)
+            .map(numericId => numericId.toString());
+    }
+
+    public getRawMaterialsByCategory(category: string): ProductAbstract[] {
+        return this.rawMaterialsByCategory[category] || [];
+    }
+
+    public getSpectralTypesForRawMaterialId(rawMaterialId: string, onlyPureSpectrals: boolean = false): string[] {
+        const spectralTypes: string[] = [];
+        Object.values(InfluenceSDK.Asteroid.SPECTRAL_TYPES).forEach(spectralData => {
+            if (onlyPureSpectrals && spectralData.name.length > 1) {
+                // Not a pure spectral type (C / I / M / S)
+                return;
+            }
+            if (spectralData.resources.includes(Number(rawMaterialId))) {
+                spectralTypes.push(spectralData.name);
+            }
+        });
+        return spectralTypes;
+    }
+
     private addShipsToAllProducts(): void {
         let nextShipIdx = 1;
         Object.values(InfluenceSDK.Ship.TYPES)
@@ -121,6 +154,20 @@ class ProductService {
         document.head.append(elStyle);
     }
 
+    public mapRawMaterialsToCategories(): void {
+        this.getRawMaterialProductIds().forEach((productId) => {
+            const product = new ProductAbstract(productId);
+            if (!product.getData().category) {
+                return;
+            }
+            const category = product.getData().category as string;
+            if (!this.rawMaterialsByCategory[category]) {
+                this.rawMaterialsByCategory[category] = [];
+            }
+            this.rawMaterialsByCategory[category].push(product);
+        });
+    }
+
     public sortProductsByName(products: (ProductAny)[]): void {
         products.sort(this.compareProductsByName);
     }
@@ -134,5 +181,6 @@ const productService: ProductService = ProductService.getInstance(); // singleto
 
 export {
     I_PRODUCT_DATA,
+    SDK_RAW_MATERIAL_CATEGORIES_SORTED,
     productService,
 }

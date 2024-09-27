@@ -7,7 +7,7 @@ class ProductAbstract {
      * - 'B1', 'B2' etc. for buildings
      * - 'S1', 'S2' etc. for ships
      */
-    protected id: string|null = null;
+    protected id: string;
     protected data: I_PRODUCT_DATA;
 
     constructor(id: string) {
@@ -19,7 +19,7 @@ class ProductAbstract {
         }
     }
 
-    public getId(): string|null {
+    public getId(): string {
         return this.id;
     }
 
