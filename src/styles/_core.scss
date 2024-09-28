@@ -53,10 +53,11 @@
 }
 
 body {
+    --body-padding: 64px;
     background-color: var(--color-body-bg);
     color: white;
     margin: 0;
-    padding: 64px;
+    padding: var(--body-padding);
     position: relative;
 
     // WIP

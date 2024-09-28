@@ -138,6 +138,7 @@
             --process-icon-size: 20px;
             display: flex;
             flex-direction: column;
+            padding-bottom: calc(210px - var(--body-padding) + 32px); // ensure enough space for "Add Processor" dropdown
 
             .industry-tier-title {
                 margin-bottom: 32px;
@@ -421,6 +422,8 @@
 
                     &.-extractor .add-process-button::after { content: 'Add Extraction'; }
                     &.-empty-lot .add-process-button::after { content: 'Add Construction'; }
+
+                    &.hide-add-process .add-process-button { display: none; }
                 }
             }
 

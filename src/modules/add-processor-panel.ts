@@ -49,7 +49,6 @@ class AddProcessorPanel {
     private makeHtmlElement(): HTMLElement {
         const el = createEl('div', null, ['add-processor-panel']);
         this.dropdownHtmlElement = this.makeDropdownHtmlElement();
-        //// TO DO: on "mouseenter" => ensure the dropdown is fully visible (e.g. scroll-down if needed)
         el.append(this.dropdownHtmlElement);
         return el;
     }

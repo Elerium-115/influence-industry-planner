@@ -56,7 +56,10 @@ class Processor {
         this.processes.push(process);
         // Add new process into the DOM
         this.getElProcessesList().append(process.getHtmlElement());
-        //// TO DO: if process is EMPTY_LOT => HIDE / REMOVE "Add Process" button re: max 1 construction per lot
+        if (this.id === PROCESSOR_BUILDING_IDS.EMPTY_LOT) {
+            // Hide "Add Construction" button re: max 1 construction per lot
+            this.htmlElement.classList.add('hide-add-process');
+        }
     }
 
     private onClickAddProcessButton(): void {
@@ -69,6 +72,10 @@ class Processor {
 
     public onProcessRemoved(processRemoved: Process): void {
         this.processes = this.processes.filter(process => process !== processRemoved);
+        if (this.id === PROCESSOR_BUILDING_IDS.EMPTY_LOT && !this.processes.length) {
+            // Show "Add Construction" button
+            this.htmlElement.classList.remove('hide-add-process');
+        }
     }
 
     private makeHtmlElement(): HTMLElement {
