@@ -138,6 +138,17 @@ class OverlayAddProcess extends OverlayAbstract {
     }
 
     private makeElEligibleProcess(processData: I_PROCESS_DATA): HTMLElement {
+        const el = createEl('div', null, ['process']);
+        el.innerHTML = /*html*/ `
+            <div class="process-header">
+                <div class="process-name">${processData.name}</div>
+                <div class="process-materials">
+                    <div class="inputs"></div>
+                    <div class="separator"></div>
+                    <div class="outputs"></div>
+                </div>
+            </div>
+        `;
         // Sort inputs and outputs alphabetically before parsing them
         const inputsDataList: I_INPUT_OR_OUTPUT_DATA[] = Object.keys(processData.inputs).map(productId => ({
             name: productService.getProductDataById(productId).name,
@@ -151,26 +162,16 @@ class OverlayAddProcess extends OverlayAbstract {
         }));
         inputsDataList.sort(this.compareProductsByName);
         outputsDataList.sort(this.compareProductsByName);
-        // Generate HTML for inputs and outputs
-        let inputsHtml = '';
-        let outputsHtml = '';
+        // Add inputs and outputs into the DOM
+        const elInputs = el.querySelector('.inputs') as HTMLElement;
+        const elOutputs = el.querySelector('.outputs') as HTMLElement;
         inputsDataList.forEach(inputData => {
-            inputsHtml += this.makeInputOrOutputHtml(inputData.productId, inputData.qty);
+            elInputs.append(this.makeElInputOrOutput(inputData.productId, inputData.qty));
         });
         outputsDataList.forEach(outputData => {
-            outputsHtml += this.makeInputOrOutputHtml(outputData.productId, outputData.qty);
+            elOutputs.append(this.makeElInputOrOutput(outputData.productId, outputData.qty));
         });
-        const el = createEl('div', null, ['process']);
-        el.innerHTML = /*html*/ `
-            <div class="process-header">
-                <div class="process-name">${processData.name}</div>
-                <div class="process-materials">
-                    <div class="inputs">${inputsHtml}</div>
-                    <div class="separator"></div>
-                    <div class="outputs">${outputsHtml}</div>
-                </div>
-            </div>
-        `;
+        // Set data for filtering by process / output
         el.dataset.processName = processData.name;
         el.dataset.outputsNames = JSON.stringify(outputsDataList.map(outputData => outputData.name));
         el.addEventListener('click', () => this.onClickProcess(processData.i));
@@ -181,11 +182,10 @@ class OverlayAddProcess extends OverlayAbstract {
         return p1.name.localeCompare(p2.name);
     }
 
-    //// TO DO: rework this function by appending elements, instead of injecting HTML
-    private makeInputOrOutputHtml(productId: string, qty: number): string {
+    private makeElInputOrOutput(productId: string, qty: number): HTMLElement {
         const el = createEl('div', null, ['product-icon', `-p${productId}`]);
         el.dataset.tooltip = `${productService.getProductNameById(productId)}: ${getFormattedRoundNumber(qty)}`;
-        return el.outerHTML;
+        return el;
     }
 
     private populateElOverlayContent(): void {
