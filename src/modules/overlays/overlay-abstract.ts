@@ -1,5 +1,7 @@
 import {createEl} from '../dom-core.js';
 
+const overlaysActive: OverlayAbstract[] = [];
+
 /**
  * Usage:
  * - extend this class from e.g. `OverlayExample`
@@ -11,7 +13,9 @@ abstract class OverlayAbstract {
     protected elOverlayContent: HTMLElement;
 
     constructor() {
-        //// TO DO: auto-close any other overlays?
+        // Auto-close any other overlays
+        overlaysActive.forEach(overlay => overlay.remove());
+        overlaysActive.push(this);
         this.htmlElement = this.makeHtmlElement();
         this.elOverlayContent = this.makeElOverlayContent();
         this.htmlElement.querySelector('.overlay-content')?.append(this.elOverlayContent);

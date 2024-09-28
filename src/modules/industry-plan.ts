@@ -4,6 +4,7 @@ import {industryPlanService} from './industry-plan-service.js';
 import {StartupProduct} from './startup-product.js';
 import {IndustryTier} from './industry-tier.js';
 import {productService} from './product-service.js';
+import {OverlayAddStartupProduct} from './overlays/overlay-add-startup-product.js';
 
 class IndustryPlan {
     private refiningPenalty: RefiningPenalty;
@@ -102,7 +103,7 @@ class IndustryPlan {
     }
 
     private onClickAddStartupProductsButton(): void {
-        console.log(`--- [onClickAddStartupProductsButton]`); //// TEST
+        new OverlayAddStartupProduct(this);
     }
 
     public onIndustryTierPopulated(industryTierPopulated: IndustryTier): void {

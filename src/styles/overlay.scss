@@ -35,11 +35,13 @@
     }
 }
 
+.overlay-add-startup-products,
 .overlay-add-extraction,
 .overlay-add-process {
     display: flex;
     flex-direction: column;
     gap: 32px;
+    min-width: 600px;
 
     > * { width: 100%; }
 
@@ -329,6 +331,60 @@
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+}
+
+.overlay-add-startup-products {
+    .overlay-filters {
+        .filter-search {
+            width: 100%;
+
+            input { width: 100%; }
+        }
+    }
+
+    .overlay-lists {
+        display: flex;
+        gap: 64px;
+        justify-content: space-between;
+
+        .overlay-list {
+            .overlay-list-title { margin-bottom: 16px; }
+
+            &.selected-products {
+                text-align: right;
+
+                .selected-products-list {
+                    background-color: var(--color-available-products-bg);
+                    font-size: 90%;
+                    margin-bottom: 16px;
+
+                    &:empty {
+                        background-color: unset;
+
+                        &::before {
+                            content: 'Select products to add as Startup Products';
+                            opacity: 0.5;
+                        }
+                    }
+                }
+
+                .add-products-button {
+                    background-color: black;
+                    cursor: pointer;
+                    display: inline-block;
+                    opacity: 0.75;
+                    padding: 8px 16px;
+
+                    &.disabled {
+                        cursor: not-allowed;
+                        opacity: 0.5;
+                    }
+
+                    &:not(.disabled):hover { opacity: 1; }
                 }
             }
         }
