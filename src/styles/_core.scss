@@ -112,7 +112,7 @@ input[type='checkbox'] { margin: 0; }
         background-color: black;
         color: white;
         content: attr(data-tooltip);
-        font-size: 90%;
+        font-size: 0.9rem; // NOT using % value, as this needs to be independent of the parent element's font-size
         outline: 4px solid rgba(255, 255, 255, 0.2);
         padding: 4px 8px;
         pointer-events: none; // prevent hover on tooltip

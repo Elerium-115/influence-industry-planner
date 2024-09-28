@@ -110,6 +110,8 @@
                             line-height: 12px;
                             opacity: 0.75;
                             width: 16px;
+
+                            @include data-tooltip-align-top-right;
                         }
                     }
 

@@ -52,9 +52,11 @@ class OverlayAddExtraction extends OverlayAbstract {
         el.append(elName);
         const pureSpectralTypes = productService.getSpectralTypesForRawMaterialId(productId, true);
         const elSpectralTypes = createEl('div', null, ['spectral-types']);
-        pureSpectralTypes.forEach(spectralType => {
+        pureSpectralTypes.forEach(pureSpectralType => {
+            const spectralTypes = productService.getSpectralTypesForPureSpectralType(pureSpectralType);
             const elSpectralType = createEl('div', null, ['spectral-type']);
-            elSpectralType.textContent = spectralType
+            elSpectralType.textContent = pureSpectralType;
+            elSpectralType.dataset.tooltip = spectralTypes.join(', ');
             elSpectralTypes.append(elSpectralType);
         });
         el.append(elSpectralTypes);

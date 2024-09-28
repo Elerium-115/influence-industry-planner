@@ -36,6 +36,10 @@ class Process {
         if (firstOutput) {
             this.setPrimaryOutput(firstOutput);
         }
+        // Add spectral types as inputs for extractions
+        if (this.isExtraction()) {
+            this.addSpectralTypesAsInputs();
+        }
     }
 
     public getId(): number|null {
@@ -74,6 +78,10 @@ class Process {
     private getElOutputs(): HTMLElement {
         // Always "HTMLElement", never "null"
         return this.htmlElement.querySelector('.outputs') as HTMLElement;
+    }
+
+    private isExtraction(): boolean {
+        return !this.inputs.length && this.outputs.length === 1 && this.outputs[0].isRawMaterial();
     }
 
     private addInputOrOutput(productId: string, inputOrOutput: 'input'|'output'): void {
@@ -133,6 +141,17 @@ class Process {
             const qtyWithPenalty = qtyRaw * (1 - penalty);
             // Round down the output qty
             output.setQty(qtyWithPenalty, false);
+        });
+    }
+
+    private addSpectralTypesAsInputs(): void {
+        const pureSpectralTypes = productService.getSpectralTypesForRawMaterialId(this.outputs[0].getId(), true);
+        pureSpectralTypes.forEach(pureSpectralType => {
+            const spectralTypes = productService.getSpectralTypesForPureSpectralType(pureSpectralType);
+            const elSpectralType = createEl('div', null, ['spectral-type']);
+            elSpectralType.textContent = pureSpectralType;
+            elSpectralType.dataset.tooltip = spectralTypes.join(', ');
+            this.getElInputs().append(elSpectralType);
         });
     }
 

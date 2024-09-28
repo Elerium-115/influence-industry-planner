@@ -96,12 +96,24 @@ class ProductService {
     public getSpectralTypesForRawMaterialId(rawMaterialId: string, onlyPureSpectrals: boolean = false): string[] {
         const spectralTypes: string[] = [];
         Object.values(InfluenceSDK.Asteroid.SPECTRAL_TYPES).forEach(spectralData => {
-            if (onlyPureSpectrals && spectralData.name.length > 1) {
+            const spectralType = spectralData.name.toUpperCase();
+            if (onlyPureSpectrals && spectralType.length > 1) {
                 // Not a pure spectral type (C / I / M / S)
                 return;
             }
             if (spectralData.resources.includes(Number(rawMaterialId))) {
-                spectralTypes.push(spectralData.name);
+                spectralTypes.push(spectralType);
+            }
+        });
+        return spectralTypes;
+    }
+
+    public getSpectralTypesForPureSpectralType(pureSpectralType: string): string[] {
+        const spectralTypes: string[] = [];
+        Object.values(InfluenceSDK.Asteroid.SPECTRAL_TYPES).forEach(spectralData => {
+            const spectralType = spectralData.name.toUpperCase();
+            if (spectralType.includes(pureSpectralType)) {
+                spectralTypes.push(spectralType);
             }
         });
         return spectralTypes;
