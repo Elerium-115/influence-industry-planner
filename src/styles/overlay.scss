@@ -344,34 +344,35 @@
                 }
             }
 
-            &.available-products {
-                .available-products-list {
-                    max-height: 50vh;
-                    min-height: 400px;
+            .products-list {
+                background-color: var(--color-available-products-bg);
+                max-height: 50vh;
+                min-height: 400px;
+
+                &:not(:empty) {
                     overflow-y: scroll; // NOT "auto", to avoid overflow for product with longest name
+                }
 
-                    .available-product {
-                        align-items: center;
-                        background-color: var(--color-available-products-bg);
-                        color: rgba(255, 255, 255, 0.75);
-                        cursor: pointer;
-                        display: flex;
-                        font-size: 90%;
-                        gap: 8px;
-                        padding: 2px 16px 2px 2px;
+                .product {
+                    align-items: center;
+                    color: rgba(255, 255, 255, 0.75);
+                    cursor: pointer;
+                    display: flex;
+                    font-size: 90%;
+                    gap: 8px;
+                    padding: 2px 16px 2px 2px;
 
-                        .product-icon {
-                            --product-icon-size: 24px;
-                        }
+                    .product-icon {
+                        --product-icon-size: 24px;
+                    }
 
-                        .product-name {
-                            @include single-line-with-ellipsis;
-                        }
+                    .product-name {
+                        @include single-line-with-ellipsis;
+                    }
 
-                        &:hover {
-                            @include hover-lighten-bg;
-                            color: white;
-                        }
+                    &:hover {
+                        @include hover-lighten-bg;
+                        color: white;
                     }
                 }
             }
@@ -379,11 +380,7 @@
             &.selected-products {
                 text-align: right;
 
-                .selected-products-list {
-                    background-color: var(--color-available-products-bg);
-                    font-size: 90%;
-                    margin-bottom: 16px;
-
+                .products-list {
                     &:empty {
                         background-color: unset;
 
@@ -398,6 +395,7 @@
                     background-color: black;
                     cursor: pointer;
                     display: inline-block;
+                    margin-top: 16px;
                     opacity: 0.75;
                     padding: 8px 16px;
 
