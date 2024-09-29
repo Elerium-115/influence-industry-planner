@@ -9,7 +9,7 @@ function getItemNameSafe(itemName: string): string {
  * e.g. "Thin-film Resistor" => "../assets/products/default/thin-film-resistor.png"
  * Valid formats: "thumb" (low-res) / "default" (medium-res) / "original" (high-res)
  */
-function getProductImageSrc(productName: string, format: 'thumb'|'default'|'original' = 'default') {
+function getProductImageSrc(productName: string, format: 'thumb'|'default'|'original' = 'default'): string {
     return `../assets/products/${format}/${getItemNameSafe(productName)}.png`;
 }
 
@@ -23,7 +23,12 @@ function uniquePushToArray(arr: any[], value: any): void {
     }
 }
 
+function delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 export {
+    delay,
     getFormattedRoundNumber,
     getProductImageSrc,
     getItemNameSafe,

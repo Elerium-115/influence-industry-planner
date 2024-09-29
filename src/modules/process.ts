@@ -121,7 +121,7 @@ class Process {
         });
     }
 
-    private setPrimaryOutput(output: ProductIcon): void {
+    public setPrimaryOutput(output: ProductIcon): void {
         if (this.primaryOutput === output) {
             // Primary output did not change
             return;
@@ -147,6 +147,7 @@ class Process {
             // Round down the output qty
             output.setQty(qtyWithPenalty, false);
         });
+        this.parentProcessor.onProcessChanged();
     }
 
     private addSpectralTypesAsInputs(): void {

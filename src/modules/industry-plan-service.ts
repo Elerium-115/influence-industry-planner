@@ -3,7 +3,7 @@ import {uniquePushToArray} from './abstract-core.js';
 import {IndustryPlan} from './industry-plan.js';
 import {IndustryTier} from './industry-tier.js';
 import {Processor} from './processor.js';
-import {SDK_PROCESSOR_IDS_BY_BUILDING_ID} from './processor-service.js';
+import {TYPE_PROCESSOR_BUILDING_IDS, SDK_PROCESSOR_IDS_BY_BUILDING_ID} from './processor-service.js';
 import {I_PROCESS_DATA, processService} from './process-service.js';
 import {ProductSelectable} from './product-selectable.js';
 import {productService} from './product-service.js';
@@ -19,11 +19,12 @@ interface IndustryTierJSON {
 }
 
 interface ProcessorJSON {
+    id: TYPE_PROCESSOR_BUILDING_IDS,
     processes: ProcessJSON[],
 };
 
 interface ProcessJSON {
-    processId: number,
+    id: number,
     primaryOutputId: string,
 };
 
@@ -76,11 +77,12 @@ class IndustryPlanService {
             }
             industryTier.getProcessors().forEach(processor => {
                 const processorJSON: ProcessorJSON = {
+                    id: processor.getId(),
                     processes: [],
                 };
                 processor.getProcesses().forEach(process => {
                     const processJSON: ProcessJSON = {
-                        processId: process.getId() as number,
+                        id: process.getId() as number,
                         primaryOutputId: process.getPrimaryOutputId(),
                     };
                     processorJSON.processes.push(processJSON);
@@ -90,6 +92,39 @@ class IndustryPlanService {
             industryPlanJSON.industryTiers.push(industryTierJSON);
         });
         return industryPlanJSON;
+    }
+
+    public saveIndustryPlanJSON(): void {
+        localStorage.setItem('testPlan', JSON.stringify(this.getIndustryPlanJSON()));
+    }
+
+    public loadIndustryPlanJSON(industryPlanJSON: IndustryPlanJSON): void {
+        const loadedIndustryPlan = new IndustryPlan(industryPlanJSON.title);
+        // Start loading
+        loadedIndustryPlan.setIsLoading(true);
+        // Add startup products
+        loadedIndustryPlan.batchAddStartupProductsByIds(industryPlanJSON.startupProductIds);
+        // Add industry tiers
+        industryPlanJSON.industryTiers.forEach(industryTierJSON => {
+            const industryTier = loadedIndustryPlan.getIndustryTierLast();
+            // Add processors into this industry tier
+            industryTierJSON.processors.forEach(processorJSON => {
+                const processor = industryTier.addProcessorById(processorJSON.id);
+                // Add processes into this processor
+                processorJSON.processes.forEach(processJSON => {
+                    processor.addProcessById(processJSON.id);
+                    const addedProcess = processor.getProcesses().slice(-1)[0];
+                    const primaryOutput = addedProcess.getOutputs().find(output => output.getId() === processJSON.primaryOutputId);
+                    if (primaryOutput) {
+                        addedProcess.setPrimaryOutput(primaryOutput);
+                    }
+                });
+            });
+        });
+        loadedIndustryPlan.setSaveIconStatus(true);
+        // Finish loading
+        loadedIndustryPlan.setIsLoading(false);
+        this.industryPlan = loadedIndustryPlan;
     }
 
     public getAvailableInputsForIndustryTier(targetIndustryTier: IndustryTier): ProductSelectable[] {
@@ -233,5 +268,6 @@ class IndustryPlanService {
 const industryPlanService: IndustryPlanService = IndustryPlanService.getInstance(); // singleton
 
 export {
+    IndustryPlanJSON,
     industryPlanService,
 }

@@ -60,6 +60,7 @@ class Processor {
             // Hide "Add Construction" button re: max 1 construction per lot
             this.htmlElement.classList.add('hide-add-process');
         }
+        this.parentIndustryTier.onProcessorChanged();
     }
 
     private onClickAddProcessButton(): void {
@@ -76,6 +77,11 @@ class Processor {
             // Show "Add Construction" button
             this.htmlElement.classList.remove('hide-add-process');
         }
+        this.parentIndustryTier.onProcessorChanged();
+    }
+
+    public onProcessChanged(): void {
+        this.parentIndustryTier.onProcessorChanged();
     }
 
     private makeHtmlElement(): HTMLElement {

@@ -11,6 +11,7 @@ class IndustryPlan {
     private refiningPenalty: RefiningPenalty;
     private startupProducts: StartupProduct[] = [];
     private industryTiers: IndustryTier[] = [];
+    private isLoading: boolean = false;
     private industryPlanHeaderHtmlElement: HTMLElement;
     private industryPlanMainHtmlElement: HTMLElement;
     private startupProductsHtmlElement: HTMLElement;
@@ -49,6 +50,14 @@ class IndustryPlan {
         return this.startupProductsHtmlElement.querySelector('.startup-products-list') as HTMLElement;
     }
 
+    public setIsLoading(isLoading: boolean): void {
+        this.isLoading = isLoading;
+    }
+
+    public setSaveIconStatus(isSaved: boolean): void {
+        this.industryPlanHeaderHtmlElement.querySelector('.save-icon')?.classList.toggle('saved', isSaved);
+    }
+
     private addStartupProductById(id: string, shouldSortAndUpdate: boolean = true): void {
         if (this.startupProducts.find(startupProduct => startupProduct.getId() === id)) {
             // Startup product already added
@@ -80,8 +89,7 @@ class IndustryPlan {
 
     public onStartupProductRemoved(startupProductRemoved: StartupProduct): void {
         this.startupProducts = this.startupProducts.filter(startupProduct => startupProduct !== startupProductRemoved);
-        //// TO DO: highlight processes whose inputs are no longer available
-        //// -- mark them as "disabled" + exclude their outputs from "getAvailableInputsForIndustryTier"
+        this.onIndustryPlanChanged();
     }
 
     private onUpdatedStartupProducts(): void {
@@ -95,6 +103,7 @@ class IndustryPlan {
         this.startupProducts.forEach(startupProduct => {
             elStartupProdutsList.append(startupProduct.getHtmlElement());
         });
+        this.onIndustryPlanChanged();
     }
 
     private onClickAddStartupProductsButton(): void {
@@ -116,10 +125,30 @@ class IndustryPlan {
         });
     }
 
+    private onClickSaveIcon(): void {
+        industryPlanService.saveIndustryPlanJSON();
+        this.setSaveIconStatus(true);
+    }
+
+    public async onIndustryPlanChanged(): Promise<void> {
+        if (this.isLoading) {
+            // Bypass this while the industry plan is being loaded
+            return;
+        }
+        this.setSaveIconStatus(false);
+        //// TO DO: highlight processes whose inputs are no longer available (e.g. if removed Startup Products / Processors / Processes)
+        //// -- mark them as "disabled" + exclude their outputs from "getAvailableInputsForIndustryTier"
+    }
+
     private populateIndustryPlanHeader(): void {
         const elTitle = createEl('div', null, ['title']);
         elTitle.textContent = this.title;
         this.industryPlanHeaderHtmlElement.append(elTitle);
+        const elSaveIcon = createEl('div', null, ['save-icon']);
+        elSaveIcon.dataset.tooltipPosition = 'bottom-left';
+        elSaveIcon.dataset.tooltip = 'Save this test-plan into local-storage, to be reloaded on your next visit';
+        elSaveIcon.addEventListener('click', this.onClickSaveIcon.bind(this));
+        this.industryPlanHeaderHtmlElement.append(elSaveIcon);
         this.industryPlanHeaderHtmlElement.append(this.refiningPenalty.getHtmlElement());
     }
 

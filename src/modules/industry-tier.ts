@@ -41,7 +41,11 @@ class IndustryTier {
         this.processors.push(processor);
         // Add new processor into the DOM
         this.getElProcessorsList().append(processor.getHtmlElement());
-        this.parentIndustryPlan.onIndustryTierPopulated(this);
+        if (this.processors.length === 1) {
+            // First processor added => signal to parent industry plan
+            this.parentIndustryPlan.onIndustryTierPopulated(this);
+        }
+        this.parentIndustryPlan.onIndustryPlanChanged();
         return processor;
     }
 
@@ -51,6 +55,11 @@ class IndustryTier {
             // All processors removed => remove this industry tier
             this.remove();
         }
+        this.parentIndustryPlan.onIndustryPlanChanged();
+    }
+
+    public onProcessorChanged(): void {
+        this.parentIndustryPlan.onIndustryPlanChanged();
     }
 
     private makeHtmlElement(): HTMLElement {
