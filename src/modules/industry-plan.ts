@@ -7,34 +7,29 @@ import {productService} from './product-service.js';
 import {OverlayAddStartupProduct} from './overlays/overlay-add-startup-product.js';
 
 class IndustryPlan {
+    private title: string;
     private refiningPenalty: RefiningPenalty;
     private startupProducts: StartupProduct[] = [];
     private industryTiers: IndustryTier[] = [];
-    private industryPlanHtmlElement: HTMLElement;
+    private industryPlanHeaderHtmlElement: HTMLElement;
+    private industryPlanMainHtmlElement: HTMLElement;
     private startupProductsHtmlElement: HTMLElement;
     private industryTiersHtmlElement: HTMLElement;
 
-    constructor() {
+    constructor(title: string) {
         industryPlanService.setIndustryPlan(this);
+        this.title = title;
         // Default penalty for secondary outputs
         this.refiningPenalty = new RefiningPenalty();
         // Always "HTMLElement", never "null"
-        this.industryPlanHtmlElement = document.getElementById('industry-plan') as HTMLElement;
-        // Empty old industry plan in the DOM
-        this.industryPlanHtmlElement.textContent = '';
-        /**
-         * Add wrappers for main components into the DOM:
-         * - refining penalty
-         * - startup products (initially empty)
-         * - industry tiers (initially empty)
-         */
-        this.startupProductsHtmlElement = this.makeStartupProductsHtmlElement();
-        this.industryTiersHtmlElement = this.makeIndustryTiersHtmlElement();
-        this.industryPlanHtmlElement.append(this.refiningPenalty.getHtmlElement());
-        this.industryPlanHtmlElement.append(this.startupProductsHtmlElement);
-        this.industryPlanHtmlElement.append(this.industryTiersHtmlElement);
-        // Add initial industry tier
-        this.addIndustryTier();
+        this.industryPlanHeaderHtmlElement = document.getElementById('industry-plan-header') as HTMLElement;
+        this.industryPlanMainHtmlElement = document.getElementById('industry-plan-main') as HTMLElement;
+        this.populateIndustryPlanHeader();
+        this.populateIndustryPlanMain();
+    }
+
+    public getTitle(): string {
+        return this.title;
     }
 
     public getStartupProducts(): StartupProduct[] {
@@ -119,6 +114,30 @@ class IndustryPlan {
         this.industryTiers.forEach((industryTier: IndustryTier, idx: number) => {
             industryTier.setTitle(`Industry Tier #${idx + 1}`);
         });
+    }
+
+    private populateIndustryPlanHeader(): void {
+        const elTitle = createEl('div', null, ['title']);
+        elTitle.textContent = this.title;
+        this.industryPlanHeaderHtmlElement.append(elTitle);
+        this.industryPlanHeaderHtmlElement.append(this.refiningPenalty.getHtmlElement());
+    }
+
+    private populateIndustryPlanMain(): void {
+        // Empty old industry plan in the DOM
+        this.industryPlanMainHtmlElement.textContent = '';
+        /**
+         * Add wrappers for main components into the DOM:
+         * - refining penalty
+         * - startup products (initially empty)
+         * - industry tiers (initially empty)
+         */
+        this.startupProductsHtmlElement = this.makeStartupProductsHtmlElement();
+        this.industryTiersHtmlElement = this.makeIndustryTiersHtmlElement();
+        this.industryPlanMainHtmlElement.append(this.startupProductsHtmlElement);
+        this.industryPlanMainHtmlElement.append(this.industryTiersHtmlElement);
+        // Add initial industry tier
+        this.addIndustryTier();
     }
 
     private makeStartupProductsHtmlElement(): HTMLElement {

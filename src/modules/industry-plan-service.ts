@@ -8,6 +8,25 @@ import {I_PROCESS_DATA, processService} from './process-service.js';
 import {ProductSelectable} from './product-selectable.js';
 import {productService} from './product-service.js';
 
+interface IndustryPlanJSON {
+    title: string,
+    startupProductIds: string[],
+    industryTiers: IndustryTierJSON[],
+}
+
+interface IndustryTierJSON {
+    processors: ProcessorJSON[],
+}
+
+interface ProcessorJSON {
+    processes: ProcessJSON[],
+};
+
+interface ProcessJSON {
+    processId: number,
+    primaryOutputId: string,
+};
+
 /**
  * Singleton
  */
@@ -40,6 +59,37 @@ class IndustryPlanService {
 
     public setIndustryPlan(industryPlan: IndustryPlan): void {
         this.industryPlan = industryPlan;
+    }
+
+    public getIndustryPlanJSON(): IndustryPlanJSON {
+        const industryPlanJSON: IndustryPlanJSON = {
+            title: this.industryPlan.getTitle(),
+            startupProductIds: this.industryPlan.getStartupProducts().map(product => product.getId()),
+            industryTiers: [],
+        };
+        this.industryPlan.getIndustryTiers().forEach(industryTier => {
+            const industryTierJSON: IndustryTierJSON = {
+                processors: [],
+            };
+            if (!industryTier.getProcessors().length) {
+                return;
+            }
+            industryTier.getProcessors().forEach(processor => {
+                const processorJSON: ProcessorJSON = {
+                    processes: [],
+                };
+                processor.getProcesses().forEach(process => {
+                    const processJSON: ProcessJSON = {
+                        processId: process.getId() as number,
+                        primaryOutputId: process.getPrimaryOutputId(),
+                    };
+                    processorJSON.processes.push(processJSON);
+                });
+                industryTierJSON.processors.push(processorJSON);
+            });
+            industryPlanJSON.industryTiers.push(industryTierJSON);
+        });
+        return industryPlanJSON;
     }
 
     public getAvailableInputsForIndustryTier(targetIndustryTier: IndustryTier): ProductSelectable[] {

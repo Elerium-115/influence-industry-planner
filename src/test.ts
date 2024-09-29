@@ -1,7 +1,8 @@
 import {PROCESSOR_BUILDING_IDS, type TYPE_PROCESSOR_BUILDING_IDS} from './modules/processor-service.js';
 import {IndustryPlan} from './modules/industry-plan.js';
+import {industryPlanService} from './modules/industry-plan-service.js';
 
-const testIndustryPlan = new IndustryPlan();
+const testIndustryPlan = new IndustryPlan('Test Plan');
 
 // Test add startup products
 const testStartupProductIds = ['3', '15', '23', '44', '48', '52', '55', '81'];
@@ -32,3 +33,4 @@ function testAddProcessorById(processorId: TYPE_PROCESSOR_BUILDING_IDS): void {
 (globalThis as any).testAddProcessorById = testAddProcessorById;
 
 console.log(`--- testIndustryPlan:`, testIndustryPlan); //// TEST
+console.log(`---> JSON:`, industryPlanService.getIndustryPlanJSON()); //// TEST

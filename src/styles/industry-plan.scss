@@ -4,318 +4,188 @@
 @import './overlay.scss';
 
 #industry-plan {
-    align-items: flex-start;
     display: flex;
-    gap: 64px;
+    flex-direction: column;
+    gap: 32px;
 
-    #refining-penalty {
-        align-items: center;
-        color: rgb(220, 180, 40);
-        display: flex;
-        font-size: 90%;
-        gap: 16px;
-        height: 48px;
-        justify-content: center;
-        left: 48px;
-        opacity: 0.75;
-        padding: 0 16px;
-        position: absolute;
-        top: 0;
-        white-space: nowrap;
-        z-index: 1;
-
-        &::before { content: 'Refining Penalty'; }
-        &::after { content: 'for secondary outputs'; }
-    }
-
-    #startup-products {
-        --product-icon-size: 32px;
-
-        .startup-products-title {
-            margin-bottom: 32px;
-
-            &::before { content: 'Startup Products'; }
+    #industry-plan-header {
+        .title {
+            font-size: 200%;
         }
 
-        .startup-products-list {
-            .startup-product {
+        #refining-penalty {
+            align-items: center;
+            color: rgb(220, 180, 40);
+            display: flex;
+            font-size: 90%;
+            gap: 16px;
+            height: 48px;
+            justify-content: center;
+            left: 48px;
+            opacity: 0.75;
+            padding: 0 16px;
+            position: absolute;
+            top: 0;
+            white-space: nowrap;
+            z-index: 1;
+
+            &::before { content: 'Refining Penalty'; }
+            &::after { content: 'for secondary outputs'; }
+        }
+    }
+
+    #industry-plan-main {
+        align-items: flex-start;
+        display: flex;
+        gap: 64px;
+
+        #startup-products {
+            --product-icon-size: 32px;
+
+            .startup-products-title {
+                margin-bottom: 32px;
+
+                &::before { content: 'Startup Products'; }
+            }
+
+            .startup-products-list {
+                .startup-product {
+                    align-items: center;
+                    background-color: var(--color-available-products-bg);
+                    color: rgba(255, 255, 255, 0.75);
+                    display: flex;
+                    gap: 8px;
+                    padding: 2px 16px 2px 2px;
+                    position: relative;
+
+                    .product-name {
+                        @include single-line-with-ellipsis;
+                        font-size: 90%;
+                        max-width: 160px;
+                    }
+
+                    .remove-product {
+                        align-items: center;
+                        background-color: var(--color-available-products-bg);
+                        bottom: 0;
+                        cursor: pointer;
+                        display: flex;
+                        left: 100%;
+                        position: absolute;
+                        top: 0;
+
+                        &::before {
+                            align-items: center;
+                            color: var(--color-warning);
+                            content: '✕';
+                            display: flex;
+                            height: 100%;
+                            padding: 0 8px;
+                        }
+
+                        &:hover::before {
+                            background-color: var(--color-warning);
+                            color: white;
+                        }
+                    }
+
+                    &:hover {
+                        @include hover-lighten-bg;
+                        color: white !important;
+
+                        .remove-product { @include hover-lighten-bg; }
+                    }
+
+                    &:not(:hover) .remove-product { display: none; }
+                }
+            }
+
+            .add-startup-products-button {
                 align-items: center;
                 background-color: var(--color-available-products-bg);
-                color: rgba(255, 255, 255, 0.75);
+                color: var(--color-add-button);
+                cursor: pointer;
                 display: flex;
                 gap: 8px;
                 padding: 2px 16px 2px 2px;
-                position: relative;
 
-                .product-name {
-                    @include single-line-with-ellipsis;
-                    font-size: 90%;
-                    max-width: 160px;
+                &::before {
+                    align-items: center;
+                    content: '+';
+                    display: flex;
+                    font-size: 200%;
+                    height: var(--product-icon-size);
+                    justify-content: center;
+                    width: var(--product-icon-size);
                 }
 
-                .remove-product {
-                    align-items: center;
-                    background-color: var(--color-available-products-bg);
-                    bottom: 0;
-                    cursor: pointer;
-                    display: flex;
-                    left: 100%;
-                    position: absolute;
-                    top: 0;
-
-                    &::before {
-                        align-items: center;
-                        color: var(--color-warning);
-                        content: '✕';
-                        display: flex;
-                        height: 100%;
-                        padding: 0 8px;
-                    }
-
-                    &:hover::before {
-                        background-color: var(--color-warning);
-                        color: white;
-                    }
+                &::after {
+                    content: 'Add Products';
+                    font-size: 90%;
+                    white-space: nowrap;
                 }
 
                 &:hover {
                     @include hover-lighten-bg;
-                    color: white !important;
+                    color: white;
+                }
+            }
+        }
 
-                    .remove-product { @include hover-lighten-bg; }
+        #industry-tiers {
+            display: flex;
+            gap: 64px;
+            padding-right: 64px; // for body overflow beyond 100% width
+
+            .industry-tier {
+                --processor-icon-size: 32px;
+                --process-icon-size: 20px;
+                padding-bottom: calc(210px - var(--body-padding) + 32px); // ensure enough space for "Add Processor" dropdown
+
+                .industry-tier-title {
+                    margin-bottom: 32px;
+
+                    &::before { content: attr(data-title); }
                 }
 
-                &:not(:hover) .remove-product { display: none; }
-            }
-        }
+                .processors-list {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 32px;
 
-        .add-startup-products-button {
-            align-items: center;
-            background-color: var(--color-available-products-bg);
-            color: var(--color-add-button);
-            cursor: pointer;
-            display: flex;
-            gap: 8px;
-            padding: 2px 16px 2px 2px;
+                    &:not(:empty) { margin-bottom: 32px; }
 
-            &::before {
-                align-items: center;
-                content: '+';
-                display: flex;
-                font-size: 200%;
-                height: var(--product-icon-size);
-                justify-content: center;
-                width: var(--product-icon-size);
-            }
+                    .processor {
+                        max-width: 240px;
 
-            &::after {
-                content: 'Add Products';
-                font-size: 90%;
-                white-space: nowrap;
-            }
-
-            &:hover {
-                @include hover-lighten-bg;
-                color: white;
-            }
-        }
-    }
-
-    #industry-tiers {
-        display: flex;
-        gap: 64px;
-        padding-right: 64px; // for body overflow beyond 100% width
-
-        .industry-tier {
-            --processor-icon-size: 32px;
-            --process-icon-size: 20px;
-            padding-bottom: calc(210px - var(--body-padding) + 32px); // ensure enough space for "Add Processor" dropdown
-
-            .industry-tier-title {
-                margin-bottom: 32px;
-
-                &::before { content: attr(data-title); }
-            }
-
-            .processors-list {
-                display: flex;
-                flex-direction: column;
-                gap: 32px;
-
-                &:not(:empty) { margin-bottom: 32px; }
-
-                .processor {
-                    max-width: 240px;
-
-                    .processor-header {
-                        padding-right: calc(var(--processor-icon-size) + var(--processor-header-gap));
-                        position: relative;
-
-                        &::before { cursor: grab; }
-
-                        .processor-info {
-                            align-items: center;
-                            bottom: 0;
-                            cursor: pointer;
-                            display: flex;
-                            justify-content: center;
-                            position: absolute;
-                            right: 0;
-                            top: 0;
-                            width: var(--processor-icon-size);
-
-                            &::before { content: '#'; }
-
-                            &:hover {
-                                background-color: var(--color-processor-highlight-bg);
-                                color: white;
-                            }
-                        }
-
-                        .remove-processor {
-                            align-items: center;
-                            background-color: var(--color-processor-header-bg);
-                            bottom: 0;
-                            cursor: pointer;
-                            display: flex;
-                            left: 100%;
-                            position: absolute;
-                            top: 0;
-
-                            &::before {
-                                align-items: center;
-                                color: var(--color-warning);
-                                content: '✕';
-                                display: flex;
-                                height: 100%;
-                                padding: 0 8px;
-                            }
-
-                            &:hover::before {
-                                background-color: var(--color-warning);
-                                color: white;
-                            }
-                        }
-
-                        &:hover {
-                            color: white;
-
-                            &::before { background-blend-mode: color; }
-                        }
-
-                        &:not(:hover) .remove-processor { display: none; }
-                    }
-
-                    .processes-list {
-                        background-color: var(--color-processor-processes-bg);
-
-                        .process {
-                            cursor: pointer;
-                            display: flex;
-                            flex-direction: column;
-                            font-size: 90%;
-                            gap: 8px;
-                            padding: 8px;
+                        .processor-header {
+                            padding-right: calc(var(--processor-icon-size) + var(--processor-header-gap));
                             position: relative;
 
-                            &:not(:first-child) { border-top: 1px solid var(--color-processor-highlight-bg); }
+                            &::before { cursor: grab; }
 
-                            .process-header {
+                            .processor-info {
                                 align-items: center;
-                                color: rgba(255, 255, 255, 0.75);
+                                bottom: 0;
+                                cursor: pointer;
                                 display: flex;
-                                gap: 8px;
-                                height: var(--process-icon-size);
+                                justify-content: center;
+                                position: absolute;
+                                right: 0;
+                                top: 0;
+                                width: var(--processor-icon-size);
 
-                                &::before {
-                                    background-image: url('../assets/icons/icon-process.svg');
-                                    background-position: center;
-                                    background-repeat: no-repeat;
-                                    background-size: 24px;
-                                    content: '';
-                                    display: inline-block;
-                                    height: var(--process-icon-size);
-                                    max-width: var(--process-icon-size);
-                                    min-width: var(--process-icon-size);
-                                    opacity: 0.75;
-                                }
+                                &::before { content: '#'; }
 
-                                .process-name { @include single-line-with-ellipsis; }
-                            }
-
-                            .process-materials {
-                                align-items: center;
-                                display: flex;
-                                gap: 16px;
-                                justify-content: space-between;
-
-                                .inputs,
-                                .outputs {
-                                    display: flex;
-                                    flex-wrap: wrap;
-                                    gap: 4px;
-
-                                    .product-icon {
-                                        --product-icon-size: 24px;
-                                        background-color: black;
-                                        border: 1px solid rgba(255, 255, 255, 0.2);
-                                        cursor: pointer;
-
-                                        &.is-primary {
-                                            border-color: var(--color-processor-highlight-subtle);
-                                            outline: 1px solid var(--color-processor-highlight-subtle);
-                                        }
-
-                                        &.flash-primary {
-                                            animation: flash-primary 500ms;
-
-                                            &::after { @include flash-tooltip(var(--color-processor)); }
-                                        }
-
-                                        @keyframes flash-primary {
-                                            25% { background-color: var(--color-processor-highlight-subtle); }
-                                            50% { background-color: unset; }
-                                            75% { background-color: var(--color-processor-highlight-subtle); }
-                                        }
-
-                                        &:hover { border-color: white; }
-                                    }
-                                }
-
-                                .inputs {
-                                    .spectral-type {
-                                        align-items: center;
-                                        border: 1px solid var(--color-processor-highlight-subtle);
-                                        border-radius: 50%;
-                                        color: var(--color-processor);
-                                        cursor: default;
-                                        display: flex;
-                                        font-size: 90%;
-                                        height: 24px;
-                                        justify-content: center;
-                                        opacity: 0.75;
-                                        width: 24px;
-
-                                        &:hover {
-                                            border-color: white;
-                                            color: white;
-                                        }
-                                    }
-                                }
-
-                                .outputs { justify-content: flex-end; }
-
-                                .separator {
-                                    &::after {
-                                        content: '⮕';
-                                        opacity: 0.5;
-                                    }
+                                &:hover {
+                                    background-color: var(--color-processor-highlight-bg);
+                                    color: white;
                                 }
                             }
 
-                            .remove-process {
+                            .remove-processor {
                                 align-items: center;
-                                background-color: var(--color-processor-processes-bg);
+                                background-color: var(--color-processor-header-bg);
                                 bottom: 0;
                                 cursor: pointer;
                                 display: flex;
@@ -325,13 +195,11 @@
 
                                 &::before {
                                     align-items: center;
-                                    background-color: var(--color-processor-process-hover);
                                     color: var(--color-warning);
                                     content: '✕';
                                     display: flex;
                                     height: 100%;
                                     padding: 0 8px;
-                                    white-space: nowrap;
                                 }
 
                                 &:hover::before {
@@ -341,126 +209,270 @@
                             }
 
                             &:hover {
-                                background-color: var(--color-processor-process-hover);
+                                color: white;
+
+                                &::before { background-blend-mode: color; }
+                            }
+
+                            &:not(:hover) .remove-processor { display: none; }
+                        }
+
+                        .processes-list {
+                            background-color: var(--color-processor-processes-bg);
+
+                            .process {
+                                cursor: pointer;
+                                display: flex;
+                                flex-direction: column;
+                                font-size: 90%;
+                                gap: 8px;
+                                padding: 8px;
+                                position: relative;
+
+                                &:not(:first-child) { border-top: 1px solid var(--color-processor-highlight-bg); }
 
                                 .process-header {
-                                    color: white;
+                                    align-items: center;
+                                    color: rgba(255, 255, 255, 0.75);
+                                    display: flex;
+                                    gap: 8px;
+                                    height: var(--process-icon-size);
 
-                                    &::before { opacity: 1; }
+                                    &::before {
+                                        background-image: url('../assets/icons/icon-process.svg');
+                                        background-position: center;
+                                        background-repeat: no-repeat;
+                                        background-size: 24px;
+                                        content: '';
+                                        display: inline-block;
+                                        height: var(--process-icon-size);
+                                        max-width: var(--process-icon-size);
+                                        min-width: var(--process-icon-size);
+                                        opacity: 0.75;
+                                    }
+
+                                    .process-name { @include single-line-with-ellipsis; }
                                 }
 
                                 .process-materials {
-                                    .inputs .spectral-type, .separator::after { opacity: 1; }
+                                    align-items: center;
+                                    display: flex;
+                                    gap: 16px;
+                                    justify-content: space-between;
+
+                                    .inputs,
+                                    .outputs {
+                                        display: flex;
+                                        flex-wrap: wrap;
+                                        gap: 4px;
+
+                                        .product-icon {
+                                            --product-icon-size: 24px;
+                                            background-color: black;
+                                            border: 1px solid rgba(255, 255, 255, 0.2);
+                                            cursor: pointer;
+
+                                            &.is-primary {
+                                                border-color: var(--color-processor-highlight-subtle);
+                                                outline: 1px solid var(--color-processor-highlight-subtle);
+                                            }
+
+                                            &.flash-primary {
+                                                animation: flash-primary 500ms;
+
+                                                &::after { @include flash-tooltip(var(--color-processor)); }
+                                            }
+
+                                            @keyframes flash-primary {
+                                                25% { background-color: var(--color-processor-highlight-subtle); }
+                                                50% { background-color: unset; }
+                                                75% { background-color: var(--color-processor-highlight-subtle); }
+                                            }
+
+                                            &:hover { border-color: white; }
+                                        }
+                                    }
+
+                                    .inputs {
+                                        .spectral-type {
+                                            align-items: center;
+                                            border: 1px solid var(--color-processor-highlight-subtle);
+                                            border-radius: 50%;
+                                            color: var(--color-processor);
+                                            cursor: default;
+                                            display: flex;
+                                            font-size: 90%;
+                                            height: 24px;
+                                            justify-content: center;
+                                            opacity: 0.75;
+                                            width: 24px;
+
+                                            &:hover {
+                                                border-color: white;
+                                                color: white;
+                                            }
+                                        }
+                                    }
+
+                                    .outputs { justify-content: flex-end; }
+
+                                    .separator {
+                                        &::after {
+                                            content: '⮕';
+                                            opacity: 0.5;
+                                        }
+                                    }
                                 }
+
+                                .remove-process {
+                                    align-items: center;
+                                    background-color: var(--color-processor-processes-bg);
+                                    bottom: 0;
+                                    cursor: pointer;
+                                    display: flex;
+                                    left: 100%;
+                                    position: absolute;
+                                    top: 0;
+
+                                    &::before {
+                                        align-items: center;
+                                        background-color: var(--color-processor-process-hover);
+                                        color: var(--color-warning);
+                                        content: '✕';
+                                        display: flex;
+                                        height: 100%;
+                                        padding: 0 8px;
+                                        white-space: nowrap;
+                                    }
+
+                                    &:hover::before {
+                                        background-color: var(--color-warning);
+                                        color: white;
+                                    }
+                                }
+
+                                &:hover {
+                                    background-color: var(--color-processor-process-hover);
+
+                                    .process-header {
+                                        color: white;
+
+                                        &::before { opacity: 1; }
+                                    }
+
+                                    .process-materials {
+                                        .inputs .spectral-type, .separator::after { opacity: 1; }
+                                    }
+                                }
+
+                                &:not(:hover) .remove-process { display: none; }
+                            }
+                        }
+
+                        .add-process-button {
+                            --padding: 8px;
+                            align-items: center;
+                            background-color: var(--color-processor-processes-bg);
+                            border-top: 1px solid var(--color-processor-highlight-bg);
+                            color: var(--color-add-button);
+                            cursor: pointer;
+                            display: flex;
+
+                            &::before {
+                                background-image: url('../assets/icons/icon-process.svg');
+                                background-position: center;
+                                background-repeat: no-repeat;
+                                background-size: 24px;
+                                content: '';
+                                display: inline-block;
+                                height: var(--process-icon-size);
+                                max-width: var(--process-icon-size);
+                                min-width: var(--process-icon-size);
+                                opacity: 0.25;
+                                padding: var(--padding);
                             }
 
-                            &:not(:hover) .remove-process { display: none; }
-                        }
-                    }
-
-                    .add-process-button {
-                        --padding: 8px;
-                        align-items: center;
-                        background-color: var(--color-processor-processes-bg);
-                        border-top: 1px solid var(--color-processor-highlight-bg);
-                        color: var(--color-add-button);
-                        cursor: pointer;
-                        display: flex;
-
-                        &::before {
-                            background-image: url('../assets/icons/icon-process.svg');
-                            background-position: center;
-                            background-repeat: no-repeat;
-                            background-size: 24px;
-                            content: '';
-                            display: inline-block;
-                            height: var(--process-icon-size);
-                            max-width: var(--process-icon-size);
-                            min-width: var(--process-icon-size);
-                            opacity: 0.25;
-                            padding: var(--padding);
-                        }
-
-                        &::after {
-                            content: 'Add Process';
-                            flex-grow: 1;
-                            font-size: 90%;
-                            line-height: calc(var(--process-icon-size) + (2 * var(--padding)));
-                            padding-right: 16px;
-                            white-space: nowrap;
-                        }
-
-                        &:hover {
-                            color: white;
-
-                            &::before,
                             &::after {
-                                background-color: var(--color-processor-process-hover);
+                                content: 'Add Process';
+                                flex-grow: 1;
+                                font-size: 90%;
+                                line-height: calc(var(--process-icon-size) + (2 * var(--padding)));
+                                padding-right: 16px;
+                                white-space: nowrap;
                             }
 
-                            &::before { opacity: 1; }
+                            &:hover {
+                                color: white;
+
+                                &::before,
+                                &::after {
+                                    background-color: var(--color-processor-process-hover);
+                                }
+
+                                &::before { opacity: 1; }
+                            }
                         }
+
+                        &.-extractor .add-process-button::after { content: 'Add Extraction'; }
+                        &.-empty-lot .add-process-button::after { content: 'Add Construction'; }
+
+                        &.hide-add-process .add-process-button { display: none; }
                     }
-
-                    &.-extractor .add-process-button::after { content: 'Add Extraction'; }
-                    &.-empty-lot .add-process-button::after { content: 'Add Construction'; }
-
-                    &.hide-add-process .add-process-button { display: none; }
                 }
-            }
 
-            .add-processor-panel {
-                --color-panel-bg: #2a2a2a; // avg. of grayscaled processor-header bg-colors
-                align-items: center;
-                background-color: var(--color-panel-bg);
-                color: rgba(255, 255, 255, 0.6);
-                cursor: pointer;
-                display: flex;
-                gap: 16px;
-                position: relative;
-
-                &::before {
+                .add-processor-panel {
+                    --color-panel-bg: #2a2a2a; // avg. of grayscaled processor-header bg-colors
                     align-items: center;
-                    background-color: #6a6a6a; // avg. of grayscaled processor-icon bg-colors
-                    content: '+';
-                    display: flex;
-                    font-size: 200%;
-                    height: var(--processor-icon-size);
-                    justify-content: center;
-                    width: var(--processor-icon-size);
-                }
-
-                &::after {
-                    content: 'Add Processor';
-                    padding-right: 16px;
-                    white-space: nowrap;
-                }
-
-                .add-processor-dropdown {
                     background-color: var(--color-panel-bg);
-                    left: 0;
-                    position: absolute;
-                    right: 0;
-                    top: 100%;
+                    color: rgba(255, 255, 255, 0.6);
+                    cursor: pointer;
+                    display: flex;
+                    gap: 16px;
+                    position: relative;
 
-                    .option {
-                        color: rgb(var(--rgb-processor));
-                        cursor: pointer;
-                        padding: 8px 8px 8px calc(var(--processor-icon-size) + 16px);
+                    &::before {
+                        align-items: center;
+                        background-color: #6a6a6a; // avg. of grayscaled processor-icon bg-colors
+                        content: '+';
+                        display: flex;
+                        font-size: 200%;
+                        height: var(--processor-icon-size);
+                        justify-content: center;
+                        width: var(--processor-icon-size);
+                    }
 
-                        &:hover {
-                            @include hover-lighten-bg;
-                            color: white;
+                    &::after {
+                        content: 'Add Processor';
+                        padding-right: 16px;
+                        white-space: nowrap;
+                    }
+
+                    .add-processor-dropdown {
+                        background-color: var(--color-panel-bg);
+                        left: 0;
+                        position: absolute;
+                        right: 0;
+                        top: 100%;
+
+                        .option {
+                            color: rgb(var(--rgb-processor));
+                            cursor: pointer;
+                            padding: 8px 8px 8px calc(var(--processor-icon-size) + 16px);
+
+                            &:hover {
+                                @include hover-lighten-bg;
+                                color: white;
+                            }
                         }
                     }
-                }
 
-                &:hover {
-                    @include hover-lighten-bg;
-                    color: white;
-                }
+                    &:hover {
+                        @include hover-lighten-bg;
+                        color: white;
+                    }
 
-                &:not(:hover) .add-processor-dropdown { display: none; }
+                    &:not(:hover) .add-processor-dropdown { display: none; }
+                }
             }
         }
     }

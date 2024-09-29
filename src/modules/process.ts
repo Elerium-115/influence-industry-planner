@@ -70,6 +70,10 @@ class Process {
         return Object.keys(this.data.outputs);
     }
 
+    public getPrimaryOutputId(): string {
+        return this.primaryOutput.getId();
+    }
+
     private getElInputs(): HTMLElement {
         // Always "HTMLElement", never "null"
         return this.htmlElement.querySelector('.inputs') as HTMLElement;
