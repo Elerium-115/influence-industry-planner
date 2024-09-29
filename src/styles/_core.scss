@@ -89,7 +89,7 @@ input[type='text'] {
 
 input[type='checkbox'] { margin: 0; }
 
-.hidden { display: none; }
+.hidden { display: none !important; }
 
 .product-icon {
     // NOTE: "--product-icon-size" must be set in each context where this class is used

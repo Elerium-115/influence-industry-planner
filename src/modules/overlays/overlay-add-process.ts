@@ -67,7 +67,7 @@ class OverlayAddProcess extends OverlayAbstract {
         const searchQueryLowercase = this.elInputFilterSearch.value.toLowerCase().trim();
         ([...this.elEligibleProcessesList.children] as HTMLElement[]).forEach(elProcess => {
             let isVisibleBySearch = false;
-            // Filter by search only if search-string NOT empty, and at least one of the filter-checkboxes is checked
+            // Filter by search only if search-query NOT empty, and at least one of the filter-checkboxes is checked
             if (searchQueryLowercase && (isFilteringByProcess || isFilteringByOutputs)) {
                 if (isFilteringByProcess) {
                     // Consider the process name only if this checkbox is checked

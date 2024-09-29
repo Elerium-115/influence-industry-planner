@@ -325,7 +325,7 @@
 
     .overlay-lists {
         display: flex;
-        gap: 64px;
+        gap: 32px;
         justify-content: space-between;
 
         .overlay-list {
@@ -346,8 +346,7 @@
 
             .products-list {
                 background-color: var(--color-available-products-bg);
-                max-height: 50vh;
-                min-height: 400px;
+                height: 50vh;
 
                 &:not(:empty) {
                     overflow-y: scroll; // NOT "auto", to avoid overflow for product with longest name
@@ -389,6 +388,25 @@
                             opacity: 0.5;
                         }
                     }
+
+                    .product {
+                        position: relative;
+
+                        &::before {
+                            align-items: center;
+                            background-color: var(--color-warning);
+                            bottom: 0;
+                            color: white;
+                            content: '✕';
+                            display: flex;
+                            left: 0;
+                            padding: 0 8px;
+                            position: absolute;
+                            top: 0;
+                        }
+
+                        &:not(:hover)::before { display: none; }
+                    }
                 }
 
                 .add-products-button {
@@ -408,5 +426,17 @@
                 }
             }
         }
+
+        .separator {
+            align-items: center;
+            display: flex;
+
+            &::after {
+                content: '⮕';
+                opacity: 0.5;
+            }
+        }
+
+        &:hover .separator::after { opacity: 1; }
     }
 }

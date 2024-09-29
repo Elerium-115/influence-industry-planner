@@ -4,7 +4,7 @@ import {IndustryPlan} from './modules/industry-plan.js';
 const testIndustryPlan = new IndustryPlan();
 
 // Test add startup products
-const testStartupProductIds = ['1', '3', '15', '23', '44', '48', '52', '55', '81'];
+const testStartupProductIds = ['3', '15', '23', '44', '48', '52', '55', '81'];
 testIndustryPlan.batchAddStartupProductsByIds(testStartupProductIds);
 
 // Test add processors + processes into the last industry tier

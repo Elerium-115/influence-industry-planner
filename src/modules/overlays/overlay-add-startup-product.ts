@@ -7,6 +7,7 @@ class OverlayAddStartupProduct extends OverlayAbstract {
     private parentIndustryPlan: IndustryPlan;
     private availableProducts: I_PRODUCT_DATA[] = [];
     private selectedProducts: I_PRODUCT_DATA[] = [];
+    private elInputFilterSearch: HTMLInputElement;
     private elAvailableProductsList: HTMLElement;
     private elSelectedProductsList: HTMLElement;
     private elAddProductsButton: HTMLElement;
@@ -28,6 +29,26 @@ class OverlayAddStartupProduct extends OverlayAbstract {
 
     private compareProductsByName(p1: I_PRODUCT_DATA, p2: I_PRODUCT_DATA): number {
         return p1.name.localeCompare(p2.name);
+    }
+
+    private onInputFilterSearch(): void {
+        this.filterAvailableProducts();
+    }
+
+    private filterAvailableProducts(): void {
+        const searchQueryLowercase = this.elInputFilterSearch.value.toLowerCase().trim();
+        ([...this.elAvailableProductsList.children] as HTMLElement[]).forEach(elProduct => {
+            let isVisibleBySearch = false;
+            // Filter by search only if search-query NOT empty
+            if (searchQueryLowercase) {
+                const productName = elProduct.dataset.productName as string;
+                isVisibleBySearch = productName.toLowerCase().includes(searchQueryLowercase);
+            } else {
+                // Not filtering by search
+                isVisibleBySearch = true;
+            }
+            elProduct.classList.toggle('hidden', !isVisibleBySearch);
+        });
     }
 
     private onClickAvailableProduct(availableProductClicked: I_PRODUCT_DATA): void {
@@ -70,9 +91,12 @@ class OverlayAddStartupProduct extends OverlayAbstract {
                 <div class="product-icon -p${availableProduct.i}"></div>
                 <div class="product-name">${availableProduct.name}</div>
             `;
+            // Set data for filtering
+            el.dataset.productName = availableProduct.name;
             el.addEventListener('click', () => this.onClickAvailableProduct(availableProduct));
             this.elAvailableProductsList.append(el);
         });
+        this.filterAvailableProducts();
     }
 
     private renderSelectedProducts(): void {
@@ -105,6 +129,7 @@ class OverlayAddStartupProduct extends OverlayAbstract {
                     </div>
                     <div class="products-list"></div>
                 </div>
+                <div class="separator"></div>
                 <div class="overlay-list selected-products">
                     <div class="overlay-list-title" data-tooltip-position="top-right" data-tooltip="Select from among the Available Products, to add as Startup Products">
                         Selected Products
@@ -114,9 +139,11 @@ class OverlayAddStartupProduct extends OverlayAbstract {
                 </div>
             </div>
         `;
+        this.elInputFilterSearch = this.elOverlayContent.querySelector('input[name="filter-search"]') as HTMLInputElement;
         this.elAvailableProductsList = this.elOverlayContent.querySelector('.available-products .products-list') as HTMLElement;
         this.elSelectedProductsList = this.elOverlayContent.querySelector('.selected-products .products-list') as HTMLElement;
         this.elAddProductsButton = this.elOverlayContent.querySelector('.add-products-button') as HTMLElement;
+        this.elInputFilterSearch.addEventListener('input', this.onInputFilterSearch.bind(this));
         this.elAddProductsButton.addEventListener('click', this.onClickAddProductsButton.bind(this));
         this.renderAvailableProducts();
     }
