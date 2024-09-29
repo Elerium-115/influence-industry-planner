@@ -85,7 +85,8 @@ class Process {
     }
 
     private addInputOrOutput(productId: string, inputOrOutput: 'input'|'output'): void {
-        const productIcon = new ProductIcon(productId, this);
+        const tooltipPosition = inputOrOutput === 'input' ? 'bottom-left' : 'bottom-right';
+        const productIcon = new ProductIcon(productId, this, tooltipPosition);
         if (!productIcon.getData()) {
             // Invalid product / ID
             return;
@@ -150,6 +151,7 @@ class Process {
             const spectralTypes = productService.getSpectralTypesForPureSpectralType(pureSpectralType);
             const elSpectralType = createEl('div', null, ['spectral-type']);
             elSpectralType.textContent = pureSpectralType;
+            elSpectralType.dataset.tooltipPosition = 'bottom-left';
             elSpectralType.dataset.tooltip = spectralTypes.join(', ');
             this.getElInputs().append(elSpectralType);
         });
@@ -173,7 +175,7 @@ class Process {
     private makeHtmlElement(): HTMLElement {
         const el = createEl('div', null, ['process']);
         el.innerHTML = /*html*/ `
-            <div class="process-header" data-tooltip="${this.getName()}">
+            <div class="process-header" data-tooltip-position="top-left" data-tooltip="${this.getName()}">
                 <div class="process-name">${this.getName()}</div>
             </div>
             <div class="process-materials">

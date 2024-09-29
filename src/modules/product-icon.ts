@@ -3,15 +3,19 @@ import {createEl} from './dom-core.js';
 import {Process} from './process.js';
 import {ProductAbstract} from './product-abstract.js';
 
+type TooltipPosition = 'top-left'|'top-right'|'bottom-left'|'bottom-right';
+
 class ProductIcon extends ProductAbstract {
     private parentProcess: Process;
+    private tooltipPosition: TooltipPosition;
     private qty: number|null = null; // null for startup products
     private htmlElement: HTMLElement;
 
-    constructor(id: string, parentProcess: Process) {
+    constructor(id: string, parentProcess: Process, tooltipPosition: TooltipPosition = 'top-left') {
         super(id);
 
         this.parentProcess = parentProcess;
+        this.tooltipPosition = tooltipPosition;
         this.htmlElement = this.makeHtmlElement();
     }
 
@@ -50,6 +54,7 @@ class ProductIcon extends ProductAbstract {
 
     private makeHtmlElement(): HTMLElement {
         const el = createEl('div', null, ['product-icon', `-p${this.id}`]);
+        el.dataset.tooltipPosition = this.tooltipPosition;
         el.dataset.tooltip = this.getName();
         el.addEventListener('click', this.onClickProductIcon.bind(this));
         el.addEventListener('mouseenter', this.onMouseenterProductIcon.bind(this));

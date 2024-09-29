@@ -29,7 +29,7 @@ class StartupProduct extends ProductAbstract {
     private makeHtmlElement(): HTMLElement {
         const el = createEl('div', null, ['startup-product']);
         el.innerHTML = /*html*/ `
-            <div class="product-icon -p${this.id}" data-tooltip="${this.getName()}"></div>
+            <div class="product-icon -p${this.id}" data-tooltip-position="top-left" data-tooltip="${this.getName()}"></div>
             <div class="product-name">${this.getName()}</div>
             <div class="remove-product"></div>
         `;

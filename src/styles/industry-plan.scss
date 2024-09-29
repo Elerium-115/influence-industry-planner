@@ -47,8 +47,6 @@
                 padding: 2px 16px 2px 2px;
                 position: relative;
 
-                .product-icon { @include data-tooltip-align-top-left; }
-
                 .product-name {
                     @include single-line-with-ellipsis;
                     font-size: 90%;
@@ -165,8 +163,6 @@
                             right: 0;
                             top: 0;
                             width: var(--processor-icon-size);
-
-                            @include data-tooltip-align-top-right;
 
                             &::before { content: '#'; }
 
@@ -300,8 +296,6 @@
                                         opacity: 0.75;
                                         width: 24px;
 
-                                        @include data-tooltip-align-bottom-left;
-
                                         &:hover {
                                             border-color: white;
                                             color: white;
@@ -310,9 +304,6 @@
                                 }
 
                                 .outputs { justify-content: flex-end; }
-
-                                .inputs .product-icon { @include data-tooltip-align-bottom-left; }
-                                .outputs .product-icon { @include data-tooltip-align-bottom-right; }
 
                                 .separator {
                                     &::after {
@@ -354,8 +345,6 @@
 
                                 .process-header {
                                     color: white;
-
-                                    @include data-tooltip-align-top-left;
 
                                     &::before { opacity: 1; }
                                 }

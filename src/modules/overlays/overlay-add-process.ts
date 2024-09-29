@@ -119,7 +119,7 @@ class OverlayAddProcess extends OverlayAbstract {
             el.dataset.productId = product.getId()?.toString();
             el.innerHTML += /*html*/ `
                 <input type="checkbox" checked>
-                <div class="product-icon -p${product.getId()}" data-tooltip="${product.getName()}"></div>
+                <div class="product-icon -p${product.getId()}" data-tooltip-position="top-left" data-tooltip="${product.getName()}"></div>
                 <div class="product-name">${product.getName()}</div>
             `;
             el.querySelector('input[type="checkbox"]')?.addEventListener('change', this.onChangeAvailableInput.bind(this));
@@ -184,6 +184,7 @@ class OverlayAddProcess extends OverlayAbstract {
 
     private makeElInputOrOutput(productId: string, qty: number): HTMLElement {
         const el = createEl('div', null, ['product-icon', `-p${productId}`]);
+        el.dataset.tooltipPosition = 'top-right';
         el.dataset.tooltip = `${productService.getProductNameById(productId)}: ${getFormattedRoundNumber(qty)}`;
         return el;
     }
@@ -211,13 +212,13 @@ class OverlayAddProcess extends OverlayAbstract {
             </div>
             <div class="overlay-lists">
                 <div class="overlay-list available-inputs">
-                    <label class="overlay-list-title" data-tooltip="Startup products, plus outputs from lower industry tiers">
+                    <label class="overlay-list-title" data-tooltip-position="top-left" data-tooltip="Startup products, plus outputs from lower industry tiers">
                         <input type="checkbox" name="toggle-all-available-inputs" checked>Available Inputs
                     </label>
                     <div class="available-inputs-list"></div>
                 </div>
                 <div class="overlay-list eligible-processes processor ${processorClassName}">
-                    <div class="overlay-list-title" data-tooltip="Using only the available inputs for this ${this.parentProcessor.getName()}">
+                    <div class="overlay-list-title" data-tooltip-position="top-right" data-tooltip="Using only the available inputs for this ${this.parentProcessor.getName()}">
                         Eligible Processes
                     </div>
                     <div class="eligible-processes-list"></div>

@@ -84,7 +84,7 @@ class Processor {
         el.innerHTML = /*html*/ `
             <div class="processor-header">
                 <div class="processor-name">${this.getName()}</div>
-                <div class="processor-info" data-tooltip="${tooltipText}"></div>
+                <div class="processor-info" data-tooltip-position="top-right" data-tooltip="${tooltipText}"></div>
                 <div class="remove-processor"></div>
             </div>
             <div class="processes-list"></div>

@@ -110,8 +110,6 @@
                             line-height: 12px;
                             opacity: 0.75;
                             width: 16px;
-
-                            @include data-tooltip-align-top-right;
                         }
                     }
 
@@ -181,11 +179,7 @@
                     gap: 8px;
                 }
 
-                .overlay-list-title {
-                    display: inline-flex;
-
-                    @include data-tooltip-align-top-left;
-                }
+                .overlay-list-title { display: inline-flex; }
 
                 .available-inputs-list {
                     margin-top: 16px;
@@ -196,11 +190,7 @@
                         margin-left: -2px;
                         padding: 2px 16px 2px 2px;
 
-                        .product-icon {
-                            --product-icon-size: 24px;
-
-                            @include data-tooltip-align-top-left;
-                        }
+                        .product-icon { --product-icon-size: 24px; }
 
                         .product-name {
                             @include single-line-with-ellipsis;
@@ -225,11 +215,7 @@
             &.eligible-processes {
                 text-align: right;
 
-                .overlay-list-title {
-                    color: rgb(var(--rgb-processor));
-
-                    @include data-tooltip-align-top-right;
-                }
+                .overlay-list-title { color: rgb(var(--rgb-processor)); }
 
                 .eligible-processes-list {
                     background-color: var(--color-processor-processes-bg);
@@ -301,11 +287,6 @@
 
                                 .outputs { justify-content: flex-end; }
 
-                                .inputs .product-icon,
-                                .outputs .product-icon {
-                                    @include data-tooltip-align-top-right;
-                                }
-
                                 .separator {
                                     &::after {
                                         content: '⮕';
@@ -364,8 +345,6 @@
             }
 
             &.available-products {
-                .overlay-list-title { @include data-tooltip-align-top-left; }
-
                 .available-products-list {
                     max-height: 50vh;
                     min-height: 400px;
@@ -399,8 +378,6 @@
 
             &.selected-products {
                 text-align: right;
-
-                .overlay-list-title { @include data-tooltip-align-top-right; }
 
                 .selected-products-list {
                     background-color: var(--color-available-products-bg);

@@ -56,6 +56,7 @@ class OverlayAddExtraction extends OverlayAbstract {
             const spectralTypes = productService.getSpectralTypesForPureSpectralType(pureSpectralType);
             const elSpectralType = createEl('div', null, ['spectral-type']);
             elSpectralType.textContent = pureSpectralType;
+            elSpectralType.dataset.tooltipPosition = 'top-right';
             elSpectralType.dataset.tooltip = spectralTypes.join(', ');
             elSpectralTypes.append(elSpectralType);
         });

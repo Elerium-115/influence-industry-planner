@@ -58,13 +58,13 @@ class OverlayAddStartupProduct extends OverlayAbstract {
             </div>
             <div class="overlay-lists">
                 <div class="overlay-list available-products">
-                    <div class="overlay-list-title" data-tooltip="All products which can be used as inputs, excluding current Startup Products">
+                    <div class="overlay-list-title" data-tooltip-position="top-left" data-tooltip="All products which can be used as inputs, excluding current Startup Products">
                         Available Products
                     </div>
                     <div class="available-products-list"></div>
                 </div>
                 <div class="overlay-list selected-products">
-                    <div class="overlay-list-title" data-tooltip="Select from among the Available Products, to add as Startup Products">
+                    <div class="overlay-list-title" data-tooltip-position="top-right" data-tooltip="Select from among the Available Products, to add as Startup Products">
                         Selected Products
                     </div>
                     <div class="selected-products-list"></div>
