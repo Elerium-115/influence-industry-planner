@@ -9,6 +9,7 @@ class OverlayAddStartupProduct extends OverlayAbstract {
     private selectedProducts: I_PRODUCT_DATA[] = [];
     private elAvailableProductsList: HTMLElement;
     private elSelectedProductsList: HTMLElement;
+    private elAddProductsButton: HTMLElement;
 
     constructor(parentIndustryPlan: IndustryPlan) {
         super();
@@ -38,6 +39,8 @@ class OverlayAddStartupProduct extends OverlayAbstract {
         // Update the lists in the DOM, starting with the Available Products
         this.renderAvailableProducts();
         this.renderSelectedProducts();
+        // Enable the "Add Products" button
+        this.elAddProductsButton.classList.remove('disabled');
     }
 
     private onClickSelectedProduct(selectedProductClicked: I_PRODUCT_DATA): void {
@@ -49,6 +52,14 @@ class OverlayAddStartupProduct extends OverlayAbstract {
         // Update the lists in the DOM, starting with the Selected Products
         this.renderSelectedProducts();
         this.renderAvailableProducts();
+        // Disable the "Add Products" button, if no remaining Selected Products
+        this.elAddProductsButton.classList.toggle('disabled', !this.selectedProducts.length);
+    }
+
+    private onClickAddProductsButton(): void {
+        const selectedProductIds = this.selectedProducts.map(product => product.i.toString());
+        this.parentIndustryPlan.batchAddStartupProductsByIds(selectedProductIds);
+        this.remove();
     }
 
     private renderAvailableProducts(): void {
@@ -105,6 +116,8 @@ class OverlayAddStartupProduct extends OverlayAbstract {
         `;
         this.elAvailableProductsList = this.elOverlayContent.querySelector('.available-products .products-list') as HTMLElement;
         this.elSelectedProductsList = this.elOverlayContent.querySelector('.selected-products .products-list') as HTMLElement;
+        this.elAddProductsButton = this.elOverlayContent.querySelector('.add-products-button') as HTMLElement;
+        this.elAddProductsButton.addEventListener('click', this.onClickAddProductsButton.bind(this));
         this.renderAvailableProducts();
     }
 
