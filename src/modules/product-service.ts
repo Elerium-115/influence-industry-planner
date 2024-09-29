@@ -35,7 +35,9 @@ class ProductService {
     private rawMaterialsByCategory: {[key in string]: ProductAbstract[]} = {};
 
     /**
-     * Unsorted IDs of products which are used as inputs for at least one process
+     * Unsorted IDs of products which can be used as inputs for at least one process.
+     * 
+     * NOTE: This is populated via "IndustryPlanService.populateInputProductIds"
      */
     private inputProductIds: string[] = [];
 
@@ -81,6 +83,10 @@ class ProductService {
 
     public getProductDataForBuildingConstruction(constructionProcessName: string): I_PRODUCT_DATA|null {
         return Object.values(this.allProductsData).find(productData => productData.name === constructionProcessName.split('Construction')[0].trim()) || null;
+    }
+
+    public getAllInputProducts(): I_PRODUCT_DATA[] {
+        return Object.values(this.allProductsData).filter(productData => this.inputProductIds.includes(productData.i.toString()));
     }
 
     public getRawMaterialProductIds(): string[] {

@@ -239,7 +239,7 @@ class OverlayAddProcess extends OverlayAbstract {
     }
 
     protected makeElOverlayContent(): HTMLElement {
-        const el = createEl('div', null, ['overlay-add-process']);
+        const el = createEl('div', null, ['overlay-content-inner', 'overlay-add-process']);
         // NOT populating this element yet, because it's created in the "super" constructor, before setting the properties of this class
         return el;
     }

@@ -16,6 +16,24 @@
         background-color: var(--color-body-bg);
         margin: 64px 0;
         padding: 32px;
+
+        .overlay-content-inner {
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+            min-width: 600px;
+
+            > * { width: 100%; }
+
+            .overlay-header {
+                align-items: center;
+                display: flex;
+                gap: 64px;
+                justify-content: space-between;
+
+                .overlay-title { font-size: 150%; }
+            }
+        }
     }
 
     .close-overlay-button {
@@ -32,26 +50,6 @@
         }
 
         &:hover { opacity: 1; }
-    }
-}
-
-.overlay-add-startup-products,
-.overlay-add-extraction,
-.overlay-add-process {
-    display: flex;
-    flex-direction: column;
-    gap: 32px;
-    min-width: 600px;
-
-    > * { width: 100%; }
-
-    .overlay-header {
-        align-items: center;
-        display: flex;
-        gap: 64px;
-        justify-content: space-between;
-
-        .overlay-title { font-size: 150%; }
     }
 }
 
@@ -190,8 +188,6 @@
                 }
 
                 .available-inputs-list {
-                    display: flex;
-                    flex-direction: column;
                     margin-top: 16px;
 
                     label {
@@ -352,10 +348,59 @@
         justify-content: space-between;
 
         .overlay-list {
-            .overlay-list-title { margin-bottom: 16px; }
+            .overlay-list-title {
+                display: inline-block;
+                margin-bottom: 16px;
+                position: relative;
+
+                &::before { // "::after" reserved for tooltip
+                    --offset: 6px;
+                    content: 'ⓘ';
+                    left: calc(100% + var(--offset));
+                    opacity: 0.5;
+                    position: absolute;
+                    top: calc(0px - var(--offset));
+                }
+            }
+
+            &.available-products {
+                .overlay-list-title { @include data-tooltip-align-top-left; }
+
+                .available-products-list {
+                    max-height: 50vh;
+                    min-height: 400px;
+                    overflow-y: scroll; // NOT "auto", to avoid overflow for product with longest name
+
+                    .available-product {
+                        align-items: center;
+                        background-color: var(--color-available-products-bg);
+                        color: rgba(255, 255, 255, 0.75);
+                        cursor: pointer;
+                        display: flex;
+                        font-size: 90%;
+                        gap: 8px;
+                        padding: 2px 16px 2px 2px;
+
+                        .product-icon {
+                            --product-icon-size: 24px;
+                        }
+
+                        .product-name {
+                            @include single-line-with-ellipsis;
+                        }
+
+                        &:hover {
+                            @include hover-lighten-bg;
+                            color: white;
+                        }
+                    }
+                }
+            }
 
             &.selected-products {
                 text-align: right;
+
+                .overlay-list-title { @include data-tooltip-align-top-right; }
 
                 .selected-products-list {
                     background-color: var(--color-available-products-bg);
@@ -366,7 +411,7 @@
                         background-color: unset;
 
                         &::before {
-                            content: 'Select products to add as Startup Products';
+                            content: 'No product selected';
                             opacity: 0.5;
                         }
                     }

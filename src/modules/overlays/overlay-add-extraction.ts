@@ -82,7 +82,7 @@ class OverlayAddExtraction extends OverlayAbstract {
     }
 
     protected makeElOverlayContent(): HTMLElement {
-        const el = createEl('div', null, ['overlay-add-extraction']);
+        const el = createEl('div', null, ['overlay-content-inner', 'overlay-add-extraction']);
         // NOT populating this element yet, because it's created in the "super" constructor, before setting the properties of this class
         return el;
     }

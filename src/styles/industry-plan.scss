@@ -30,8 +30,6 @@
 
     #startup-products {
         --product-icon-size: 32px;
-        display: flex;
-        flex-direction: column;
 
         .startup-products-title {
             margin-bottom: 32px;
@@ -40,9 +38,6 @@
         }
 
         .startup-products-list {
-            display: flex;
-            flex-direction: column;
-
             .startup-product {
                 align-items: center;
                 background-color: var(--color-available-products-bg);
@@ -136,8 +131,6 @@
         .industry-tier {
             --processor-icon-size: 32px;
             --process-icon-size: 20px;
-            display: flex;
-            flex-direction: column;
             padding-bottom: calc(210px - var(--body-padding) + 32px); // ensure enough space for "Add Processor" dropdown
 
             .industry-tier-title {
