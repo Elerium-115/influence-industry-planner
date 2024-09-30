@@ -36,7 +36,7 @@ class ProductService {
 
     /**
      * Unsorted IDs of products which can be used as inputs for at least one process.
-     * 
+     *
      * NOTE: This is populated via "IndustryPlanService.populateInputProductIds"
      */
     private inputProductIds: string[] = [];

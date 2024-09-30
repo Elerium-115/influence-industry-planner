@@ -145,6 +145,8 @@ class OverlayAddStartupProduct extends OverlayAbstract {
         this.elAddProductsButton = this.elOverlayContent.querySelector('.add-products-button') as HTMLElement;
         this.elInputFilterSearch.addEventListener('input', this.onInputFilterSearch.bind(this));
         this.elAddProductsButton.addEventListener('click', this.onClickAddProductsButton.bind(this));
+        // Explicit focus re: HTML property "autofocus" NOT working as expected, if already triggered in a previous overlay
+        this.elInputFilterSearch.focus();
         this.renderAvailableProducts();
     }
 

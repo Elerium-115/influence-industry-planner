@@ -7,18 +7,21 @@ import {productService} from './product-service.js';
 import {OverlayAddStartupProduct} from './overlays/overlay-add-startup-product.js';
 
 class IndustryPlan {
+    private id: string;
     private title: string;
     private refiningPenalty: RefiningPenalty;
     private startupProducts: StartupProduct[] = [];
     private industryTiers: IndustryTier[] = [];
     private isLoading: boolean = false;
+    private isSaved: boolean = false;
     private industryPlanHeaderHtmlElement: HTMLElement;
     private industryPlanMainHtmlElement: HTMLElement;
     private startupProductsHtmlElement: HTMLElement;
     private industryTiersHtmlElement: HTMLElement;
 
-    constructor(title: string) {
+    constructor(title: string, id?: string) {
         industryPlanService.setIndustryPlan(this);
+        this.id = id ? id : crypto.randomUUID();
         this.title = title;
         // Default penalty for secondary outputs
         this.refiningPenalty = new RefiningPenalty();
@@ -27,6 +30,10 @@ class IndustryPlan {
         this.industryPlanMainHtmlElement = document.getElementById('industry-plan-main') as HTMLElement;
         this.populateIndustryPlanHeader();
         this.populateIndustryPlanMain();
+    }
+
+    public getId(): string {
+        return this.id;
     }
 
     public getTitle(): string {
@@ -54,7 +61,12 @@ class IndustryPlan {
         this.isLoading = isLoading;
     }
 
-    public setSaveIconStatus(isSaved: boolean): void {
+    public getIsSaved(): boolean {
+        return this.isSaved;
+    }
+
+    public setSavedStatusAndIcon(isSaved: boolean): void {
+        this.isSaved = isSaved;
         this.industryPlanHeaderHtmlElement.querySelector('.save-icon')?.classList.toggle('saved', isSaved);
     }
 
@@ -127,7 +139,7 @@ class IndustryPlan {
 
     private onClickSaveIcon(): void {
         industryPlanService.saveIndustryPlanJSON();
-        this.setSaveIconStatus(true);
+        this.setSavedStatusAndIcon(true);
     }
 
     public async onIndustryPlanChanged(): Promise<void> {
@@ -135,7 +147,7 @@ class IndustryPlan {
             // Bypass this while the industry plan is being loaded
             return;
         }
-        this.setSaveIconStatus(false);
+        this.setSavedStatusAndIcon(false);
         //// TO DO: highlight processes whose inputs are no longer available (e.g. if removed Startup Products / Processors / Processes)
         //// -- mark them as "disabled" + exclude their outputs from "getAvailableInputsForIndustryTier"
     }

@@ -1,12 +1,15 @@
 @import './_core.scss';
 @import './_processor.scss';
 // Above imports required for below imports
+@import './main-menu.scss';
 @import './overlay.scss';
 
 #industry-plan {
     display: flex;
     flex-direction: column;
     gap: 32px;
+    margin-top: var(--nav-height);
+    padding: 16px 64px 32px 64px;
 
     #industry-plan-header {
         align-items: center;
@@ -82,7 +85,7 @@
                 .startup-product {
                     align-items: center;
                     background-color: var(--color-available-products-bg);
-                    color: rgba(255, 255, 255, 0.75);
+                    color: var(--color-text-normal);
                     display: flex;
                     gap: 8px;
                     padding: 2px 16px 2px 2px;
@@ -128,6 +131,13 @@
 
                     &:not(:hover) .remove-product { display: none; }
                 }
+
+                &:empty + .add-startup-products-button {
+                    // Make the "Add Products" button more visible, if no startup products in the list
+                    color: var(--color-text-normal);
+
+                    &:hover { color: white; }
+                }
             }
 
             .add-startup-products-button {
@@ -165,12 +175,12 @@
         #industry-tiers {
             display: flex;
             gap: 64px;
-            padding-right: 64px; // for body overflow beyond 100% width
 
             .industry-tier {
                 --processor-icon-size: 32px;
                 --process-icon-size: 20px;
-                padding-bottom: calc(210px - var(--body-padding) + 32px); // ensure enough space for "Add Processor" dropdown
+                // Ensure enough vertical space for "Add Processor" dropdown
+                padding-bottom: 210px; // 6 processor types * 35px per processor
 
                 .industry-tier-title {
                     margin-bottom: 32px;
@@ -263,7 +273,7 @@
 
                                 .process-header {
                                     align-items: center;
-                                    color: rgba(255, 255, 255, 0.75);
+                                    color: var(--color-text-normal);
                                     display: flex;
                                     gap: 8px;
                                     height: var(--process-icon-size);

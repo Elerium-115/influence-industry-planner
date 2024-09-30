@@ -186,7 +186,7 @@
 
                     label {
                         background-color: var(--color-available-products-bg);
-                        color: rgba(255, 255, 255, 0.75);
+                        color: var(--color-text-normal);
                         margin-left: -2px;
                         padding: 2px 16px 2px 2px;
 
@@ -241,7 +241,7 @@
                         .process-header {
                             --process-icon-size: 20px;
                             align-items: center;
-                            color: rgba(255, 255, 255, 0.75);
+                            color: var(--color-text-normal);
                             display: flex;
                             gap: 8px;
                             height: var(--process-icon-size);
@@ -354,7 +354,7 @@
 
                 .product {
                     align-items: center;
-                    color: rgba(255, 255, 255, 0.75);
+                    color: var(--color-text-normal);
                     cursor: pointer;
                     display: flex;
                     font-size: 90%;

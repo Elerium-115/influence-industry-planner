@@ -25,6 +25,7 @@
     --color-add-button: rgba(255, 255, 255, 0.25);
     --color-available-products-bg: #1a1a1a;
     --color-body-bg: #222;
+    --color-nav-bg: #111;
     --color-category-volatile: rgb(91, 192, 245);
     --color-category-volatile-bg: rgba(91, 192, 245, 0.1);
     --color-category-organic: rgb(120, 211, 86);
@@ -35,6 +36,7 @@
     --color-category-rare-earth-bg: rgba(255, 54, 54, 0.1);
     --color-category-fissile: rgb(138, 21, 255);
     --color-category-fissile-bg: rgba(138, 21, 255, 0.1);
+    --color-text-normal: rgba(255, 255, 255, 0.75);
     --color-warning: rgb(223, 67, 0);
 }
 
@@ -47,29 +49,28 @@
 }
 
 body {
-    --body-padding: 64px;
+    --nav-height: 64px;
     background-color: var(--color-body-bg);
     color: white;
     margin: 0;
-    padding: var(--body-padding);
-    padding-top: 0;
+    min-width: fit-content;
     position: relative;
 
     // WIP
     &::before {
         align-items: center;
         background-color: rgb(220, 180, 40);
+        bottom: 0;
         color: black;
         content: 'Work in progress';
         display: flex;
-        font-size: 60%;
-        height: 48px;
+        font-size: 80%;
+        height: 64px;
         justify-content: center;
         left: 0;
         position: fixed;
         text-align: center;
-        top: 0;
-        width: 48px;
+        width: 64px;
         z-index: 1;
     }
 }

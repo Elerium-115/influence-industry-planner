@@ -235,6 +235,8 @@ class OverlayAddProcess extends OverlayAbstract {
         this.elInputFilterByProcess.addEventListener('change', this.onChangeFilterByProcess.bind(this));
         this.elInputFilterByOutput.addEventListener('change', this.onChangeFilterByOutput.bind(this));
         this.elInputFilterSearch.addEventListener('input', this.onInputFilterSearch.bind(this));
+        // Explicit focus re: HTML property "autofocus" NOT working as expected, if already triggered in a previous overlay
+        this.elInputFilterSearch.focus();
         this.populateElAvailableInputsList();
         this.updateAndRenderEligibleProcesses();
     }

@@ -1,12 +1,13 @@
-import {PROCESSOR_BUILDING_IDS, type TYPE_PROCESSOR_BUILDING_IDS} from './modules/processor-service.js';
+import {PROCESSOR_BUILDING_IDS} from './modules/processor-service.js';
 import {IndustryPlan} from './modules/industry-plan.js';
-import {IndustryPlanJSON, industryPlanService} from './modules/industry-plan-service.js';
+import {industryPlanService} from './modules/industry-plan-service.js';
 
-const savedIndustryPlanJSON: IndustryPlanJSON = JSON.parse(localStorage.getItem('testPlan') as string);
-
-if (savedIndustryPlanJSON) {
-    console.log(`--- LOADING savedIndustryPlanJSON:`, savedIndustryPlanJSON); //// TEST
-    industryPlanService.loadIndustryPlanJSON(savedIndustryPlanJSON);
+const savedIndustryPlansJSON = industryPlanService.getSavedIndustryPlansJSON();
+if (savedIndustryPlansJSON.length) {
+    // Pre-load the latest saved industry plan
+    const latestIndustryPlanJSON = savedIndustryPlansJSON.slice(-1)[0];
+    console.log(`--- LOADING latestIndustryPlanJSON:`, latestIndustryPlanJSON); //// TEST
+    industryPlanService.loadIndustryPlanJSON(latestIndustryPlanJSON);
 } else {
     console.log(`--- MOCKING new industry plan`); //// TEST
     const testIndustryPlan = new IndustryPlan('Test Plan');
@@ -33,5 +34,5 @@ if (savedIndustryPlanJSON) {
     });
 
     console.log(`--- testIndustryPlan:`, testIndustryPlan); //// TEST
-    console.log(`---> JSON:`, industryPlanService.getIndustryPlanJSON()); //// TEST
+    console.log(`---> JSON:`, industryPlanService.makeIndustryPlanJSON()); //// TEST
 }

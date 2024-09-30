@@ -1,0 +1,87 @@
+#main-menu {
+    align-items: center;
+    background-color: var(--color-nav-bg);
+    display: flex;
+    height: var(--nav-height);
+    justify-content: space-between;
+    left: 0;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1;
+
+    #side-menu {
+        align-items: center;
+        color: var(--color-text-normal);
+        display: inline-flex;
+        position: relative;
+
+        #burger-icon {
+            padding: 20px;
+
+            .icon-inner {
+                border-top: 4px solid var(--color-text-normal);
+                height: 24px;
+                position: relative;
+                transition: all 250ms;
+                width: 24px;
+
+                &::before,
+                &::after {
+                    border-top: 4px solid var(--color-text-normal);
+                    content: '';
+                    display: block;
+                    position: absolute;
+                    width: 100%;
+                }
+
+                &::before { top: calc(50% - 4px); }
+                &::after { bottom: 0; }
+            }
+        }
+
+        #page-title { font-size: 150%; }
+
+        &:hover {
+            color: white;
+
+            #burger-icon .icon-inner {
+                border-color: white;
+                transform: rotate(90deg);
+
+                &::before, &::after { border-color: white; }
+            }
+        }
+
+        ul {
+            background-color: var(--color-nav-bg);
+            display: flex;
+            filter: drop-shadow(4px 4px 4px black);
+            flex-direction: column;
+            left: 0;
+            list-style: none;
+            position: absolute;
+            top: var(--nav-height);
+
+            li {
+                color: var(--color-text-normal);
+                cursor: pointer;
+                padding: 16px;
+                white-space: nowrap;
+
+                &:hover {
+                    @include hover-lighten-bg;
+                    color: white;
+                }
+            }
+        }
+
+        &:not(:hover) ul { display: none; }
+    }
+
+    #account-menu {
+        padding-right: 32px;
+
+        &::before { color: var(--color-text-normal); content: 'Account'; } //// TEST
+    }
+}

@@ -9,6 +9,7 @@ import {ProductSelectable} from './product-selectable.js';
 import {productService} from './product-service.js';
 
 interface IndustryPlanJSON {
+    id: string,
     title: string,
     startupProductIds: string[],
     industryTiers: IndustryTierJSON[],
@@ -34,7 +35,7 @@ interface ProcessJSON {
 class IndustryPlanService {
     private static instance: IndustryPlanService;
 
-    private industryPlan: IndustryPlan;
+    private industryPlan: IndustryPlan; // currently loaded industry plan
 
     constructor() {
         /**
@@ -62,8 +63,9 @@ class IndustryPlanService {
         this.industryPlan = industryPlan;
     }
 
-    public getIndustryPlanJSON(): IndustryPlanJSON {
+    public makeIndustryPlanJSON(): IndustryPlanJSON {
         const industryPlanJSON: IndustryPlanJSON = {
+            id: this.industryPlan.getId(),
             title: this.industryPlan.getTitle(),
             startupProductIds: this.industryPlan.getStartupProducts().map(product => product.getId()),
             industryTiers: [],
@@ -94,12 +96,34 @@ class IndustryPlanService {
         return industryPlanJSON;
     }
 
+    public getSavedIndustryPlansJSON(): IndustryPlanJSON[] {
+        localStorage.removeItem('testPlan'); // cleanup obsolete data //// TO DO: remove this later on
+        return JSON.parse(localStorage.getItem('savedIndustryPlans') as string) || [];
+    }
+
+    public getSavedIndustryPlanJSON(id: string): IndustryPlanJSON|null {
+        const savedIndustryPlansJSON = industryPlanService.getSavedIndustryPlansJSON();
+        return savedIndustryPlansJSON.find(industryPlanJSON => industryPlanJSON.id === id) || null;
+    }
+
     public saveIndustryPlanJSON(): void {
-        localStorage.setItem('testPlan', JSON.stringify(this.getIndustryPlanJSON()));
+        const loadedIndustryPlanJSON = this.makeIndustryPlanJSON();
+        const savedIndustryPlansJSON = industryPlanService.getSavedIndustryPlansJSON();
+        // Find the industry plan from local-storage matching the currently loaded industry plan
+        let matchingIdx = savedIndustryPlansJSON.findIndex(industryPlanJSON => industryPlanJSON.id === loadedIndustryPlanJSON.id);
+        if (matchingIdx !== -1) {
+            // Update the matching industry plan
+            savedIndustryPlansJSON[matchingIdx] = loadedIndustryPlanJSON;
+        } else {
+            // Newly saved industry plan
+            savedIndustryPlansJSON.push(loadedIndustryPlanJSON);
+        }
+        // Commit all saved industry plans into local-storage
+        localStorage.setItem('savedIndustryPlans', JSON.stringify(savedIndustryPlansJSON));
     }
 
     public loadIndustryPlanJSON(industryPlanJSON: IndustryPlanJSON): void {
-        const loadedIndustryPlan = new IndustryPlan(industryPlanJSON.title);
+        const loadedIndustryPlan = new IndustryPlan(industryPlanJSON.title, industryPlanJSON.id);
         // Start loading
         loadedIndustryPlan.setIsLoading(true);
         // Add startup products
@@ -121,7 +145,7 @@ class IndustryPlanService {
                 });
             });
         });
-        loadedIndustryPlan.setSaveIconStatus(true);
+        loadedIndustryPlan.setSavedStatusAndIcon(true);
         // Finish loading
         loadedIndustryPlan.setIsLoading(false);
         this.industryPlan = loadedIndustryPlan;
