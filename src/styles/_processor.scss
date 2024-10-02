@@ -11,12 +11,12 @@
     }
 }
 
-.-extractor { --rgb-processor: 220, 180, 40; }
-.-bioreactor { --rgb-processor: 136, 230, 117; }
-.-refinery { --rgb-processor: 87, 213, 255; }
-.-factory { --rgb-processor: 40, 120, 255; }
-.-shipyard { --rgb-processor: 129, 129, 255; }
-.-empty-lot { --rgb-processor: 241, 131, 97; }
+.-extractor { --rgb-processor: var(--rgb-processor-extractor); }
+.-bioreactor { --rgb-processor: var(--rgb-processor-bioreactor); }
+.-refinery { --rgb-processor: var(--rgb-processor-refinery); }
+.-factory { --rgb-processor: var(--rgb-processor-factory); }
+.-shipyard { --rgb-processor: var(--rgb-processor-shipyard); }
+.-empty-lot { --rgb-processor: var(--rgb-processor-empty-lot); }
 
 .processor {
     --color-processor: rgb(var(--rgb-processor));

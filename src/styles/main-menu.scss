@@ -17,30 +17,31 @@
         position: relative;
 
         #burger-icon {
-            padding: 20px;
+            padding: 16px 24px;
 
             .icon-inner {
-                border-top: 4px solid var(--color-text-normal);
-                height: 24px;
+                --line-thickness: 2px;
+                border-top: var(--line-thickness) solid var(--color-text-normal);
+                height: 16px;
                 position: relative;
                 transition: all 250ms;
-                width: 24px;
+                width: 16px;
 
                 &::before,
                 &::after {
-                    border-top: 4px solid var(--color-text-normal);
+                    border-top: var(--line-thickness) solid var(--color-text-normal);
                     content: '';
                     display: block;
                     position: absolute;
                     width: 100%;
                 }
 
-                &::before { top: calc(50% - 4px); }
+                &::before { top: calc(50% - var(--line-thickness)); }
                 &::after { bottom: 0; }
             }
         }
 
-        #page-title { font-size: 150%; }
+        #page-title { font-size: 120%; }
 
         &:hover {
             color: white;
@@ -66,13 +67,18 @@
             li {
                 color: var(--color-text-normal);
                 cursor: pointer;
-                padding: 16px;
+                line-height: var(--nav-height);
+                padding: 0 24px;
                 white-space: nowrap;
 
                 &:hover {
                     @include hover-lighten-bg;
-                    color: white;
+                    color: white !important;
                 }
+
+                &:nth-child(1) { color: rgb(var(--rgb-processor-bioreactor)); }
+                &:nth-child(2) { color: rgb(var(--rgb-processor-refinery)); }
+                &:nth-child(3) { color: rgb(var(--rgb-processor-factory)); }
             }
         }
 

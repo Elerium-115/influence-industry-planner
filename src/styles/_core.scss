@@ -38,6 +38,12 @@
     --color-category-fissile-bg: rgba(138, 21, 255, 0.1);
     --color-text-normal: rgba(255, 255, 255, 0.75);
     --color-warning: rgb(223, 67, 0);
+    --rgb-processor-extractor: 220, 180, 40;
+    --rgb-processor-bioreactor: 136, 230, 117;
+    --rgb-processor-refinery: 87, 213, 255;
+    --rgb-processor-factory: 40, 120, 255;
+    --rgb-processor-shipyard: 129, 129, 255;
+    --rgb-processor-empty-lot: 241, 131, 97;
 }
 
 * {
@@ -49,17 +55,18 @@
 }
 
 body {
-    --nav-height: 64px;
+    --nav-height: 48px;
     background-color: var(--color-body-bg);
     color: white;
     margin: 0;
     min-width: fit-content;
+    padding-top: var(--nav-height);
     position: relative;
 
     // WIP
     &::before {
         align-items: center;
-        background-color: rgb(220, 180, 40);
+        background-color: rgb(var(--rgb-processor-extractor));
         bottom: 0;
         color: black;
         content: 'Work in progress';

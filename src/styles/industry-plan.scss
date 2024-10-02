@@ -8,7 +8,6 @@
     display: flex;
     flex-direction: column;
     gap: 32px;
-    margin-top: var(--nav-height);
     padding: 16px 64px 32px 64px;
 
     #industry-plan-header {
@@ -42,7 +41,7 @@
             &:hover { opacity: 1; }
 
             &.saved {
-                --color-saved: rgb(136, 230, 117);
+                --color-saved: rgb(var(--rgb-processor-bioreactor));
                 border: 2px solid var(--color-saved);
                 border-radius: 50%;
                 color: var(--color-saved);
