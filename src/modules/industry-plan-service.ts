@@ -7,6 +7,7 @@ import {TYPE_PROCESSOR_BUILDING_IDS, SDK_PROCESSOR_IDS_BY_BUILDING_ID} from './p
 import {I_PROCESS_DATA, processService} from './process-service.js';
 import {ProductSelectable} from './product-selectable.js';
 import {productService} from './product-service.js';
+import {OverlayCreateIndustryPlan} from './overlays/overlay-create-industry-plan.js';
 
 interface IndustryPlanJSON {
     id: string,
@@ -35,7 +36,10 @@ interface ProcessJSON {
 class IndustryPlanService {
     private static instance: IndustryPlanService;
 
-    private industryPlan: IndustryPlan; // currently loaded industry plan
+    /**
+     * Currently loaded industry plan, if any
+     */
+    private industryPlan: IndustryPlan|null = null;
 
     constructor() {
         /**
@@ -63,7 +67,22 @@ class IndustryPlanService {
         this.industryPlan = industryPlan;
     }
 
+    public isIndustryPlanLoadedButNotSaved(): boolean {
+        return Boolean(this.industryPlan && !this.industryPlan.getIsSaved());
+    }
+
+    public isAvailablePlanTitle(planTitle: string): boolean {
+        return !this.getSavedIndustryPlansJSON().some(industryPlanJSON => industryPlanJSON.title === planTitle);
+    }
+
+    public onClickCreateIndustryPlan(): void {
+        new OverlayCreateIndustryPlan();
+    }
+
     public makeIndustryPlanJSON(): IndustryPlanJSON {
+        if (!this.industryPlan) {
+            throw Error('ERROR: industryPlan not set @ makeIndustryPlanJSON');
+        }
         const industryPlanJSON: IndustryPlanJSON = {
             id: this.industryPlan.getId(),
             title: this.industryPlan.getTitle(),
@@ -152,6 +171,9 @@ class IndustryPlanService {
     }
 
     public getAvailableInputsForIndustryTier(targetIndustryTier: IndustryTier): ProductSelectable[] {
+        if (!this.industryPlan) {
+            throw Error('ERROR: industryPlan not set @ getAvailableInputsForIndustryTier');
+        }
         const availableInputs: ProductSelectable[] = [];
         // Add startup products
         this.industryPlan.getStartupProducts().forEach(startupProduct => {

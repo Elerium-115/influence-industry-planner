@@ -28,6 +28,9 @@ class IndustryPlan {
         // Always "HTMLElement", never "null"
         this.industryPlanHeaderHtmlElement = document.getElementById('industry-plan-header') as HTMLElement;
         this.industryPlanMainHtmlElement = document.getElementById('industry-plan-main') as HTMLElement;
+        // Reset HTML elements, in case of previously loaded plan
+        this.industryPlanHeaderHtmlElement.textContent = '';
+        this.industryPlanMainHtmlElement.textContent = '';
         this.populateIndustryPlanHeader();
         this.populateIndustryPlanMain();
     }
@@ -158,7 +161,7 @@ class IndustryPlan {
         this.industryPlanHeaderHtmlElement.append(elTitle);
         const elSaveIcon = createEl('div', null, ['save-icon']);
         elSaveIcon.dataset.tooltipPosition = 'bottom-left';
-        elSaveIcon.dataset.tooltip = 'Save this test-plan into local-storage, to be reloaded on your next visit';
+        elSaveIcon.dataset.tooltip = 'Save this industry plan into local-storage';
         elSaveIcon.addEventListener('click', this.onClickSaveIcon.bind(this));
         this.industryPlanHeaderHtmlElement.append(elSaveIcon);
         this.industryPlanHeaderHtmlElement.append(this.refiningPenalty.getHtmlElement());

@@ -2,6 +2,9 @@ import {PROCESSOR_BUILDING_IDS} from './modules/processor-service.js';
 import {IndustryPlan} from './modules/industry-plan.js';
 import {industryPlanService} from './modules/industry-plan-service.js';
 
+// Expose "industryPlanService" for inline scripts in HTML - e.g. "onclick"
+global.industryPlanService = industryPlanService;
+
 const savedIndustryPlansJSON = industryPlanService.getSavedIndustryPlansJSON();
 if (savedIndustryPlansJSON.length) {
     // Pre-load the latest saved industry plan

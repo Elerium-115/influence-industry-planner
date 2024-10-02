@@ -1,3 +1,18 @@
+@mixin overlay-cta-button {
+    background-color: black;
+    cursor: pointer;
+    display: inline-block;
+    opacity: 0.75;
+    padding: 8px 16px;
+
+    &.disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+
+    &:not(.disabled):hover { opacity: 1; }    
+}
+
 .overlay {
     align-items: flex-start;
     backdrop-filter: blur(16px);
@@ -410,19 +425,9 @@
                 }
 
                 .add-products-button {
-                    background-color: black;
-                    cursor: pointer;
-                    display: inline-block;
                     margin-top: 16px;
-                    opacity: 0.75;
-                    padding: 8px 16px;
 
-                    &.disabled {
-                        cursor: not-allowed;
-                        opacity: 0.5;
-                    }
-
-                    &:not(.disabled):hover { opacity: 1; }
+                    @include overlay-cta-button;
                 }
             }
         }
@@ -439,4 +444,30 @@
 
         &:hover .separator::after { opacity: 1; }
     }
+}
+
+.overlay-create-industry-plan {
+    &.plan-not-saved {
+        .overlay-input::before {
+            background-color: var(--color-warning);
+            content: 'WARNING: Creating a new plan will discard all unsaved changes in the currently loaded plan!';
+            display: block;
+            margin-bottom: 32px;
+            padding: 8px 16px;
+        }
+    }
+
+    &.invalid-title {
+        .overlay-input::after {
+            background-color: var(--color-warning);
+            content: 'Plan title already used by another one of your saved plans. Please enter a different title.';
+            display: block;
+            margin-top: 16px;
+            padding: 8px 16px;
+        }
+    }
+
+    .overlay-input input { width: 100%; }
+
+    .overlay-cta .create-plan-button { @include overlay-cta-button; }
 }
