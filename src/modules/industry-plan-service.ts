@@ -74,8 +74,8 @@ class IndustryPlanService {
         return Boolean(this.industryPlan && !this.industryPlan.getIsSaved());
     }
 
-    public isAvailablePlanTitle(planTitle: string): boolean {
-        return !this.getSavedIndustryPlansJSON().some(industryPlanJSON => industryPlanJSON.title === planTitle);
+    public isReservedPlanTitle(planTitle: string): boolean {
+        return this.getSavedIndustryPlansJSON().some(industryPlanJSON => industryPlanJSON.title === planTitle);
     }
 
     public onClickCreateIndustryPlan(): void {
@@ -90,7 +90,25 @@ class IndustryPlanService {
         new OverlayPublicIndustryPlans();
     }
 
-    public makeIndustryPlanJSON(): IndustryPlanJSON {
+    public getSavedIndustryPlansJSON(): IndustryPlanJSON[] {
+        localStorage.removeItem('testPlan'); // cleanup obsolete data //// TO DO: remove this later on
+        return JSON.parse(localStorage.getItem('savedIndustryPlans') as string) || [];
+    }
+
+    public getLatestSavedIndustryPlanJSON(): IndustryPlanJSON|null {
+        const savedIndustryPlansJSON = industryPlanService.getSavedIndustryPlansJSON();
+        if (!savedIndustryPlansJSON.length) {
+            return null;
+        }
+        savedIndustryPlansJSON.sort(this.compareIndustryPlanJSONByUpdatedTsDesc);
+        return savedIndustryPlansJSON[0];
+    }
+
+    private compareIndustryPlanJSONByUpdatedTsDesc(p1: IndustryPlanJSON, p2: IndustryPlanJSON): number {
+        return p2.updatedTs - p1.updatedTs;
+    }
+
+    private makeIndustryPlanJSON(): IndustryPlanJSON {
         if (!this.industryPlan) {
             throw Error('ERROR: industryPlan not set @ makeIndustryPlanJSON');
         }
@@ -125,16 +143,6 @@ class IndustryPlanService {
             industryPlanJSON.industryTiers.push(industryTierJSON);
         });
         return industryPlanJSON;
-    }
-
-    public getSavedIndustryPlansJSON(): IndustryPlanJSON[] {
-        localStorage.removeItem('testPlan'); // cleanup obsolete data //// TO DO: remove this later on
-        return JSON.parse(localStorage.getItem('savedIndustryPlans') as string) || [];
-    }
-
-    public getSavedIndustryPlanJSON(id: string): IndustryPlanJSON|null {
-        const savedIndustryPlansJSON = industryPlanService.getSavedIndustryPlansJSON();
-        return savedIndustryPlansJSON.find(industryPlanJSON => industryPlanJSON.id === id) || null;
     }
 
     public saveIndustryPlanJSON(): void {

@@ -16,8 +16,29 @@
         gap: 64px;
         height: 48px;
 
-        .title {
-            font-size: 200%;
+        .title-wrapper {
+            // These elements must have identical styling, for the width measurement @ "IndustryPlan.onInputTitle"
+            .title-hidden, .title-input {
+                border: 1px solid transparent;
+                font-size: 200%;
+                height: unset;
+                min-width: 32px;
+            }
+
+            .title-hidden {
+                opacity: 0;
+                position: fixed;
+                top: -100vh;
+                white-space: pre;
+            }
+
+            .title-input {
+                background: transparent;
+                color: var(--color-text-normal);
+                padding: 0;
+
+                &:hover { border-color: rgba(255, 255, 255, 0.2); }
+            }
         }
 
         .save-icon {

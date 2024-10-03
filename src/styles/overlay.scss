@@ -460,7 +460,7 @@
     &.invalid-title {
         .overlay-input::after {
             background-color: var(--color-warning);
-            content: 'Plan title already used by another one of your saved plans. Please enter a different title.';
+            content: 'Title already used by another one of your saved plans. Try a different title.';
             display: block;
             margin-top: 16px;
             padding: 8px 16px;

@@ -21,7 +21,7 @@ class OverlayCreateIndustryPlan extends OverlayAbstract {
 
     private onClickCreatePlanButton(): void {
         const planTitle = this.elInputPlanTitle.value.trim();
-        if (!industryPlanService.isAvailablePlanTitle(planTitle)) {
+        if (industryPlanService.isReservedPlanTitle(planTitle)) {
             this.elOverlayContent.classList.add('invalid-title');
             return;
         }

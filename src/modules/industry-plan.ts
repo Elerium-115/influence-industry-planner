@@ -9,6 +9,7 @@ import {OverlayAddStartupProduct} from './overlays/overlay-add-startup-product.j
 class IndustryPlan {
     private id: string;
     private title: string;
+    private titleSaved: string;
     private updatedTs: number;
     private refiningPenalty: RefiningPenalty;
     private startupProducts: StartupProduct[] = [];
@@ -31,6 +32,7 @@ class IndustryPlan {
             this.id = crypto.randomUUID();
         }
         this.title = title;
+        this.titleSaved = title;
         // Default penalty for secondary outputs
         this.refiningPenalty = new RefiningPenalty();
         // Always "HTMLElement", never "null"
@@ -152,26 +154,76 @@ class IndustryPlan {
         });
     }
 
+    private onInputTitle(): void {
+        const elTitleWrapper = this.industryPlanHeaderHtmlElement.querySelector('.title-wrapper') as HTMLElement;
+        const elTitleHidden = elTitleWrapper.querySelector('.title-hidden') as HTMLElement;
+        const elTitleInput = elTitleWrapper.querySelector('.title-input') as HTMLInputElement;
+        // Resize the title-input, to match the actual width of the title
+        elTitleHidden.textContent = elTitleInput.value;
+        elTitleInput.style.width = elTitleHidden.offsetWidth + 'px';
+    }
+
+    private onBlurTitle(event: InputEvent): void {
+        const elTitleInput = event.target as HTMLInputElement;
+        const newTitle = elTitleInput.value.trim();
+        const isReservedTitle = (newTitle !== this.title)
+            && (newTitle !== this.titleSaved)
+            && industryPlanService.isReservedPlanTitle(newTitle);
+        // Ensure title not empty, and not used by another saved plan
+        if (!newTitle || isReservedTitle) {
+            // Revert to previously set title
+            elTitleInput.value = this.title;
+            this.onInputTitle();
+            if (isReservedTitle) {
+                alert('Title already used by another one of your saved plans. Try a different title.');
+            }
+            return;
+        }
+        // Ensure trimmed title
+        elTitleInput.value = newTitle;
+        this.onInputTitle();
+        if (this.title !== newTitle) {
+            this.title = newTitle;
+            this.onIndustryPlanChanged(false);
+        }
+    }
+
     private onClickSaveIcon(): void {
         this.updatedTs = new Date().getTime();
+        this.titleSaved = this.title;
         industryPlanService.saveIndustryPlanJSON();
         this.setSavedStatusAndIcon(true);
     }
 
-    public async onIndustryPlanChanged(): Promise<void> {
+    public async onIndustryPlanChanged(isFunctionalChange: boolean = true): Promise<void> {
         if (this.isLoading) {
             // Bypass this while the industry plan is being loaded
             return;
         }
         this.setSavedStatusAndIcon(false);
-        //// TO DO: highlight processes whose inputs are no longer available (e.g. if removed Startup Products / Processors / Processes)
-        //// -- mark them as "disabled" + exclude their outputs from "getAvailableInputsForIndustryTier"
+        if (isFunctionalChange) {
+            //// TO DO: highlight processes whose inputs are no longer available (e.g. if removed Startup Products / Processors / Processes)
+            //// -- mark them as "disabled" + exclude their outputs from "getAvailableInputsForIndustryTier"
+        }
     }
 
     private populateIndustryPlanHeader(): void {
-        const elTitle = createEl('div', null, ['title']);
-        elTitle.textContent = this.title;
-        this.industryPlanHeaderHtmlElement.append(elTitle);
+        // Add editable title
+        const elTitleWrapper = createEl('div', null, ['title-wrapper']);
+        elTitleWrapper.dataset.tooltipPosition = 'top-left';
+        elTitleWrapper.dataset.tooltip = 'Click to edit this title';
+        const elTitleHidden = createEl('div', null, ['title-hidden']);
+        const elTitleInput = createEl('input', null, ['title-input']) as HTMLInputElement;
+        elTitleInput.type = 'text';
+        elTitleInput.value = this.title;
+        elTitleInput.addEventListener('input', this.onInputTitle.bind(this));
+        elTitleInput.addEventListener('blur', this.onBlurTitle.bind(this));
+        elTitleWrapper.append(elTitleHidden);
+        elTitleWrapper.append(elTitleInput);
+        this.industryPlanHeaderHtmlElement.append(elTitleWrapper);
+        // Trigger this handler only after the above elements have been added into the DOM
+        this.onInputTitle();
+        // Add save-icon
         const elSaveIcon = createEl('div', null, ['save-icon']);
         elSaveIcon.dataset.tooltipPosition = 'bottom-left';
         elSaveIcon.dataset.tooltip = 'Save this industry plan into local-storage';

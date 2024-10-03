@@ -5,12 +5,11 @@ import {industryPlanService} from './modules/industry-plan-service.js';
 // Expose "industryPlanService" for inline scripts in HTML - e.g. "onclick"
 global.industryPlanService = industryPlanService;
 
-const savedIndustryPlansJSON = industryPlanService.getSavedIndustryPlansJSON();
-if (savedIndustryPlansJSON.length) {
-    // Pre-load the latest saved industry plan
-    const latestIndustryPlanJSON = savedIndustryPlansJSON.slice(-1)[0];
-    console.log(`--- LOADING latestIndustryPlanJSON:`, latestIndustryPlanJSON); //// TEST
-    industryPlanService.loadIndustryPlanJSON(latestIndustryPlanJSON);
+// Pre-load the latest saved industry plan, if any
+const latestSavedIndustryPlanJSON = industryPlanService.getLatestSavedIndustryPlanJSON();
+if (latestSavedIndustryPlanJSON) {
+    console.log(`--- LOADING latestSavedIndustryPlanJSON:`, latestSavedIndustryPlanJSON); //// TEST
+    industryPlanService.loadIndustryPlanJSON(latestSavedIndustryPlanJSON);
 } else {
     console.log(`--- MOCKING new industry plan`); //// TEST
     const testIndustryPlan = new IndustryPlan('Test Plan');
@@ -37,5 +36,4 @@ if (savedIndustryPlansJSON.length) {
     });
 
     console.log(`--- testIndustryPlan:`, testIndustryPlan); //// TEST
-    console.log(`---> JSON:`, industryPlanService.makeIndustryPlanJSON()); //// TEST
 }
