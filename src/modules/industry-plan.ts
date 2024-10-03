@@ -9,6 +9,7 @@ import {OverlayAddStartupProduct} from './overlays/overlay-add-startup-product.j
 class IndustryPlan {
     private id: string;
     private title: string;
+    private updatedTs: number;
     private refiningPenalty: RefiningPenalty;
     private startupProducts: StartupProduct[] = [];
     private industryTiers: IndustryTier[] = [];
@@ -21,7 +22,14 @@ class IndustryPlan {
 
     constructor(title: string, id?: string) {
         industryPlanService.setIndustryPlan(this);
-        this.id = id ? id : crypto.randomUUID();
+        if (id) {
+            // Newly created plan
+            this.id = id;
+            this.updatedTs = new Date().getTime();
+        } else {
+            // Previously saved plan => NOT updating "updatedTs"
+            this.id = crypto.randomUUID();
+        }
         this.title = title;
         // Default penalty for secondary outputs
         this.refiningPenalty = new RefiningPenalty();
@@ -41,6 +49,10 @@ class IndustryPlan {
 
     public getTitle(): string {
         return this.title;
+    }
+
+    public getUpdatedTs(): number {
+        return this.updatedTs;
     }
 
     public getStartupProducts(): StartupProduct[] {
@@ -141,6 +153,7 @@ class IndustryPlan {
     }
 
     private onClickSaveIcon(): void {
+        this.updatedTs = new Date().getTime();
         industryPlanService.saveIndustryPlanJSON();
         this.setSavedStatusAndIcon(true);
     }

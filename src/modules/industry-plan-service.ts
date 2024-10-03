@@ -8,10 +8,13 @@ import {I_PROCESS_DATA, processService} from './process-service.js';
 import {ProductSelectable} from './product-selectable.js';
 import {productService} from './product-service.js';
 import {OverlayCreateIndustryPlan} from './overlays/overlay-create-industry-plan.js';
+import {OverlayMyIndustryPlans} from './overlays/overlay-my-industry-plans.js';
+import {OverlayPublicIndustryPlans} from './overlays/overlay-public-industry-plans.js';
 
 interface IndustryPlanJSON {
     id: string,
     title: string,
+    updatedTs: number,
     startupProductIds: string[],
     industryTiers: IndustryTierJSON[],
 }
@@ -79,6 +82,14 @@ class IndustryPlanService {
         new OverlayCreateIndustryPlan();
     }
 
+    public onClickMyIndustryPlans(): void {
+        new OverlayMyIndustryPlans();
+    }
+
+    public onClickPublicIndustryPlans(): void {
+        new OverlayPublicIndustryPlans();
+    }
+
     public makeIndustryPlanJSON(): IndustryPlanJSON {
         if (!this.industryPlan) {
             throw Error('ERROR: industryPlan not set @ makeIndustryPlanJSON');
@@ -86,6 +97,7 @@ class IndustryPlanService {
         const industryPlanJSON: IndustryPlanJSON = {
             id: this.industryPlan.getId(),
             title: this.industryPlan.getTitle(),
+            updatedTs: this.industryPlan.getUpdatedTs(),
             startupProductIds: this.industryPlan.getStartupProducts().map(product => product.getId()),
             industryTiers: [],
         };

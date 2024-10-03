@@ -10,7 +10,7 @@
         opacity: 0.5;
     }
 
-    &:not(.disabled):hover { opacity: 1; }    
+    &:not(.disabled):hover { opacity: 1; }
 }
 
 .overlay {
@@ -471,3 +471,36 @@
 
     .overlay-cta .create-plan-button { @include overlay-cta-button; }
 }
+
+.overlay-my-industry-plans {
+    .overlay-list {
+        margin: 0 -16px;
+        width: unset !important;
+
+        .list-item {
+            color: var(--color-text-normal);
+            display: grid;
+            grid-template-columns:
+                minmax(0, 1fr) // plan title
+                minmax(0, 1fr) // last updated
+                ;
+            padding: 8px 16px;
+
+            &.list-item-header {
+                font-size: 120%;
+            }
+
+            &:not(.list-item-header) {
+                border-top: 1px solid rgba(255, 255, 255, 0.05);
+                cursor: pointer;
+            }
+
+            &:hover:not(.list-item-header) {
+                @include hover-lighten-bg;
+                color: white;
+            }
+        }
+    }
+}
+
+.overlay-public-industry-plans {}
