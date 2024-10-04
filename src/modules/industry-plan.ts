@@ -1,5 +1,5 @@
 import {createEl} from './dom-core.js';
-import {RefiningPenalty} from './refining-penalty.js';
+import {DEFAULT_PENALTY_FOR_SECONDARY_OUTPUTS, RefiningPenalty} from './refining-penalty.js';
 import {industryPlanService} from './industry-plan-service.js';
 import {StartupProduct} from './startup-product.js';
 import {IndustryTier} from './industry-tier.js';
@@ -21,20 +21,24 @@ class IndustryPlan {
     private startupProductsHtmlElement: HTMLElement;
     private industryTiersHtmlElement: HTMLElement;
 
-    constructor(title: string, id?: string) {
+    constructor(
+        title: string,
+        penaltyForSecondaryOutputs: number = DEFAULT_PENALTY_FOR_SECONDARY_OUTPUTS,
+        id?: string|null,
+    ) {
         industryPlanService.setIndustryPlan(this);
         if (id) {
-            // Newly created plan
-            this.id = id;
-            this.updatedTs = new Date().getTime();
-        } else {
             // Previously saved plan => NOT updating "updatedTs"
+            this.id = id;
+        } else {
+            // Newly created plan
             this.id = crypto.randomUUID();
+            this.updatedTs = new Date().getTime();
         }
         this.title = title;
         this.titleSaved = title;
         // Default penalty for secondary outputs
-        this.refiningPenalty = new RefiningPenalty();
+        this.refiningPenalty = new RefiningPenalty(penaltyForSecondaryOutputs);
         // Always "HTMLElement", never "null"
         this.industryPlanHeaderHtmlElement = document.getElementById('industry-plan-header') as HTMLElement;
         this.industryPlanMainHtmlElement = document.getElementById('industry-plan-main') as HTMLElement;
@@ -67,6 +71,10 @@ class IndustryPlan {
 
     public getIndustryTierLast(): IndustryTier {
         return this.industryTiers.slice(-1)[0];
+    }
+
+    public getRefiningPenalty(): RefiningPenalty {
+        return this.refiningPenalty;
     }
 
     private getElStartupProdutsList(): HTMLElement {
