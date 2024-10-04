@@ -78,6 +78,15 @@ class IndustryPlanService {
         return this.getSavedIndustryPlansJSON().some(industryPlanJSON => industryPlanJSON.title === planTitle);
     }
 
+    public onRemoveIndustryPlan(): void {
+        // Remove this industry plan form local-storage
+        this.removeIndustryPlanJSON();
+        // Finish removing this industry plan
+        this.industryPlan = null;
+        // Show list of remaining saved industry plans
+        new OverlayMyIndustryPlans();
+    }
+
     public onClickCreateIndustryPlan(): void {
         new OverlayCreateIndustryPlan();
     }
@@ -188,6 +197,13 @@ class IndustryPlanService {
         // Finish loading
         loadedIndustryPlan.setIsLoading(false);
         this.industryPlan = loadedIndustryPlan;
+    }
+
+    public removeIndustryPlanJSON(): void {
+        let savedIndustryPlansJSON = industryPlanService.getSavedIndustryPlansJSON();
+        savedIndustryPlansJSON = savedIndustryPlansJSON.filter(industryPlanJSON => industryPlanJSON.id !== this.industryPlan?.getId());
+        // Commit remaining saved industry plans into local-storage
+        localStorage.setItem('savedIndustryPlans', JSON.stringify(savedIndustryPlansJSON));
     }
 
     public getAvailableInputsForIndustryTier(targetIndustryTier: IndustryTier): ProductSelectable[] {

@@ -58,7 +58,11 @@ class OverlayMyIndustryPlans extends OverlayAbstract {
     }
 
     protected makeElOverlayContent(): HTMLElement {
-        const el = createEl('div', null, ['overlay-content-inner', 'overlay-my-industry-plans']);
+        const elClasses = ['overlay-content-inner', 'overlay-my-industry-plans'];
+        if (industryPlanService.isIndustryPlanLoadedButNotSaved()) {
+            elClasses.push('plan-not-saved');
+        }
+        const el = createEl('div', null, elClasses);
         // NOT populating this element yet, because it's created in the "super" constructor, before setting the properties of this class
         return el;
     }

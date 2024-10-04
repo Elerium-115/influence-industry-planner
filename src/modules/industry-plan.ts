@@ -154,13 +154,31 @@ class IndustryPlan {
         });
     }
 
+    private onClickRemovePlan(): void {
+        if (!confirm('Are you sure you want to permanently remove this industry plan?')) {
+            return; // Abort action
+        }
+        // Reset HTML elements
+        this.industryPlanHeaderHtmlElement.textContent = '';
+        this.industryPlanMainHtmlElement.textContent = '';
+        industryPlanService.onRemoveIndustryPlan();
+    }
+
     private onInputTitle(): void {
         const elTitleWrapper = this.industryPlanHeaderHtmlElement.querySelector('.title-wrapper') as HTMLElement;
         const elTitleHidden = elTitleWrapper.querySelector('.title-hidden') as HTMLElement;
         const elTitleInput = elTitleWrapper.querySelector('.title-input') as HTMLInputElement;
-        // Resize the title-input, to match the actual width of the title
+        // Resize the title-input, to match the actual width of the title (plus 2px to avoid glitch)
         elTitleHidden.textContent = elTitleInput.value;
-        elTitleInput.style.width = elTitleHidden.offsetWidth + 'px';
+        elTitleInput.style.width = (elTitleHidden.offsetWidth + 2) + 'px';
+    }
+
+    private onKeydownTitle(event: KeyboardEvent): void {
+        const elTitleInput = event.target as HTMLInputElement;
+        // Pressing "Enter" while this input is focused => trigger its "blur" handler
+        if (event.key === 'Enter' && elTitleInput === document.activeElement) {
+            elTitleInput.blur();
+        }
     }
 
     private onBlurTitle(event: InputEvent): void {
@@ -208,17 +226,26 @@ class IndustryPlan {
     }
 
     private populateIndustryPlanHeader(): void {
+        // Add icon to remove this plan
+        const elRemovePlan = createEl('div', null, ['remove-plan']);
+        elRemovePlan.dataset.tooltipPosition = 'bottom-left';
+        elRemovePlan.dataset.tooltip = 'Remove this industry plan';
+        elRemovePlan.addEventListener('click', this.onClickRemovePlan.bind(this));
+        this.industryPlanHeaderHtmlElement.append(elRemovePlan);
         // Add editable title
         const elTitleWrapper = createEl('div', null, ['title-wrapper']);
-        elTitleWrapper.dataset.tooltipPosition = 'top-left';
+        elTitleWrapper.dataset.tooltipPosition = 'bottom-left';
         elTitleWrapper.dataset.tooltip = 'Click to edit this title';
+        // -- Hidden plan title, used for measuring the width of the editable plan title
         const elTitleHidden = createEl('div', null, ['title-hidden']);
+        elTitleWrapper.append(elTitleHidden);
+        // -- Editable plan title
         const elTitleInput = createEl('input', null, ['title-input']) as HTMLInputElement;
         elTitleInput.type = 'text';
         elTitleInput.value = this.title;
         elTitleInput.addEventListener('input', this.onInputTitle.bind(this));
+        elTitleInput.addEventListener('keydown', this.onKeydownTitle.bind(this));
         elTitleInput.addEventListener('blur', this.onBlurTitle.bind(this));
-        elTitleWrapper.append(elTitleHidden);
         elTitleWrapper.append(elTitleInput);
         this.industryPlanHeaderHtmlElement.append(elTitleWrapper);
         // Trigger this handler only after the above elements have been added into the DOM

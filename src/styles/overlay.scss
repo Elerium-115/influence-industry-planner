@@ -13,6 +13,14 @@
     &:not(.disabled):hover { opacity: 1; }
 }
 
+@mixin warning-plan-not-saved($warning) {
+    background-color: var(--color-warning);
+    content: $warning;
+    display: block;
+    margin-bottom: 32px;
+    padding: 8px 16px;
+}
+
 .overlay {
     align-items: flex-start;
     backdrop-filter: blur(16px);
@@ -447,14 +455,8 @@
 }
 
 .overlay-create-industry-plan {
-    &.plan-not-saved {
-        .overlay-input::before {
-            background-color: var(--color-warning);
-            content: 'WARNING: Creating a new plan will discard all unsaved changes in the currently loaded plan!';
-            display: block;
-            margin-bottom: 32px;
-            padding: 8px 16px;
-        }
+    &.plan-not-saved .overlay-input::before {
+        @include warning-plan-not-saved('WARNING: Creating a new plan will discard all unsaved changes in the currently loaded plan!');
     }
 
     &.invalid-title {
@@ -473,6 +475,10 @@
 }
 
 .overlay-my-industry-plans {
+    &.plan-not-saved .overlay-list::before {
+        @include warning-plan-not-saved('WARNING: Loading another plan will discard all unsaved changes in the currently loaded plan!');
+    }
+
     .overlay-list {
         margin: 0 -16px;
         width: unset !important;
