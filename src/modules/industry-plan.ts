@@ -1,5 +1,5 @@
 import {createEl} from './dom-core.js';
-import {DEFAULT_PENALTY_FOR_SECONDARY_OUTPUTS, RefiningPenalty} from './refining-penalty.js';
+import {RefiningPenalty} from './refining-penalty.js';
 import {industryPlanService} from './industry-plan-service.js';
 import {StartupProduct} from './startup-product.js';
 import {IndustryTier} from './industry-tier.js';
@@ -11,6 +11,7 @@ class IndustryPlan {
     private title: string;
     private titleSaved: string;
     private updatedTs: number;
+    private scientistsInCrew: number;
     private refiningPenalty: RefiningPenalty;
     private startupProducts: StartupProduct[] = [];
     private industryTiers: IndustryTier[] = [];
@@ -23,7 +24,7 @@ class IndustryPlan {
 
     constructor(
         title: string,
-        penaltyForSecondaryOutputs: number = DEFAULT_PENALTY_FOR_SECONDARY_OUTPUTS,
+        scientistsInCrew: number = 1,
         id?: string|null,
     ) {
         industryPlanService.setIndustryPlan(this);
@@ -37,8 +38,8 @@ class IndustryPlan {
         }
         this.title = title;
         this.titleSaved = title;
-        // Default penalty for secondary outputs
-        this.refiningPenalty = new RefiningPenalty(penaltyForSecondaryOutputs);
+        this.scientistsInCrew = scientistsInCrew;
+        this.refiningPenalty = new RefiningPenalty(scientistsInCrew);
         // Always "HTMLElement", never "null"
         this.industryPlanHeaderHtmlElement = document.getElementById('industry-plan-header') as HTMLElement;
         this.industryPlanMainHtmlElement = document.getElementById('industry-plan-main') as HTMLElement;
@@ -61,6 +62,10 @@ class IndustryPlan {
         return this.updatedTs;
     }
 
+    public getScientistsInCrew(): number {
+        return this.scientistsInCrew;
+    }
+
     public getStartupProducts(): StartupProduct[] {
         return this.startupProducts;
     }
@@ -71,10 +76,6 @@ class IndustryPlan {
 
     public getIndustryTierLast(): IndustryTier {
         return this.industryTiers.slice(-1)[0];
-    }
-
-    public getRefiningPenalty(): RefiningPenalty {
-        return this.refiningPenalty;
     }
 
     private getElStartupProdutsList(): HTMLElement {

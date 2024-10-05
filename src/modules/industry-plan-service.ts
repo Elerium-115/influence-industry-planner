@@ -15,7 +15,7 @@ interface IndustryPlanJSON {
     id: string,
     title: string,
     updatedTs: number,
-    penaltyForSecondaryOutputs: number,
+    scientistsInCrew: number,
     startupProductIds: string[],
     industryTiers: IndustryTierJSON[],
 }
@@ -126,7 +126,7 @@ class IndustryPlanService {
             id: this.industryPlan.getId(),
             title: this.industryPlan.getTitle(),
             updatedTs: this.industryPlan.getUpdatedTs(),
-            penaltyForSecondaryOutputs: this.industryPlan.getRefiningPenalty().getPenaltyForSecondaryOutputs(),
+            scientistsInCrew: this.industryPlan.getScientistsInCrew(),
             startupProductIds: this.industryPlan.getStartupProducts().map(product => product.getId()),
             industryTiers: [],
         };
@@ -175,7 +175,7 @@ class IndustryPlanService {
     public loadIndustryPlanJSON(industryPlanJSON: IndustryPlanJSON): void {
         const loadedIndustryPlan = new IndustryPlan(
             industryPlanJSON.title,
-            industryPlanJSON.penaltyForSecondaryOutputs,
+            industryPlanJSON.scientistsInCrew,
             industryPlanJSON.id,
         );
         // Start loading
