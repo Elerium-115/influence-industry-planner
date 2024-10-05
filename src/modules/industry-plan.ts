@@ -3,6 +3,7 @@ import {RefiningPenalty} from './refining-penalty.js';
 import {industryPlanService} from './industry-plan-service.js';
 import {StartupProduct} from './startup-product.js';
 import {IndustryTier} from './industry-tier.js';
+import {Process} from './process.js';
 import {productService} from './product-service.js';
 import {OverlayAddStartupProduct} from './overlays/overlay-add-startup-product.js';
 
@@ -38,8 +39,9 @@ class IndustryPlan {
         }
         this.title = title;
         this.titleSaved = title;
-        this.scientistsInCrew = scientistsInCrew;
-        this.refiningPenalty = new RefiningPenalty(scientistsInCrew);
+        // Set "scientistsInCrew" WITHOUT updating the qtys re: industry plan NOT yet populated
+        this.setScientistsInCrew(scientistsInCrew, false);
+        this.refiningPenalty = new RefiningPenalty(scientistsInCrew, this);
         // Always "HTMLElement", never "null"
         this.industryPlanHeaderHtmlElement = document.getElementById('industry-plan-header') as HTMLElement;
         this.industryPlanMainHtmlElement = document.getElementById('industry-plan-main') as HTMLElement;
@@ -66,6 +68,21 @@ class IndustryPlan {
         return this.scientistsInCrew;
     }
 
+    public setScientistsInCrew(scientistsInCrew: number, shouldUpdateQtys: boolean = true): void {
+        this.scientistsInCrew = scientistsInCrew;
+        if (shouldUpdateQtys) {
+            // Update qtys for secondary outputs, if any
+            this.getAllProcesses().forEach(process => {
+                if (process.getOutputs().length <= 1) {
+                    // NO secondary outputs
+                    return;
+                }
+                // Force-update the primary output for this process, to update the qtys + flash it
+                process.setPrimaryOutput(process.getPrimaryOutput(), true);
+            });
+        }
+    }
+
     public getStartupProducts(): StartupProduct[] {
         return this.startupProducts;
     }
@@ -76,6 +93,16 @@ class IndustryPlan {
 
     public getIndustryTierLast(): IndustryTier {
         return this.industryTiers.slice(-1)[0];
+    }
+
+    private getAllProcesses(): Process[] {
+        const processes: Process[] = [];
+        this.industryTiers.forEach(industryTier => {
+            industryTier.getProcessors().forEach(processor => {
+                processes.push(...processor.getProcesses());
+            });
+        });
+        return processes;
     }
 
     private getElStartupProdutsList(): HTMLElement {
@@ -94,6 +121,12 @@ class IndustryPlan {
     public setSavedStatusAndIcon(isSaved: boolean): void {
         this.isSaved = isSaved;
         this.industryPlanHeaderHtmlElement.querySelector('.save-icon')?.classList.toggle('saved', isSaved);
+    }
+
+    public markHasSecondaryOutputs(): void {
+        // Show "Scientists in crew" only if the industry plan contains processes with secondary outputs
+        const hasSecondaryOutputs = this.getAllProcesses().some(process => process.getOutputs().length >= 2);
+        this.industryPlanHeaderHtmlElement.classList.toggle('has-secondary-outputs', hasSecondaryOutputs);
     }
 
     private addStartupProductById(id: string, shouldSortAndUpdate: boolean = true): void {
@@ -229,6 +262,7 @@ class IndustryPlan {
         }
         this.setSavedStatusAndIcon(false);
         if (isFunctionalChange) {
+            this.markHasSecondaryOutputs();
             //// TO DO: highlight processes whose inputs are no longer available (e.g. if removed Startup Products / Processors / Processes)
             //// -- mark them as "disabled" + exclude their outputs from "getAvailableInputsForIndustryTier"
         }

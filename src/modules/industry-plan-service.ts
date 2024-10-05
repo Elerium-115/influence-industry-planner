@@ -199,6 +199,7 @@ class IndustryPlanService {
                 });
             });
         });
+        loadedIndustryPlan.markHasSecondaryOutputs();
         loadedIndustryPlan.setSavedStatusAndIcon(true);
         // Finish loading
         loadedIndustryPlan.setIsLoading(false);

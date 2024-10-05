@@ -69,7 +69,6 @@
                 padding: 0;
 
                 &:hover, &:focus { background-color: black; }
-                &:hover { border-color: rgba(255, 255, 255, 0.2); }
             }
         }
 
@@ -109,14 +108,38 @@
         }
 
         #refining-penalty {
+            align-items: center;
             display: flex;
-            font-size: 90%;
-            gap: 16px;
-            opacity: 0.5;
 
-            &::before { content: 'Refining Penalty'; }
-            &::after { content: 'for secondary outputs'; }
+            &::before {
+                content: 'Scientists in crew:';
+                margin-right: 16px;
+                opacity: 0.5;
+            }
+
+            .scientists-count {
+                color: var(--color-text-normal);
+                cursor: pointer;
+                line-height: 32px;
+                text-align: center;
+                width: 32px;
+
+                &:hover {
+                    @include hover-lighten-bg;
+                    color: white;
+                }
+
+                &.selected {
+                    background-color: rgba(var(--rgb-processor-refinery), 0.75);
+
+                    &:hover { color: white; }
+
+                    &.warning-if-selected { background-color: var(--color-warning); }
+                }
+            }
         }
+
+        &:not(.has-secondary-outputs) #refining-penalty { display: none; }
     }
 
     #industry-plan-main {

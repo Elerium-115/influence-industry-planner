@@ -50,6 +50,10 @@ class Process {
         return this.outputs;
     }
 
+    public getPrimaryOutput(): ProductIcon {
+        return this.primaryOutput;
+    }
+
     public getData(): I_PROCESS_DATA {
         return this.data;
     }
@@ -121,8 +125,8 @@ class Process {
         });
     }
 
-    public setPrimaryOutput(output: ProductIcon): void {
-        if (this.primaryOutput === output) {
+    public setPrimaryOutput(output: ProductIcon, forceUpdate: boolean = false): void {
+        if (this.primaryOutput === output && !forceUpdate) {
             // Primary output did not change
             return;
         }

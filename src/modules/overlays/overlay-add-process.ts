@@ -92,7 +92,7 @@ class OverlayAddProcess extends OverlayAbstract {
     private onChangeToggleAllAvailableInputs(event: InputEvent) {
         const elToggleAllInput = event.target as HTMLInputElement;
         // Force-check/uncheck each available input (this will NOT trigger its "onchange" handler)
-        this.elAvailableInputsList.querySelectorAll('input[type="checkbox"]').forEach((elInput: any) => {
+        ([...this.elAvailableInputsList.querySelectorAll('input[type="checkbox"]')] as HTMLInputElement[]).forEach(elInput => {
             elInput.checked = elToggleAllInput.checked;
             // Manually trigger the "onchange" handler, without updating the processes
             (elInput as HTMLElement).dispatchEvent(new InputEvent('change'));
