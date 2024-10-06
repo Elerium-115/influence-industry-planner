@@ -479,6 +479,15 @@
 
                                 &:not(:hover) .remove-process { display: none; }
                             }
+
+                            &:empty + .add-process-button {
+                                // Make the "Add Process" button more visible, if no processes in the list
+                                color: var(--color-text-normal);
+            
+                                &::before { opacity: 0.75; }
+
+                                &:hover { color: white; }
+                            }
                         }
 
                         .add-process-button {
@@ -521,7 +530,7 @@
                                     background-color: var(--color-processor-process-hover);
                                 }
 
-                                &::before { opacity: 1; }
+                                &::before { opacity: 1 !important; }
                             }
                         }
 
@@ -532,6 +541,7 @@
                     }
                 }
 
+                .add-output-product-button,
                 .add-processor-panel {
                     --color-panel-bg: #2a2a2a; // avg. of grayscaled processor-header bg-colors
                     align-items: center;
@@ -542,15 +552,41 @@
                     gap: 16px;
                     position: relative;
 
+                    &:hover {
+                        @include hover-lighten-bg;
+                        color: white;
+                    }
+                }
+
+                @mixin icon-pseudo-element {
+                    align-items: center;
+                    background-color: #6a6a6a; // avg. of grayscaled processor-icon bg-colors
+                    display: flex;
+                    height: var(--processor-icon-size);
+                    justify-content: center;
+                    width: var(--processor-icon-size);
+                }
+
+                .add-output-product-button {
+                    margin-bottom: 32px;
+
                     &::before {
-                        align-items: center;
-                        background-color: #6a6a6a; // avg. of grayscaled processor-icon bg-colors
+                        @include icon-pseudo-element;
+                        content: '⮕';
+                    }
+
+                    &::after {
+                        content: 'Add Output';
+                        padding-right: 16px;
+                        white-space: nowrap;
+                    }
+                }
+
+                .add-processor-panel {
+                    &::before {
+                        @include icon-pseudo-element;
                         content: '+';
-                        display: flex;
                         font-size: 200%;
-                        height: var(--processor-icon-size);
-                        justify-content: center;
-                        width: var(--processor-icon-size);
                     }
 
                     &::after {
@@ -576,11 +612,6 @@
                                 color: white;
                             }
                         }
-                    }
-
-                    &:hover {
-                        @include hover-lighten-bg;
-                        color: white;
                     }
 
                     &:not(:hover) .add-processor-dropdown { display: none; }

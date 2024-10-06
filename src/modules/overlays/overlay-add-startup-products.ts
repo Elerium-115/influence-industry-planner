@@ -3,7 +3,7 @@ import {OverlayAbstract} from './overlay-abstract';
 import {IndustryPlan} from '../industry-plan.js';
 import {I_PRODUCT_DATA, productService} from '../product-service.js';
 
-class OverlayAddStartupProduct extends OverlayAbstract {
+class OverlayAddStartupProducts extends OverlayAbstract {
     private parentIndustryPlan: IndustryPlan;
     private availableProducts: I_PRODUCT_DATA[] = [];
     private selectedProducts: I_PRODUCT_DATA[] = [];
@@ -158,5 +158,5 @@ class OverlayAddStartupProduct extends OverlayAbstract {
 }
 
 export {
-    OverlayAddStartupProduct,
+    OverlayAddStartupProducts,
 }

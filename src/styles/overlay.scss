@@ -56,6 +56,12 @@
 
                 .overlay-title { font-size: 150%; }
             }
+
+            .overlay-info {
+                font-size: 90%;
+                line-height: 150%;
+                opacity: 0.5;
+            }
         }
     }
 
@@ -451,6 +457,17 @@
         }
 
         &:hover .separator::after { opacity: 1; }
+    }
+}
+
+.overlay-add-output-product {
+    .overlay-header {
+        .industry-tier {
+            @include hover-lighten-bg;
+            color: var(--color-text-normal);
+            line-height: 32px;
+            padding: 0 16px;
+        }
     }
 }
 

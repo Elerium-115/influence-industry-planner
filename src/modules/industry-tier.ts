@@ -3,6 +3,7 @@ import {IndustryPlan} from './industry-plan.js';
 import {Processor} from './processor.js';
 import {type TYPE_PROCESSOR_BUILDING_IDS} from './processor-service.js';
 import {AddProcessorPanel} from './add-processor-panel.js';
+import {OverlayAddOutputProduct} from './overlays/overlay-add-output-product.js';
 
 class IndustryTier {
     private title: string;
@@ -15,6 +16,10 @@ class IndustryTier {
         this.title = title;
         this.parentIndustryPlan = parentIndustryPlan;
         this.htmlElement = this.makeHtmlElement();
+    }
+
+    public getTitle(): string {
+        return this.title;
     }
 
     public getProcessors(): Processor[] {
@@ -62,12 +67,18 @@ class IndustryTier {
         this.parentIndustryPlan.onIndustryPlanChanged();
     }
 
+    private onClickAddOutputProductButton(): void {
+        new OverlayAddOutputProduct(this);
+    }
+
     private makeHtmlElement(): HTMLElement {
         const el = createEl('div', null, ['industry-tier']);
         el.innerHTML = /*html*/ `
             <div class="industry-tier-title" data-title="${this.title}"></div>
             <div class="processors-list"></div>
+            <div class="add-output-product-button"></div>
         `;
+        el.querySelector('.add-output-product-button')?.addEventListener('click', this.onClickAddOutputProductButton.bind(this));
         // Inject add-processor panel
         this.addProcessorPanel = new AddProcessorPanel(this);
         el.append(this.addProcessorPanel.getHtmlElement());

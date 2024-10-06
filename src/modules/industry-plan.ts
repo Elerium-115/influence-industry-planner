@@ -5,7 +5,7 @@ import {StartupProduct} from './startup-product.js';
 import {IndustryTier} from './industry-tier.js';
 import {Process} from './process.js';
 import {productService} from './product-service.js';
-import {OverlayAddStartupProduct} from './overlays/overlay-add-startup-product.js';
+import {OverlayAddStartupProducts} from './overlays/overlay-add-startup-products.js';
 
 class IndustryPlan {
     private id: string;
@@ -178,7 +178,7 @@ class IndustryPlan {
     }
 
     private onClickAddStartupProductsButton(): void {
-        new OverlayAddStartupProduct(this);
+        new OverlayAddStartupProducts(this);
     }
 
     public onIndustryTierPopulated(industryTierPopulated: IndustryTier): void {
