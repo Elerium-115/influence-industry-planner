@@ -1,4 +1,3 @@
-import * as InfluenceSDK from '@influenceth/sdk';
 import {I_PRODUCT_DATA, productService} from './product-service.js';
 
 class ProductAbstract {
@@ -30,10 +29,6 @@ class ProductAbstract {
 
     public getName(): string {
         return this.data.name;
-    }
-
-    public isRawMaterial(): boolean {
-        return this.data.classification === InfluenceSDK.Product.CLASSIFICATIONS.RAW_MATERIAL;
     }
 }
 

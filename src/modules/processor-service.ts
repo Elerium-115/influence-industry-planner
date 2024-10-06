@@ -39,6 +39,12 @@ class ProcessorService {
     public getBuildingName(buildingId: TYPE_PROCESSOR_BUILDING_IDS): string {
         return InfluenceSDK.Building.TYPES[buildingId].name;
     }
+
+    public getProcessorBuildingIdBySdkProcessorId(sdkProcesorId: number): TYPE_PROCESSOR_BUILDING_IDS {
+        const matchingProcessorBuildingId = Object.values(PROCESSOR_BUILDING_IDS)
+            .find(processorBuildingId => SDK_PROCESSOR_IDS_BY_BUILDING_ID[processorBuildingId].includes(sdkProcesorId)) as number;
+        return Number(matchingProcessorBuildingId);
+    }
 }
 
 const processorService: ProcessorService = ProcessorService.getInstance(); // singleton

@@ -125,6 +125,10 @@ class ProductService {
         return spectralTypes;
     }
 
+    public isRawMaterialByProductData(productData: I_PRODUCT_DATA): boolean {
+        return productData.classification === InfluenceSDK.Product.CLASSIFICATIONS.RAW_MATERIAL;
+    }
+
     private addShipsToAllProducts(): void {
         let nextShipIdx = 1;
         Object.values(InfluenceSDK.Ship.TYPES)

@@ -89,7 +89,9 @@ class Process {
     }
 
     private isExtraction(): boolean {
-        return !this.inputs.length && this.outputs.length === 1 && this.outputs[0].isRawMaterial();
+        return !this.inputs.length
+            && this.outputs.length === 1
+            && productService.isRawMaterialByProductData(this.outputs[0].getData());
     }
 
     private addInputOrOutput(productId: string, inputOrOutput: 'input'|'output'): void {

@@ -273,6 +273,13 @@ class IndustryPlanService {
         return eligibleProcesses;
     }
 
+    public getEligibleProcessesUsingInputs(availableInputs: ProductSelectable[]): I_PROCESS_DATA[] {
+        const availableInputsProductIds = availableInputs.map(availableInput => availableInput.getId());
+        return Object.values(processService.getAllProcessesData())
+            // Keep only processes that can be run with the available inputs
+            .filter(processData => Object.keys(processData.inputs).every(inputProductId => availableInputsProductIds.includes(inputProductId)));
+    }
+
     private updateProcessesWithEmptyOutputs(): void {
         Object.values(processService.getAllProcessesData()).forEach(processData => {
             if (Object.keys(processData.outputs).length) {

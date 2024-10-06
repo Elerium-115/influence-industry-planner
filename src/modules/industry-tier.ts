@@ -1,3 +1,4 @@
+import {uniquePushToArray} from './abstract-core.js';
 import {createEl} from './dom-core.js';
 import {IndustryPlan} from './industry-plan.js';
 import {Processor} from './processor.js';
@@ -24,6 +25,19 @@ class IndustryTier {
 
     public getProcessors(): Processor[] {
         return this.processors;
+    }
+
+    public getOutputProductIdsFromTier(): string[] {
+        // Get the product IDs of all outputs produced at this industry tier
+        const outputProductIds: string[] = [];
+        this.processors.forEach(processor => {
+            processor.getProcesses().forEach(process => {
+                process.getOutputs().forEach(output => {
+                    uniquePushToArray(outputProductIds, output.getId());
+                });
+            });
+        });
+        return outputProductIds;
     }
 
     public getHtmlElement(): HTMLElement {

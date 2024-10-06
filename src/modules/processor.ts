@@ -47,11 +47,11 @@ class Processor {
         return this.htmlElement.querySelector('.processes-list') as HTMLElement;
     }
 
-    public addProcessById(processId: number): void {
+    public addProcessById(processId: number): Process|null {
         const process = new Process(processId, this);
         if (!process.getData()) {
             // Invalid process / ID
-            return;
+            return null;
         }
         this.processes.push(process);
         // Add new process into the DOM
@@ -61,6 +61,7 @@ class Processor {
             this.htmlElement.classList.add('hide-add-process');
         }
         this.parentIndustryTier.onProcessorChanged();
+        return process;
     }
 
     private onClickAddProcessButton(): void {
