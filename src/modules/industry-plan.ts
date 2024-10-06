@@ -48,6 +48,7 @@ class IndustryPlan {
         // Reset HTML elements, in case of previously loaded plan
         this.industryPlanHeaderHtmlElement.textContent = '';
         this.industryPlanMainHtmlElement.textContent = '';
+        this.markHasSecondaryOutputs(); // required when creating a new plan, while another plan with secondary outputs is loaded
         this.populateIndustryPlanHeader();
         this.populateIndustryPlanMain();
     }
@@ -124,7 +125,7 @@ class IndustryPlan {
     }
 
     public markHasSecondaryOutputs(): void {
-        // Show "Scientists in crew" only if the industry plan contains processes with secondary outputs
+        // Show "Scientists in Crew" only if the industry plan contains processes with secondary outputs
         const hasSecondaryOutputs = this.getAllProcesses().some(process => process.getOutputs().length >= 2);
         this.industryPlanHeaderHtmlElement.classList.toggle('has-secondary-outputs', hasSecondaryOutputs);
     }
@@ -299,7 +300,14 @@ class IndustryPlan {
         elSaveIcon.dataset.tooltip = 'Save this industry plan into local-storage';
         elSaveIcon.addEventListener('click', this.onClickSaveIcon.bind(this));
         this.industryPlanHeaderHtmlElement.append(elSaveIcon);
+        // Add "Scientists in Crew" (a.k.a. refining penalty)
         this.industryPlanHeaderHtmlElement.append(this.refiningPenalty.getHtmlElement());
+        // Add "Generate Plan for Product"
+        const elGeneratePlan = createEl('div', null, ['generate-plan-for-product']);
+        elGeneratePlan.innerHTML = '<div class="generate-plan-button"></div>';
+        elGeneratePlan.dataset.tooltipPosition = 'bottom-right';
+        elGeneratePlan.dataset.tooltip = 'Generate the entire industry plan required to make any given product';
+        // this.industryPlanHeaderHtmlElement.append(elGeneratePlan);
     }
 
     private populateIndustryPlanMain(): void {
@@ -307,7 +315,6 @@ class IndustryPlan {
         this.industryPlanMainHtmlElement.textContent = '';
         /**
          * Add wrappers for main components into the DOM:
-         * - refining penalty
          * - startup products (initially empty)
          * - industry tiers (initially empty)
          */

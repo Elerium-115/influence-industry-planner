@@ -4,6 +4,21 @@
 @import './main-menu.scss';
 @import './overlay.scss';
 
+:root {
+    --button-icon-size: 32px;
+    --color-button-bg: #2a2a2a; // avg. of grayscaled processor-header bg-colors
+}
+
+@mixin button-icon-pseudo-element {
+    // NOTE: "--button-icon-size" must be set in each context where this class is used
+    align-items: center;
+    background-color: #6a6a6a; // avg. of grayscaled processor-icon bg-colors
+    display: flex;
+    height: var(--button-icon-size);
+    justify-content: center;
+    width: var(--button-icon-size);
+}
+
 #industry-plan {
     display: flex;
     flex-direction: column;
@@ -112,7 +127,7 @@
             display: flex;
 
             &::before {
-                content: 'Scientists in crew:';
+                content: 'Scientists in Crew:';
                 margin-right: 16px;
                 opacity: 0.5;
             }
@@ -140,6 +155,35 @@
         }
 
         &:not(.has-secondary-outputs) #refining-penalty { display: none; }
+
+        .generate-plan-for-product {
+            .generate-plan-button {
+                align-items: center;
+                background-color: var(--color-button-bg);
+                color: rgba(255, 255, 255, 0.6);
+                cursor: pointer;
+                display: flex;
+                gap: 16px;
+                position: relative;
+
+                &:hover {
+                    @include hover-lighten-bg;
+                    color: white;
+                }
+
+                &::before {
+                    @include button-icon-pseudo-element;
+                    content: '⚛';
+                    font-size: 150%;
+                }
+
+                &::after {
+                    content: 'Generate Plan for Product';
+                    padding-right: 16px;
+                    white-space: nowrap;
+                }
+            }
+        }
     }
 
     #industry-plan-main {
@@ -483,7 +527,7 @@
                             &:empty + .add-process-button {
                                 // Make the "Add Process" button more visible, if no processes in the list
                                 color: var(--color-text-normal);
-            
+
                                 &::before { opacity: 0.75; }
 
                                 &:hover { color: white; }
@@ -543,9 +587,8 @@
 
                 .add-output-product-button,
                 .add-processor-panel {
-                    --color-panel-bg: #2a2a2a; // avg. of grayscaled processor-header bg-colors
                     align-items: center;
-                    background-color: var(--color-panel-bg);
+                    background-color: var(--color-button-bg);
                     color: rgba(255, 255, 255, 0.6);
                     cursor: pointer;
                     display: flex;
@@ -558,20 +601,11 @@
                     }
                 }
 
-                @mixin icon-pseudo-element {
-                    align-items: center;
-                    background-color: #6a6a6a; // avg. of grayscaled processor-icon bg-colors
-                    display: flex;
-                    height: var(--processor-icon-size);
-                    justify-content: center;
-                    width: var(--processor-icon-size);
-                }
-
                 .add-output-product-button {
                     margin-bottom: 32px;
 
                     &::before {
-                        @include icon-pseudo-element;
+                        @include button-icon-pseudo-element;
                         content: '⮕';
                     }
 
@@ -584,7 +618,7 @@
 
                 .add-processor-panel {
                     &::before {
-                        @include icon-pseudo-element;
+                        @include button-icon-pseudo-element;
                         content: '+';
                         font-size: 200%;
                     }
@@ -596,7 +630,7 @@
                     }
 
                     .add-processor-dropdown {
-                        background-color: var(--color-panel-bg);
+                        background-color: var(--color-button-bg);
                         left: 0;
                         position: absolute;
                         right: 0;

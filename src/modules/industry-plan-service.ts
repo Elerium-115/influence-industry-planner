@@ -3,7 +3,11 @@ import {uniquePushToArray} from './abstract-core.js';
 import {IndustryPlan} from './industry-plan.js';
 import {IndustryTier} from './industry-tier.js';
 import {Processor} from './processor.js';
-import {TYPE_PROCESSOR_BUILDING_IDS, SDK_PROCESSOR_IDS_BY_BUILDING_ID} from './processor-service.js';
+import {
+    TYPE_PROCESSOR_BUILDING_IDS,
+    MOCK_PROCESSOR_ID_EXTRACTOR,
+    SDK_PROCESSOR_IDS_BY_BUILDING_ID,
+} from './processor-service.js';
 import {I_PROCESS_DATA, processService} from './process-service.js';
 import {ProductSelectable} from './product-selectable.js';
 import {productService} from './product-service.js';
@@ -343,7 +347,7 @@ class IndustryPlanService {
             const processData: I_PROCESS_DATA = {
                 i: 0, // to be updated below
                 name: `${productName} Extraction`, // e.g. "Water Extraction"
-                processorType: -1, // no processor for "Extraction" in the SDK, as of Sep 2024
+                processorType: MOCK_PROCESSOR_ID_EXTRACTOR,
                 setupTime: 0,
                 recipeTime: 0,
                 inputs: {},
