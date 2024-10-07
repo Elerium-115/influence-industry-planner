@@ -108,7 +108,7 @@
     }
 }
 
-.overlay-generate-plan-for-products,
+.overlay-generate-plan-for-target-products,
 .overlay-add-startup-products {
     .overlay-lists {
         display: flex;
@@ -211,14 +211,6 @@
         }
 
         &:hover .separator::after { opacity: 1; }
-    }
-}
-
-.overlay-generate-plan-for-products {
-    .overlay-lists {
-        .overlay-list {
-            &.eligible-products .overlay-list-title::before { content: unset; }
-        }
     }
 }
 

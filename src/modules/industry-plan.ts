@@ -7,7 +7,7 @@ import {IndustryTier} from './industry-tier.js';
 import {Process} from './process.js';
 import {productService} from './product-service.js';
 import {OverlayAddStartupProducts} from './overlays/overlay-add-startup-products.js';
-import {OverlayGeneratePlanForProducts} from './overlays/overlay-generate-plan-for-product.js';
+import {OverlayGeneratePlanForTargetProducts} from './overlays/overlay-generate-plan-for-product.js';
 
 class IndustryPlan {
     private id: string;
@@ -112,18 +112,19 @@ class IndustryPlan {
         return processes;
     }
 
-    /**
-     * Get the DISTINCT product IDs of all outputs in this industry plan
-     */
-    public getAllOutputProductIdsInPlan(): string[] {
-        const outputProductIds: string[] = [];
-        this.getAllProcessesInPlan().forEach(process => {
-            process.getOutputs().forEach(output => {
-                uniquePushToArray(outputProductIds, output.getId());
-            });
-        });
-        return outputProductIds;
-    }
+    //// TO DO: cleanup if still not used, after some time...
+    // /**
+    //  * Get the DISTINCT product IDs of all outputs in this industry plan
+    //  */
+    // private getAllOutputProductIdsInPlan(): string[] {
+    //     const outputProductIds: string[] = [];
+    //     this.getAllProcessesInPlan().forEach(process => {
+    //         process.getOutputs().forEach(output => {
+    //             uniquePushToArray(outputProductIds, output.getId());
+    //         });
+    //     });
+    //     return outputProductIds;
+    // }
 
     private getElStartupProdutsList(): HTMLElement {
         // Always "HTMLElement", never "null"
@@ -143,10 +144,19 @@ class IndustryPlan {
         this.industryPlanHeaderHtmlElement.querySelector('.save-icon')?.classList.toggle('saved', isSaved);
     }
 
+    private hasProcessors(): boolean {
+        return Boolean(this.industryTiers[0].getProcessors().length);
+    }
+
     public markHasSecondaryOutputs(): void {
         // Show "Scientists in Crew" only if the industry plan contains processes with secondary outputs
         const hasSecondaryOutputs = this.getAllProcessesInPlan().some(process => process.getOutputs().length >= 2);
         this.industryPlanHeaderHtmlElement.classList.toggle('has-secondary-outputs', hasSecondaryOutputs);
+    }
+
+    private markHasProcessors(): void {
+        // Show "Generate Plan for Target Products" only if the industry plan does NOT contain any processors
+        this.industryPlanHeaderHtmlElement.classList.toggle('has-processors', this.hasProcessors());
     }
 
     private addStartupProductById(id: string, shouldSortAndUpdate: boolean = true): void {
@@ -170,8 +180,12 @@ class IndustryPlan {
         this.onUpdatedStartupProducts();
     }
 
-    public generatePlanForTargetProductIds(ids: string[]): void {
-        console.log(`--- [generatePlanForTargetProductIds]`); //// TEST
+    public onGeneratePlanForTargetProductIds(ids: string[]): void {
+        if (this.hasProcessors()) {
+            // Do NOT allow this functionality if the industry plan contains any processors
+            return;
+        }
+        industryPlanService.generatePlanForTargetProductIds(ids);
     }
 
     private addIndustryTier(): void {
@@ -280,7 +294,11 @@ class IndustryPlan {
     }
 
     private onClickGeneratePlan(): void {
-        new OverlayGeneratePlanForProducts(this);
+        if (this.hasProcessors()) {
+            // Do NOT allow this functionality if the industry plan contains any processors
+            return;
+        }
+        new OverlayGeneratePlanForTargetProducts(this);
     }
 
     public async onIndustryPlanChanged(isFunctionalChange: boolean = true): Promise<void> {
@@ -291,6 +309,7 @@ class IndustryPlan {
         this.setSavedStatusAndIcon(false);
         if (isFunctionalChange) {
             this.markHasSecondaryOutputs();
+            this.markHasProcessors();
             //// TO DO: highlight processes whose inputs are no longer available (e.g. if removed Startup Products / Processors / Processes)
             //// -- mark them as "disabled" + exclude their outputs from "getAvailableInputsForIndustryTier"
         }
@@ -329,8 +348,8 @@ class IndustryPlan {
         this.industryPlanHeaderHtmlElement.append(elSaveIcon);
         // Add "Scientists in Crew" (a.k.a. refining penalty)
         this.industryPlanHeaderHtmlElement.append(this.refiningPenalty.getHtmlElement());
-        // Add "Generate Plan for Products"
-        const elGeneratePlan = createEl('div', null, ['generate-plan-for-products']);
+        // Add "Generate Plan for Target Products"
+        const elGeneratePlan = createEl('div', null, ['generate-plan-for-target-products']);
         elGeneratePlan.innerHTML = '<div class="generate-plan-button"></div>';
         elGeneratePlan.dataset.tooltipPosition = 'bottom-right';
         elGeneratePlan.dataset.tooltip = 'Generate the entire industry plan required to make any target products';

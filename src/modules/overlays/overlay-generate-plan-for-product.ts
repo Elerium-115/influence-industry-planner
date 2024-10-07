@@ -3,7 +3,7 @@ import {OverlayAbstract} from './overlay-abstract';
 import {IndustryPlan} from '../industry-plan.js';
 import {I_PRODUCT_DATA, productService} from '../product-service.js';
 
-class OverlayGeneratePlanForProducts extends OverlayAbstract {
+class OverlayGeneratePlanForTargetProducts extends OverlayAbstract {
     private parentIndustryPlan: IndustryPlan;
     private eligibleProducts: I_PRODUCT_DATA[] = [];
     private selectedProducts: I_PRODUCT_DATA[] = [];
@@ -22,16 +22,14 @@ class OverlayGeneratePlanForProducts extends OverlayAbstract {
 
     /**
      * Eligible products = all products excluding:
-     * - raw materials
      * - startup products
-     * - outputs already produced in this industry plan
+     * - raw materials
      */
     private initEligibleProducts(): void {
         const rawMaterialProductIds = productService.getRawMaterialProductIds();
         const startupProductIds = this.parentIndustryPlan.getStartupProducts().map(product => product.getId());
-        const allOutputProductIdsInPlan = this.parentIndustryPlan.getAllOutputProductIdsInPlan();
         // All excluded product IDs, potentially containing duplicate IDs (not bothering to de-duplicate them)
-        const excludedProductIds = [...rawMaterialProductIds, ...startupProductIds, ...allOutputProductIdsInPlan];
+        const excludedProductIds = [...rawMaterialProductIds, ...startupProductIds];
         this.eligibleProducts = productService.getAllProductsData()
             .filter(productData => !excludedProductIds.includes(productData.i.toString()))
             .sort(this.compareProductsByName);
@@ -46,7 +44,6 @@ class OverlayGeneratePlanForProducts extends OverlayAbstract {
     }
 
     private filterEligibleProducts(): void {
-        //// TO DO: check / update as needed
         const searchQueryLowercase = this.elInputFilterSearch.value.toLowerCase().trim();
         ([...this.elEligibleProductsList.children] as HTMLElement[]).forEach(elProduct => {
             let isVisibleBySearch = false;
@@ -90,7 +87,7 @@ class OverlayGeneratePlanForProducts extends OverlayAbstract {
 
     private onClickAddProductsButton(): void {
         const selectedProductIds = this.selectedProducts.map(product => product.i.toString());
-        this.parentIndustryPlan.generatePlanForTargetProductIds(selectedProductIds);
+        this.parentIndustryPlan.onGeneratePlanForTargetProductIds(selectedProductIds);
         this.remove();
     }
 
@@ -132,7 +129,6 @@ class OverlayGeneratePlanForProducts extends OverlayAbstract {
                 <div>After selecting the target products, the entire industry plan will be generated automatically.</div>
                 <div>The minimum number of processor buildings will be used (i.e. multiple processes per building).</div>
                 <div>If a product can be made via multiple process variants, the process with the highest throughput will be used.</div>
-                <div>This list excludes: raw materials, startup products, and outputs already produced in this industry plan.</div>
             </div>
             <div class="overlay-filters">
                 <div class="filter-search">
@@ -141,7 +137,9 @@ class OverlayGeneratePlanForProducts extends OverlayAbstract {
             </div>
             <div class="overlay-lists">
                 <div class="overlay-list eligible-products">
-                    <div class="overlay-list-title">Eligible Products</div>
+                    <div class="overlay-list-title" data-tooltip-position="top-left" data-tooltip="All products, excluding current Startup Products and raw materials">
+                        Eligible Products
+                    </div>
                     <div class="products-list"></div>
                 </div>
                 <div class="separator"></div>
@@ -166,12 +164,12 @@ class OverlayGeneratePlanForProducts extends OverlayAbstract {
     }
 
     protected makeElOverlayContent(): HTMLElement {
-        const el = createEl('div', null, ['overlay-content-inner', 'overlay-generate-plan-for-products']);
+        const el = createEl('div', null, ['overlay-content-inner', 'overlay-generate-plan-for-target-products']);
         // NOT populating this element yet, because it's created in the "super" constructor, before setting the properties of this class
         return el;
     }
 }
 
 export {
-    OverlayGeneratePlanForProducts,
+    OverlayGeneratePlanForTargetProducts,
 }

@@ -363,6 +363,10 @@ class IndustryPlanService {
             processService.setExtractionProcessIdByRawMaterialId(productId, processData.i);
         });
     }
+
+    public generatePlanForTargetProductIds(ids: string[]): void {
+        console.log(`--- [generatePlanForTargetProductIds]`); //// TEST
+    }
 }
 
 const industryPlanService: IndustryPlanService = IndustryPlanService.getInstance(); // singleton
