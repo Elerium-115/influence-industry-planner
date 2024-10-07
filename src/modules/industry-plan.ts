@@ -1,3 +1,4 @@
+import {uniquePushToArray} from './abstract-core.js';
 import {createEl} from './dom-core.js';
 import {RefiningPenalty} from './refining-penalty.js';
 import {industryPlanService} from './industry-plan-service.js';
@@ -6,6 +7,7 @@ import {IndustryTier} from './industry-tier.js';
 import {Process} from './process.js';
 import {productService} from './product-service.js';
 import {OverlayAddStartupProducts} from './overlays/overlay-add-startup-products.js';
+import {OverlayGeneratePlanForProducts} from './overlays/overlay-generate-plan-for-product.js';
 
 class IndustryPlan {
     private id: string;
@@ -73,7 +75,7 @@ class IndustryPlan {
         this.scientistsInCrew = scientistsInCrew;
         if (shouldUpdateQtys) {
             // Update qtys for secondary outputs, if any
-            this.getAllProcesses().forEach(process => {
+            this.getAllProcessesInPlan().forEach(process => {
                 if (process.getOutputs().length <= 1) {
                     // NO secondary outputs
                     return;
@@ -96,7 +98,11 @@ class IndustryPlan {
         return this.industryTiers.slice(-1)[0];
     }
 
-    private getAllProcesses(): Process[] {
+    /**
+     * Get each instance of each "Process" in this industry plan,
+     * including multiple instances for the same process ID.
+     */
+    private getAllProcessesInPlan(): Process[] {
         const processes: Process[] = [];
         this.industryTiers.forEach(industryTier => {
             industryTier.getProcessors().forEach(processor => {
@@ -104,6 +110,19 @@ class IndustryPlan {
             });
         });
         return processes;
+    }
+
+    /**
+     * Get the DISTINCT product IDs of all outputs in this industry plan
+     */
+    public getAllOutputProductIdsInPlan(): string[] {
+        const outputProductIds: string[] = [];
+        this.getAllProcessesInPlan().forEach(process => {
+            process.getOutputs().forEach(output => {
+                uniquePushToArray(outputProductIds, output.getId());
+            });
+        });
+        return outputProductIds;
     }
 
     private getElStartupProdutsList(): HTMLElement {
@@ -126,7 +145,7 @@ class IndustryPlan {
 
     public markHasSecondaryOutputs(): void {
         // Show "Scientists in Crew" only if the industry plan contains processes with secondary outputs
-        const hasSecondaryOutputs = this.getAllProcesses().some(process => process.getOutputs().length >= 2);
+        const hasSecondaryOutputs = this.getAllProcessesInPlan().some(process => process.getOutputs().length >= 2);
         this.industryPlanHeaderHtmlElement.classList.toggle('has-secondary-outputs', hasSecondaryOutputs);
     }
 
@@ -149,6 +168,10 @@ class IndustryPlan {
     public batchAddStartupProductsByIds(ids: string[]): void {
         ids.forEach(id => this.addStartupProductById(id, false));
         this.onUpdatedStartupProducts();
+    }
+
+    public generatePlanForTargetProductIds(ids: string[]): void {
+        console.log(`--- [generatePlanForTargetProductIds]`); //// TEST
     }
 
     private addIndustryTier(): void {
@@ -256,6 +279,10 @@ class IndustryPlan {
         this.setSavedStatusAndIcon(true);
     }
 
+    private onClickGeneratePlan(): void {
+        new OverlayGeneratePlanForProducts(this);
+    }
+
     public async onIndustryPlanChanged(isFunctionalChange: boolean = true): Promise<void> {
         if (this.isLoading) {
             // Bypass this while the industry plan is being loaded
@@ -302,12 +329,13 @@ class IndustryPlan {
         this.industryPlanHeaderHtmlElement.append(elSaveIcon);
         // Add "Scientists in Crew" (a.k.a. refining penalty)
         this.industryPlanHeaderHtmlElement.append(this.refiningPenalty.getHtmlElement());
-        // Add "Generate Plan for Product"
-        const elGeneratePlan = createEl('div', null, ['generate-plan-for-product']);
+        // Add "Generate Plan for Products"
+        const elGeneratePlan = createEl('div', null, ['generate-plan-for-products']);
         elGeneratePlan.innerHTML = '<div class="generate-plan-button"></div>';
         elGeneratePlan.dataset.tooltipPosition = 'bottom-right';
-        elGeneratePlan.dataset.tooltip = 'Generate the entire industry plan required to make any given product';
-        // this.industryPlanHeaderHtmlElement.append(elGeneratePlan);
+        elGeneratePlan.dataset.tooltip = 'Generate the entire industry plan required to make any target products';
+        elGeneratePlan.addEventListener('click', this.onClickGeneratePlan.bind(this));
+        this.industryPlanHeaderHtmlElement.append(elGeneratePlan);
     }
 
     private populateIndustryPlanMain(): void {

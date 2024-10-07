@@ -116,7 +116,7 @@ class OverlayAddOutputProduct extends OverlayAbstract {
             <div class="overlay-info">
                 <div>These products can be made using only the startup products, and the outputs from lower industry tiers.</div>
                 <div>Selecting one of them will automatically add the process which outputs it, into the current industry tier.</div>
-                <div>The outputs already produced at the current industry tier are excluded from this list.</div>
+                <div>This list excludes: outputs already produced at the current industry tier.</div>
             </div>
             <div class="overlay-filters">
                 <div class="filter-checkboxes">

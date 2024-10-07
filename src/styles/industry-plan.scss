@@ -156,7 +156,7 @@
 
         &:not(.has-secondary-outputs) #refining-penalty { display: none; }
 
-        .generate-plan-for-product {
+        .generate-plan-for-products {
             .generate-plan-button {
                 align-items: center;
                 background-color: var(--color-button-bg);
@@ -178,7 +178,7 @@
                 }
 
                 &::after {
-                    content: 'Generate Plan for Product';
+                    content: 'Generate Plan for Products';
                     padding-right: 16px;
                     white-space: nowrap;
                 }

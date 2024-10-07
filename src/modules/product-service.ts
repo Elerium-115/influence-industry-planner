@@ -69,6 +69,10 @@ class ProductService {
         return this.inputProductIds.includes(productId);
     }
 
+    public getAllProductsData(): I_PRODUCT_DATA[] {
+        return Object.values(this.allProductsData);
+    }
+
     public getProductDataById(productId: string): I_PRODUCT_DATA {
         return this.allProductsData[productId];
     }
