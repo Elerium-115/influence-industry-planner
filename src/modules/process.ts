@@ -46,6 +46,10 @@ class Process {
         return this.id;
     }
 
+    public getInputs(): ProductIcon[] {
+        return this.inputs;
+    }
+
     public getOutputs(): ProductIcon[] {
         return this.outputs;
     }
@@ -60,6 +64,10 @@ class Process {
 
     private getName(): string {
         return this.data.name;
+    }
+
+    public getParentProcessor(): Processor {
+        return this.parentProcessor;
     }
 
     public getHtmlElement(): HTMLElement {
@@ -154,6 +162,11 @@ class Process {
             output.setQty(qtyWithPenalty, false);
         });
         this.parentProcessor.onProcessChanged();
+    }
+
+    public setPrimaryOutputByProductId(outputProductId: string): void {
+        const primaryOutput = this.outputs.find(output => output.getId() === outputProductId) as ProductIcon;
+        this.setPrimaryOutput(primaryOutput);
     }
 
     private addSpectralTypesAsInputs(): void {

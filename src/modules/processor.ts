@@ -38,6 +38,10 @@ class Processor {
         return `-${getItemNameSafe(this.getName())}`; // e.g. "-empty-lot"
     }
 
+    public getParentIndustryTier(): IndustryTier {
+        return this.parentIndustryTier;
+    }
+
     public getHtmlElement(): HTMLElement {
         return this.htmlElement;
     }

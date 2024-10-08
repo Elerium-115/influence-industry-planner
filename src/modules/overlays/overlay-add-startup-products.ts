@@ -135,14 +135,14 @@ class OverlayAddStartupProducts extends OverlayAbstract {
                         Selected Products
                     </div>
                     <div class="products-list"></div>
-                    <div class="add-products-button disabled">Add Products</div>
+                    <div class="cta-button disabled">Add Products</div>
                 </div>
             </div>
         `;
         this.elInputFilterSearch = this.elOverlayContent.querySelector('input[name="filter-search"]') as HTMLInputElement;
         this.elAvailableProductsList = this.elOverlayContent.querySelector('.available-products .products-list') as HTMLElement;
         this.elSelectedProductsList = this.elOverlayContent.querySelector('.selected-products .products-list') as HTMLElement;
-        this.elAddProductsButton = this.elOverlayContent.querySelector('.add-products-button') as HTMLElement;
+        this.elAddProductsButton = this.elOverlayContent.querySelector('.cta-button') as HTMLElement;
         this.elInputFilterSearch.addEventListener('input', this.onInputFilterSearch.bind(this));
         this.elAddProductsButton.addEventListener('click', this.onClickAddProductsButton.bind(this));
         // Explicit focus re: HTML property "autofocus" NOT working as expected, if already triggered in a previous overlay

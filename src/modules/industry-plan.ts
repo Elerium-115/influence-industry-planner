@@ -20,6 +20,8 @@ class IndustryPlan {
     private industryTiers: IndustryTier[] = [];
     private isLoading: boolean = false;
     private isSaved: boolean = false;
+    private isPendingOperation: boolean = false;
+    private industryPlanHtmlElement: HTMLElement;
     private industryPlanHeaderHtmlElement: HTMLElement;
     private industryPlanMainHtmlElement: HTMLElement;
     private startupProductsHtmlElement: HTMLElement;
@@ -45,12 +47,14 @@ class IndustryPlan {
         this.setScientistsInCrew(scientistsInCrew, false);
         this.refiningPenalty = new RefiningPenalty(scientistsInCrew, this);
         // Always "HTMLElement", never "null"
+        this.industryPlanHtmlElement = document.getElementById('industry-plan') as HTMLElement;
         this.industryPlanHeaderHtmlElement = document.getElementById('industry-plan-header') as HTMLElement;
         this.industryPlanMainHtmlElement = document.getElementById('industry-plan-main') as HTMLElement;
         // Reset HTML elements, in case of previously loaded plan
         this.industryPlanHeaderHtmlElement.textContent = '';
         this.industryPlanMainHtmlElement.textContent = '';
         this.markHasSecondaryOutputs(); // required when creating a new plan, while another plan with secondary outputs is loaded
+        this.markHasProcessors(); // required when creating a new plan, while another plan with processors is loaded
         this.populateIndustryPlanHeader();
         this.populateIndustryPlanMain();
     }
@@ -102,7 +106,7 @@ class IndustryPlan {
      * Get each instance of each "Process" in this industry plan,
      * including multiple instances for the same process ID.
      */
-    private getAllProcessesInPlan(): Process[] {
+    public getAllProcessesInPlan(): Process[] {
         const processes: Process[] = [];
         this.industryTiers.forEach(industryTier => {
             industryTier.getProcessors().forEach(processor => {
@@ -144,8 +148,13 @@ class IndustryPlan {
         this.industryPlanHeaderHtmlElement.querySelector('.save-icon')?.classList.toggle('saved', isSaved);
     }
 
+    public setIsPendingOperation(isPendingOperation: boolean): void {
+        this.isPendingOperation = isPendingOperation;
+        this.industryPlanHtmlElement.classList.toggle('is-pending-operation', isPendingOperation);
+    }
+
     private hasProcessors(): boolean {
-        return Boolean(this.industryTiers[0].getProcessors().length);
+        return Boolean(this.industryTiers.length && this.industryTiers[0].getProcessors().length);
     }
 
     public markHasSecondaryOutputs(): void {
@@ -154,12 +163,12 @@ class IndustryPlan {
         this.industryPlanHeaderHtmlElement.classList.toggle('has-secondary-outputs', hasSecondaryOutputs);
     }
 
-    private markHasProcessors(): void {
+    public markHasProcessors(): void {
         // Show "Generate Plan for Target Products" only if the industry plan does NOT contain any processors
         this.industryPlanHeaderHtmlElement.classList.toggle('has-processors', this.hasProcessors());
     }
 
-    private addStartupProductById(id: string, shouldSortAndUpdate: boolean = true): void {
+    public addStartupProductById(id: string, shouldSortAndUpdate: boolean = true): void {
         if (this.startupProducts.find(startupProduct => startupProduct.getId() === id)) {
             // Startup product already added
             return;
@@ -180,12 +189,17 @@ class IndustryPlan {
         this.onUpdatedStartupProducts();
     }
 
-    public onGeneratePlanForTargetProductIds(ids: string[]): void {
+    public onGeneratePlanForTargetProductIds(targetProductIds: string[]): void {
         if (this.hasProcessors()) {
             // Do NOT allow this functionality if the industry plan contains any processors
             return;
         }
-        industryPlanService.generatePlanForTargetProductIds(ids);
+        // Async execution, to show the "pending" overlay during that time
+        this.setIsPendingOperation(true);
+        setTimeout(async () => {
+            await industryPlanService.generatePlanForTargetProductIds(targetProductIds);
+            this.setIsPendingOperation(false);
+        });
     }
 
     private addIndustryTier(): void {
@@ -201,7 +215,7 @@ class IndustryPlan {
         this.onIndustryPlanChanged();
     }
 
-    private onUpdatedStartupProducts(): void {
+    public onUpdatedStartupProducts(): void {
         // Sort startup products alphabetically
         productService.sortProductsByName(this.startupProducts);
         // Update startup products in the DOM
@@ -248,9 +262,13 @@ class IndustryPlan {
         const elTitleWrapper = this.industryPlanHeaderHtmlElement.querySelector('.title-wrapper') as HTMLElement;
         const elTitleHidden = elTitleWrapper.querySelector('.title-hidden') as HTMLElement;
         const elTitleInput = elTitleWrapper.querySelector('.title-input') as HTMLInputElement;
-        // Resize the title-input, to match the actual width of the title (plus 2px to avoid glitch)
+        /**
+         * Resize the title-input, to match the actual width of the title - plus an offset
+         * to avoid overflow glitch, when the title is resized BEFORE the fonts are loaded.
+         */
+        const offset = 8; // 8px
         elTitleHidden.textContent = elTitleInput.value;
-        elTitleInput.style.width = (elTitleHidden.offsetWidth + 2) + 'px';
+        elTitleInput.style.width = (elTitleHidden.offsetWidth + offset) + 'px';
     }
 
     private onKeydownTitle(event: KeyboardEvent): void {
@@ -351,7 +369,7 @@ class IndustryPlan {
         // Add "Generate Plan for Target Products"
         const elGeneratePlan = createEl('div', null, ['generate-plan-for-target-products']);
         elGeneratePlan.innerHTML = '<div class="generate-plan-button"></div>';
-        elGeneratePlan.dataset.tooltipPosition = 'bottom-right';
+        elGeneratePlan.dataset.tooltipPosition = 'bottom-left';
         elGeneratePlan.dataset.tooltip = 'Generate the entire industry plan required to make any target products';
         elGeneratePlan.addEventListener('click', this.onClickGeneratePlan.bind(this));
         this.industryPlanHeaderHtmlElement.append(elGeneratePlan);

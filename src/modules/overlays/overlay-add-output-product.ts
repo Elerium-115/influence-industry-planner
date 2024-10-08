@@ -79,7 +79,7 @@ class OverlayAddOutputProduct extends OverlayAbstract {
 
     private onClickOutputProduct(outputProductClicked: I_PRODUCT_DATA_WITH_PROCESS_DATA): void {
         // Add the procesor required for the selected output and its process variant
-        const processorBuildingId = processorService.getProcessorBuildingIdBySdkProcessorId(outputProductClicked.processData.processorType) as number;
+        const processorBuildingId = processorService.getProcessorBuildingIdBySdkProcessorId(outputProductClicked.processData.processorType);
         const processor = this.parentIndustryTier.addProcessorById(processorBuildingId);
         // Add the process variant into the newly created processor
         const process = processor.addProcessById(outputProductClicked.processData.i) as Process;

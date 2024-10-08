@@ -133,6 +133,11 @@ class ProductService {
         return productData.classification === InfluenceSDK.Product.CLASSIFICATIONS.RAW_MATERIAL;
     }
 
+    public isRawMaterialByProductId(productId: string): boolean {
+        const productData = this.getProductDataById(productId);
+        return this.isRawMaterialByProductData(productData);
+    }
+
     private addShipsToAllProducts(): void {
         let nextShipIdx = 1;
         Object.values(InfluenceSDK.Ship.TYPES)

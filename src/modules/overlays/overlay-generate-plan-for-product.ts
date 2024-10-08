@@ -10,7 +10,7 @@ class OverlayGeneratePlanForTargetProducts extends OverlayAbstract {
     private elInputFilterSearch: HTMLInputElement;
     private elEligibleProductsList: HTMLElement;
     private elSelectedProductsList: HTMLElement;
-    private elAddProductsButton: HTMLElement;
+    private elGeneratePlanButton: HTMLElement;
 
     constructor(parentIndustryPlan: IndustryPlan) {
         super();
@@ -68,8 +68,8 @@ class OverlayGeneratePlanForTargetProducts extends OverlayAbstract {
         // Update the lists in the DOM, starting with the Eligible Products
         this.renderEligibleProducts();
         this.renderSelectedProducts();
-        // Enable the "Add Products" button
-        this.elAddProductsButton.classList.remove('disabled');
+        // Enable the "Generate Plan" button
+        this.elGeneratePlanButton.classList.remove('disabled');
     }
 
     private onClickSelectedProduct(selectedProductClicked: I_PRODUCT_DATA): void {
@@ -81,11 +81,11 @@ class OverlayGeneratePlanForTargetProducts extends OverlayAbstract {
         // Update the lists in the DOM, starting with the Selected Products
         this.renderSelectedProducts();
         this.renderEligibleProducts();
-        // Disable the "Add Products" button, if no remaining Selected Products
-        this.elAddProductsButton.classList.toggle('disabled', !this.selectedProducts.length);
+        // Disable the "Generate Plan" button, if no remaining Selected Products
+        this.elGeneratePlanButton.classList.toggle('disabled', !this.selectedProducts.length);
     }
 
-    private onClickAddProductsButton(): void {
+    private onClickGeneratePlanButton(): void {
         const selectedProductIds = this.selectedProducts.map(product => product.i.toString());
         this.parentIndustryPlan.onGeneratePlanForTargetProductIds(selectedProductIds);
         this.remove();
@@ -148,16 +148,16 @@ class OverlayGeneratePlanForTargetProducts extends OverlayAbstract {
                         Selected Products
                     </div>
                     <div class="products-list"></div>
-                    <div class="add-products-button disabled">Add Products</div>
+                    <div class="cta-button disabled">Generate Plan</div>
                 </div>
             </div>
         `;
         this.elInputFilterSearch = this.elOverlayContent.querySelector('input[name="filter-search"]') as HTMLInputElement;
         this.elEligibleProductsList = this.elOverlayContent.querySelector('.eligible-products .products-list') as HTMLElement;
         this.elSelectedProductsList = this.elOverlayContent.querySelector('.selected-products .products-list') as HTMLElement;
-        this.elAddProductsButton = this.elOverlayContent.querySelector('.add-products-button') as HTMLElement;
+        this.elGeneratePlanButton = this.elOverlayContent.querySelector('.cta-button') as HTMLElement;
         this.elInputFilterSearch.addEventListener('input', this.onInputFilterSearch.bind(this));
-        this.elAddProductsButton.addEventListener('click', this.onClickAddProductsButton.bind(this));
+        this.elGeneratePlanButton.addEventListener('click', this.onClickGeneratePlanButton.bind(this));
         // Explicit focus re: HTML property "autofocus" NOT working as expected, if already triggered in a previous overlay
         this.elInputFilterSearch.focus();
         this.renderEligibleProducts();

@@ -67,6 +67,16 @@ class ProcessService {
     private compareProcessesByName(p1: I_PROCESS_DATA, p2: I_PROCESS_DATA): number {
         return p1.name.localeCompare(p2.name);
     }
+
+    public getProcessVariantsForOutputProductId(outputProductId: string): I_PROCESS_DATA[] {
+        return Object.values(this.allProcessesData)
+            .filter(processData => Object.keys(processData.outputs).includes(outputProductId));
+    }
+
+    public getThroughputForProcessOutput(outputProductId: string, processData: I_PROCESS_DATA): number {
+        const outputQty = processData.outputs[outputProductId];
+        return outputQty / processData.recipeTime;
+    }
 }
 
 const processService: ProcessService = ProcessService.getInstance(); // singleton
