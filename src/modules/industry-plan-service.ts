@@ -137,7 +137,6 @@ class IndustryPlanService {
     }
 
     public getSavedIndustryPlansJSON(): IndustryPlanJSON[] {
-        localStorage.removeItem('testPlan'); // cleanup obsolete data //// TO DO: remove this later on
         return JSON.parse(localStorage.getItem('savedIndustryPlans') as string) || [];
     }
 
@@ -236,7 +235,6 @@ class IndustryPlanService {
             });
         });
         loadedIndustryPlan.markHasSecondaryOutputs();
-        loadedIndustryPlan.markHasProcessors();
         loadedIndustryPlan.setSavedStatusAndIcon(true);
         // Finish loading
         loadedIndustryPlan.setIsLoading(false);

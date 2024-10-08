@@ -54,7 +54,6 @@ class IndustryPlan {
         this.industryPlanHeaderHtmlElement.textContent = '';
         this.industryPlanMainHtmlElement.textContent = '';
         this.markHasSecondaryOutputs(); // required when creating a new plan, while another plan with secondary outputs is loaded
-        this.markHasProcessors(); // required when creating a new plan, while another plan with processors is loaded
         this.populateIndustryPlanHeader();
         this.populateIndustryPlanMain();
     }
@@ -153,19 +152,10 @@ class IndustryPlan {
         this.industryPlanHtmlElement.classList.toggle('is-pending-operation', isPendingOperation);
     }
 
-    private hasProcessors(): boolean {
-        return Boolean(this.industryTiers.length && this.industryTiers[0].getProcessors().length);
-    }
-
     public markHasSecondaryOutputs(): void {
         // Show "Scientists in Crew" only if the industry plan contains processes with secondary outputs
         const hasSecondaryOutputs = this.getAllProcessesInPlan().some(process => process.getOutputs().length >= 2);
         this.industryPlanHeaderHtmlElement.classList.toggle('has-secondary-outputs', hasSecondaryOutputs);
-    }
-
-    public markHasProcessors(): void {
-        // Show "Generate Plan for Target Products" only if the industry plan does NOT contain any processors
-        this.industryPlanHeaderHtmlElement.classList.toggle('has-processors', this.hasProcessors());
     }
 
     public addStartupProductById(id: string, shouldSortAndUpdate: boolean = true): void {
@@ -190,10 +180,6 @@ class IndustryPlan {
     }
 
     public onGeneratePlanForTargetProductIds(targetProductIds: string[]): void {
-        if (this.hasProcessors()) {
-            // Do NOT allow this functionality if the industry plan contains any processors
-            return;
-        }
         // Async execution, to show the "pending" overlay during that time
         this.setIsPendingOperation(true);
         setTimeout(async () => {
@@ -312,10 +298,6 @@ class IndustryPlan {
     }
 
     private onClickGeneratePlan(): void {
-        if (this.hasProcessors()) {
-            // Do NOT allow this functionality if the industry plan contains any processors
-            return;
-        }
         new OverlayGeneratePlanForTargetProducts(this);
     }
 
@@ -327,7 +309,6 @@ class IndustryPlan {
         this.setSavedStatusAndIcon(false);
         if (isFunctionalChange) {
             this.markHasSecondaryOutputs();
-            this.markHasProcessors();
             //// TO DO: highlight processes whose inputs are no longer available (e.g. if removed Startup Products / Processors / Processes)
             //// -- mark them as "disabled" + exclude their outputs from "getAvailableInputsForIndustryTier"
         }

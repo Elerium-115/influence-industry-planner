@@ -220,9 +220,6 @@
 
         // Show "Scientists in Crew" only if the industry plan contains processes with secondary outputs
         &:not(.has-secondary-outputs) #refining-penalty { display: none; }
-
-        // Show "Generate Plan for Target Products" only if the industry plan does NOT contain any processors
-        &.has-processors .generate-plan-for-target-products { display: none; }
     }
 
     #industry-plan-main {
