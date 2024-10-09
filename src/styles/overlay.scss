@@ -490,6 +490,7 @@
                     .product-name { @include single-line-with-ellipsis; }
 
                     .process-name {
+                        color: var(--color-processor);
                         flex-grow: 1;
                         opacity: 0.5;
                         text-align: right;

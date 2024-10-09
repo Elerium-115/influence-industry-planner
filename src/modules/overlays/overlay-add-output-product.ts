@@ -1,3 +1,4 @@
+import {getItemNameSafe} from '../abstract-core.js';
 import {createEl} from '../dom-core.js';
 import {OverlayAbstract} from './overlay-abstract';
 import {industryPlanService} from '../industry-plan-service.js';
@@ -93,15 +94,21 @@ class OverlayAddOutputProduct extends OverlayAbstract {
         this.elOutputProductsList.textContent = '';
         this.eligibleOutputs.forEach(outputProduct => {
             const el = createEl('div', null, ['product']);
+            const processorBuildingId = processorService.getProcessorBuildingIdBySdkProcessorId(outputProduct.processData.processorType);
+            const buildingName = processorService.getBuildingName(processorBuildingId);
+            const processorClassName = `-${getItemNameSafe(buildingName)}`; // e.g. "-empty-lot"
             el.innerHTML += /*html*/ `
                 <div class="product-icon -p${outputProduct.i}"></div>
                 <div class="product-name">${outputProduct.name}</div>
-                <div class="process-name">${outputProduct.processData.name}</div>
+                <div class="process-name processor ${processorClassName}">${outputProduct.processData.name}</div>
             `;
             const inputNames = Object.keys(outputProduct.processData.inputs)
                 .map(inputProductId => productService.getProductNameById(inputProductId));
             el.dataset.tooltipPosition = 'top-right';
-            el.dataset.tooltip = `Inputs: ${inputNames.join(', ')}`;
+            el.dataset.tooltip = `${buildingName}`;
+            if (inputNames.length) {
+                el.dataset.tooltip += ` - Inputs: ${inputNames.join(', ')}`;
+            }
             el.addEventListener('click', () => this.onClickOutputProduct(outputProduct));
             this.elOutputProductsList.append(el);
         });
