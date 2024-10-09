@@ -69,33 +69,101 @@
 
         &:empty::before { content: 'Create or load an industry plan using the menu in the top-left corner'; }
 
-        .remove-plan {
-            bottom: 0;
-            cursor: pointer;
+        #plan-menu {
+            align-items: center;
+            color: var(--color-text-normal);
             display: flex;
-            padding: 0 12px;
+            flex-direction: column;
+            height: 40px;
             position: absolute;
             right: 100%;
-            top: 0;
+            top: 4px;
+            width: 64px;
 
-            &::before {
+            .plan-menu-inner {
                 align-items: center;
-                color: var(--color-warning);
-                content: '✕';
                 display: flex;
-                font-size: 150%;
-                height: 100%;
+                height: 40px;
                 justify-content: center;
-                width: 40px;
+                position: relative;
+                width: 56px;
+
+                &::before {
+                    content: '⋮';
+                    font-size: 150%;
+                    transition: all 250ms;
+                }
+
+                ul {
+                    background-color: var(--color-nav-bg);
+                    display: flex;
+                    filter: drop-shadow(4px 4px 4px black);
+                    flex-direction: column;
+                    left: 0;
+                    list-style: none;
+                    position: absolute;
+                    top: 100%;
+                    z-index: 1;
+
+                    li {
+                        align-items: center;
+                        color: var(--color-text-normal);
+                        cursor: pointer;
+                        display: flex;
+                        line-height: 40px;
+                        padding-right: 16px;
+                        white-space: nowrap;
+
+                        &:hover {
+                            @include hover-lighten-bg;
+                            color: white !important;
+                        }
+
+                        &::before {
+                            content: 'x';
+                            text-align: center;
+                            width: 56px;
+                        }
+
+                        &.-duplicate {
+                            color: rgb(var(--rgb-processor-bioreactor));
+
+                            &::before { content: '❐'; }
+                        }
+
+                        &.-share {
+                            color: rgb(var(--rgb-processor-factory));
+
+                            &::before { content: '⎋'; }
+                        }
+
+                        &.-remove {
+                            color: var(--color-warning);
+
+                            &::before { content: '✕'; }
+
+                            &:hover {
+                                background-color: var(--color-warning);
+                                color: white;
+                            }
+                        }
+                    }
+                }
             }
 
-            &:hover::before {
-                background-color: var(--color-warning);
-                color: white;
+            &:hover {
+                .plan-menu-inner {
+                    background-color: var(--color-nav-bg);
+
+                    &::before {
+                        color: white;
+                        transform: rotate(90deg);
+                    }
+                }
             }
+
+            &:not(:hover) .plan-menu-inner ul { display: none; }
         }
-
-        &:not(:hover) .remove-plan { display: none; }
 
         .title-wrapper {
             // These elements must have identical styling, for the width measurement @ "IndustryPlan.onInputTitle"
@@ -118,7 +186,10 @@
                 color: var(--color-text-normal);
                 padding: 0;
 
-                &:hover, &:focus { background-color: black; }
+                &:hover, &:focus {
+                    background-color: var(--color-nav-bg);
+                    color: white;
+                }
             }
         }
 

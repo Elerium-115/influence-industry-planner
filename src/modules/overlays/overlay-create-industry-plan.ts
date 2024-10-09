@@ -19,8 +19,19 @@ class OverlayCreateIndustryPlan extends OverlayAbstract {
         this.elOverlayContent.classList.remove('invalid-title');
     }
 
+    private onKeydownPlanTitle(event: KeyboardEvent): void {
+        const elInputPlanTitle = event.target as HTMLInputElement;
+        // Pressing "Enter" while this input is focused => trigger its "submit" handler
+        if (event.key === 'Enter' && elInputPlanTitle === document.activeElement) {
+            this.onClickCreatePlanButton();
+        }
+    }
+
     private onClickCreatePlanButton(): void {
         const planTitle = this.elInputPlanTitle.value.trim();
+        if (!planTitle) {
+            return;
+        }
         if (industryPlanService.isReservedPlanTitle(planTitle)) {
             this.elOverlayContent.classList.add('invalid-title');
             return;
@@ -44,6 +55,7 @@ class OverlayCreateIndustryPlan extends OverlayAbstract {
         this.elInputPlanTitle = this.elOverlayContent.querySelector('input[name="plan-title"]') as HTMLInputElement;
         this.elCreatePlanButton = this.elOverlayContent.querySelector('.create-plan-button') as HTMLElement;
         this.elInputPlanTitle.addEventListener('input', this.onInputPlanTitle.bind(this));
+        this.elInputPlanTitle.addEventListener('keydown', this.onKeydownPlanTitle.bind(this));
         this.elCreatePlanButton.addEventListener('click', this.onClickCreatePlanButton.bind(this));
         // Explicit focus re: HTML property "autofocus" NOT working as expected, if already triggered in a previous overlay
         this.elInputPlanTitle.focus();

@@ -15,7 +15,7 @@ import {ProductSelectable} from './product-selectable.js';
 import {productService} from './product-service.js';
 import {OverlayCreateIndustryPlan} from './overlays/overlay-create-industry-plan.js';
 import {OverlayMyIndustryPlans} from './overlays/overlay-my-industry-plans.js';
-import {OverlayPublicIndustryPlans} from './overlays/overlay-public-industry-plans.js';
+import {OverlaySharedIndustryPlans} from './overlays/overlay-shared-industry-plans.js';
 
 interface IndustryPlanJSON {
     id: string,
@@ -132,8 +132,8 @@ class IndustryPlanService {
         new OverlayMyIndustryPlans();
     }
 
-    public onClickPublicIndustryPlans(): void {
-        new OverlayPublicIndustryPlans();
+    public onClickSharedIndustryPlans(): void {
+        new OverlaySharedIndustryPlans();
     }
 
     public getSavedIndustryPlansJSON(): IndustryPlanJSON[] {

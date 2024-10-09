@@ -234,6 +234,14 @@ class IndustryPlan {
         });
     }
 
+    private onClickDuplicatePlan(): void {
+        console.log(`--- [onClickDuplicatePlan]`); //// TEST
+    }
+
+    private onClickSharePlan(): void {
+        console.log(`--- [onClickSharePlan]`); //// TEST
+    }
+
     private onClickRemovePlan(): void {
         if (!confirm('Are you sure you want to permanently remove this industry plan?')) {
             return; // Abort action
@@ -315,12 +323,8 @@ class IndustryPlan {
     }
 
     private populateIndustryPlanHeader(): void {
-        // Add icon to remove this plan
-        const elRemovePlan = createEl('div', null, ['remove-plan']);
-        elRemovePlan.dataset.tooltipPosition = 'bottom-left';
-        elRemovePlan.dataset.tooltip = 'Remove this industry plan';
-        elRemovePlan.addEventListener('click', this.onClickRemovePlan.bind(this));
-        this.industryPlanHeaderHtmlElement.append(elRemovePlan);
+        // Add plan-menu
+        this.industryPlanHeaderHtmlElement.append(this.makePlanMenuHtmlElement());
         // Add editable title
         const elTitleWrapper = createEl('div', null, ['title-wrapper']);
         elTitleWrapper.dataset.tooltipPosition = 'bottom-left';
@@ -370,6 +374,26 @@ class IndustryPlan {
         this.industryPlanMainHtmlElement.append(this.industryTiersHtmlElement);
         // Add initial industry tier
         this.addIndustryTier();
+    }
+
+    private makePlanMenuHtmlElement(): HTMLElement {
+        const el = createEl('div', 'plan-menu');
+        el.innerHTML = /*html*/ `
+            <div class="plan-menu-inner">
+                <ul>
+                    <li class='-duplicate'>Duplicate</li>
+                    <li class='-share'>Share</li>
+                    <li class='-remove'>Remove</li>
+                </ul>
+            </div>
+        `;
+        const elDuplicatePlane = el.querySelector('.-duplicate') as HTMLElement;
+        const elSharePlan = el.querySelector('.-share') as HTMLElement;
+        const elRemovePlan = el.querySelector('.-remove') as HTMLElement;
+        elDuplicatePlane.addEventListener('click', this.onClickDuplicatePlan.bind(this));
+        elSharePlan.addEventListener('click', this.onClickSharePlan.bind(this));
+        elRemovePlan.addEventListener('click', this.onClickRemovePlan.bind(this));
+        return el;
     }
 
     private makeStartupProductsHtmlElement(): HTMLElement {
