@@ -134,7 +134,11 @@
                         &.-share {
                             color: rgb(var(--rgb-processor-factory));
 
-                            &::before { content: '⎋'; }
+                            &::before {
+                                content: '⮑';
+                                transform: scaleY(-1);
+                                font-size: 70%;
+                            }
                         }
 
                         &.-remove {
@@ -182,13 +186,24 @@
             }
 
             .title-input {
-                background: transparent;
+                --color-duplicated: rgb(var(--rgb-processor-bioreactor));
+                background-color: transparent;
                 color: var(--color-text-normal);
                 padding: 0;
 
                 &:hover, &:focus {
                     background-color: var(--color-nav-bg);
                     color: white;
+                }
+
+                &.flash-title {
+                    animation: flash-title 500ms;
+
+                    @keyframes flash-title {
+                        25% { color: var(--color-duplicated); }
+                        50% { color: var(--color-text-normal); }
+                        75% { color: var(--color-duplicated); }
+                    }
                 }
             }
         }
@@ -545,12 +560,12 @@
                                                 animation: flash-primary 500ms;
 
                                                 &::after { @include flash-tooltip(var(--color-processor)); }
-                                            }
 
-                                            @keyframes flash-primary {
-                                                25% { background-color: var(--color-processor-highlight-subtle); }
-                                                50% { background-color: unset; }
-                                                75% { background-color: var(--color-processor-highlight-subtle); }
+                                                @keyframes flash-primary {
+                                                    25% { background-color: var(--color-processor-highlight-subtle); }
+                                                    50% { background-color: unset; }
+                                                    75% { background-color: var(--color-processor-highlight-subtle); }
+                                                }
                                             }
 
                                             &:hover { border-color: white; }

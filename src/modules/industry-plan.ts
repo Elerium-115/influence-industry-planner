@@ -38,7 +38,7 @@ class IndustryPlan {
             this.id = id;
         } else {
             // Newly created plan
-            this.id = crypto.randomUUID();
+            this.id = industryPlanService.generateIndustryPlanId();
             this.updatedTs = new Date().getTime();
         }
         this.title = title;
@@ -235,7 +235,15 @@ class IndustryPlan {
     }
 
     private onClickDuplicatePlan(): void {
-        console.log(`--- [onClickDuplicatePlan]`); //// TEST
+        industryPlanService.duplicateIndustryPlan();
+    }
+
+    public onDuplicatedPlan(): void {
+        const elTitleInput = this.industryPlanHeaderHtmlElement.querySelector('.title-input') as HTMLInputElement;
+        elTitleInput.classList.add('flash-title');
+        setTimeout(() => {
+            elTitleInput.classList.remove('flash-title');
+        }, 500); // match the animation duration for "flash-title"
     }
 
     private onClickSharePlan(): void {

@@ -136,21 +136,35 @@ class IndustryPlanService {
         new OverlaySharedIndustryPlans();
     }
 
-    public getSavedIndustryPlansJSON(): IndustryPlanJSON[] {
-        return JSON.parse(localStorage.getItem('savedIndustryPlans') as string) || [];
+    public getSavedIndustryPlansJSON(sortBy: string = 'title'): IndustryPlanJSON[] {
+        const savedIndustryPlansJSON = JSON.parse(localStorage.getItem('savedIndustryPlans') as string) || [];
+        switch (sortBy) {
+            case 'updatedTsDesc':
+                savedIndustryPlansJSON.sort(this.compareIndustryPlanJSONByUpdatedTsDesc);
+                break;
+            case 'title':
+            default:
+                savedIndustryPlansJSON.sort(this.compareIndustryPlanJSONByTitle);
+                break;
+        }
+        return savedIndustryPlansJSON;
     }
 
     public getLatestSavedIndustryPlanJSON(): IndustryPlanJSON|null {
-        const savedIndustryPlansJSON = industryPlanService.getSavedIndustryPlansJSON();
-        if (!savedIndustryPlansJSON.length) {
-            return null;
-        }
-        savedIndustryPlansJSON.sort(this.compareIndustryPlanJSONByUpdatedTsDesc);
-        return savedIndustryPlansJSON[0];
+        const savedIndustryPlansJSON = industryPlanService.getSavedIndustryPlansJSON('updatedTsDesc');
+        return savedIndustryPlansJSON.length ? savedIndustryPlansJSON[0] : null;
+    }
+
+    private compareIndustryPlanJSONByTitle(p1: IndustryPlanJSON, p2: IndustryPlanJSON): number {
+        return p1.title.localeCompare(p2.title);
     }
 
     private compareIndustryPlanJSONByUpdatedTsDesc(p1: IndustryPlanJSON, p2: IndustryPlanJSON): number {
         return p2.updatedTs - p1.updatedTs;
+    }
+
+    public generateIndustryPlanId(): string {
+        return crypto.randomUUID();
     }
 
     private makeIndustryPlanJSON(): IndustryPlanJSON {
@@ -246,6 +260,18 @@ class IndustryPlanService {
         savedIndustryPlansJSON = savedIndustryPlansJSON.filter(industryPlanJSON => industryPlanJSON.id !== this.industryPlan?.getId());
         // Commit remaining saved industry plans into local-storage
         localStorage.setItem('savedIndustryPlans', JSON.stringify(savedIndustryPlansJSON));
+    }
+
+    public duplicateIndustryPlan(): void {
+        const duplicatedIndustryPlanJSON = this.makeIndustryPlanJSON();
+        duplicatedIndustryPlanJSON.id = this.generateIndustryPlanId();
+        duplicatedIndustryPlanJSON.title += ' copy';
+        duplicatedIndustryPlanJSON.updatedTs = new Date().getTime();
+        const savedIndustryPlansJSON = industryPlanService.getSavedIndustryPlansJSON();
+        savedIndustryPlansJSON.push(duplicatedIndustryPlanJSON);
+        localStorage.setItem('savedIndustryPlans', JSON.stringify(savedIndustryPlansJSON));
+        this.loadIndustryPlanJSON(duplicatedIndustryPlanJSON);
+        this.industryPlan?.onDuplicatedPlan();
     }
 
     public getAvailableInputsForIndustryTier(targetIndustryTier: IndustryTier): ProductSelectable[] {
