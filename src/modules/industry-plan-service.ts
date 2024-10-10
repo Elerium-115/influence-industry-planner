@@ -1,7 +1,7 @@
 import * as InfluenceSDK from '@influenceth/sdk';
 import {uniquePushToArray} from './abstract-core.js';
 import {IndustryPlan} from './industry-plan.js';
-import {LineDataStartupProduct, StartupProduct} from './startup-product.js';
+import {StartupProduct} from './startup-product.js';
 import {IndustryTier} from './industry-tier.js';
 import {Processor} from './processor.js';
 import {
@@ -13,6 +13,7 @@ import {
 import {Process} from './process.js';
 import {I_PROCESS_DATA, processService} from './process-service.js';
 import {ProductSelectable} from './product-selectable.js';
+import {ProductIcon} from './product-icon.js';
 import {productService} from './product-service.js';
 import {OverlayCreateIndustryPlan} from './overlays/overlay-create-industry-plan.js';
 import {OverlayMyIndustryPlans} from './overlays/overlay-my-industry-plans.js';
@@ -43,6 +44,11 @@ interface ProcessJSON {
 
 interface I_PROCESS_DATA_WITH_PRIMARY_OUTPUT_PRODUCT_ID extends I_PROCESS_DATA {
     primaryOutputProductId: string,
+}
+
+interface LineDataWithTarget {
+    line: any, // LeaderLine instance
+    elTarget: HTMLElement,
 }
 
 const LeaderLineOptionsDefault = {
@@ -749,13 +755,13 @@ class IndustryPlanService {
             .map(input => input.getHtmlElement());
     }
 
-    private makeLineDataForStartupProduct(startupProduct: StartupProduct, elTarget: HTMLElement): LineDataStartupProduct {
+    private makeLineDataForStartupProduct(startupProduct: StartupProduct, elTarget: HTMLElement): LineDataWithTarget {
         const line = new LeaderLine(
             startupProduct.getHtmlElement(),
             elTarget,
             LeaderLineOptionsByType.fromStartupProduct,
         );
-        const lineData: LineDataStartupProduct = {
+        const lineData: LineDataWithTarget = {
             line,
             elTarget,
         };
@@ -770,7 +776,7 @@ class IndustryPlanService {
                 return;
             }
             // THEN: remove lines to any inputs that have been removed
-            const linesToRemove: LineDataStartupProduct[] = [];
+            const linesToRemove: LineDataWithTarget[] = [];
             startupProduct.getLines().forEach(lineData => {
                 if (document.contains(lineData.elTarget)) {
                     lineData.line.position();
@@ -806,11 +812,16 @@ class IndustryPlanService {
         }
         startupProduct.markHasLines();
     }
+
+    public toggleLinesForOutput(output: ProductIcon): void {
+        //// ...
+    }
 }
 
 const industryPlanService: IndustryPlanService = IndustryPlanService.getInstance(); // singleton
 
 export {
     IndustryPlanJSON,
+    LineDataWithTarget,
     industryPlanService,
 }

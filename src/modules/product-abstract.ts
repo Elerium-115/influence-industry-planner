@@ -1,3 +1,5 @@
+import {removeFromArray} from './abstract-core.js';
+import {LineDataWithTarget} from './industry-plan-service.js';
 import {I_PRODUCT_DATA, productService} from './product-service.js';
 
 class ProductAbstract {
@@ -9,6 +11,8 @@ class ProductAbstract {
      */
     protected id: string;
     protected data: I_PRODUCT_DATA;
+    protected lines: LineDataWithTarget[] = [];
+    protected htmlElement: HTMLElement;
 
     constructor(id: string) {
         this.id = id;
@@ -29,6 +33,42 @@ class ProductAbstract {
 
     public getName(): string {
         return this.data.name;
+    }
+
+    public getLines(): LineDataWithTarget[] {
+        return this.lines;
+    }
+
+    public addLineData(lineData: LineDataWithTarget): void {
+        this.lines.push(lineData);
+    }
+
+    private removeLineData(lineData: LineDataWithTarget): void {
+        lineData.line.remove();
+        this.lines = removeFromArray(this.lines, lineData);
+    }
+
+    public removeLinesByList(linesToRemove: LineDataWithTarget[]): void {
+        linesToRemove.forEach(lineData => this.removeLineData(lineData));
+    }
+
+    public removeAllLines(): void {
+        this.lines.forEach(lineData => lineData.line.remove());
+        this.lines = [];
+    }
+
+    /**
+     * NOTE: This function should NOT be called from within
+     * "addLineData", "removeLineData" etc. in this class,
+     * but instead from the overall handlers which call those
+     * functions, at the very end of each such handler.
+     */
+    public markHasLines(): void {
+        this.htmlElement.classList.toggle('has-lines', Boolean(this.lines.length));
+    }
+
+    public getHtmlElement(): HTMLElement {
+        return this.htmlElement;
     }
 }
 

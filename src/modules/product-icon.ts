@@ -9,7 +9,6 @@ class ProductIcon extends ProductAbstract {
     private parentProcess: Process;
     private tooltipPosition: TooltipPosition;
     private qty: number|null = null; // null for startup products
-    private htmlElement: HTMLElement;
 
     constructor(id: string, parentProcess: Process, tooltipPosition: TooltipPosition = 'top-left') {
         super(id);
@@ -17,10 +16,6 @@ class ProductIcon extends ProductAbstract {
         this.parentProcess = parentProcess;
         this.tooltipPosition = tooltipPosition;
         this.htmlElement = this.makeHtmlElement();
-    }
-
-    public getHtmlElement(): HTMLElement {
-        return this.htmlElement;
     }
 
     public toggleIsPrimary(isPrimary: boolean, isPrimaryChanged: boolean = true): void {
@@ -37,7 +32,7 @@ class ProductIcon extends ProductAbstract {
         this.qty = qty;
         // Also add / update the qty in the tooltip
         const qtyInTooltip = getFormattedRoundNumber(qty, roundUpInTooltip);
-        this.getHtmlElement().dataset.tooltip = `${this.getName()}: ${qtyInTooltip}`;
+        this.htmlElement.dataset.tooltip = `${this.getName()}: ${qtyInTooltip}`;
     }
 
     private onClickProductIcon(): void {

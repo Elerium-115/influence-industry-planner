@@ -1,4 +1,5 @@
 import {createEl} from './dom-core.js';
+import {industryPlanService} from './industry-plan-service.js';
 import {Processor} from './processor.js';
 import {I_PROCESS_DATA, processService} from './process-service.js';
 import {ProductIcon} from './product-icon.js';
@@ -185,6 +186,7 @@ class Process {
         if (this.outputs.includes(inputOrOutput)) {
             // Output product clicked => set as primary output
             this.setPrimaryOutput(inputOrOutput);
+            industryPlanService.toggleLinesForOutput(inputOrOutput);
         }
     }
 
