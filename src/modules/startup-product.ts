@@ -1,6 +1,6 @@
 import {createEl} from './dom-core.js';
 import {IndustryPlan} from './industry-plan.js';
-import {industryPlanService} from './industry-plan-service.js';
+import {leaderLineService} from './leader-line-service.js';
 import {ProductAbstract} from './product-abstract.js';
 import {productService} from './product-service.js';
 
@@ -23,7 +23,16 @@ class StartupProduct extends ProductAbstract {
     }
 
     private onClickStartupProduct(): void {
-        industryPlanService.toggleLinesForStartupProduct(this);
+        leaderLineService.toggleLinesForStartupProduct(this);
+        leaderLineService.increaseLinesForStartupProduct(this);
+    }
+
+    private onMouseenterStartupProduct(): void {
+        leaderLineService.increaseLinesForStartupProduct(this);
+    }
+
+    private onMouseleaveStartupProduct(): void {
+        leaderLineService.decreaseLinesForStartupProduct(this);
     }
 
     private makeHtmlElement(): HTMLElement {
@@ -35,6 +44,8 @@ class StartupProduct extends ProductAbstract {
         `;
         el.querySelector('.remove-product')?.addEventListener('click', this.remove.bind(this));
         el.addEventListener('click', this.onClickStartupProduct.bind(this));
+        el.addEventListener('mouseenter', this.onMouseenterStartupProduct.bind(this));
+        el.addEventListener('mouseleave', this.onMouseleaveStartupProduct.bind(this));
         return el;
     }
 

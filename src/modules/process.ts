@@ -1,5 +1,5 @@
 import {createEl} from './dom-core.js';
-import {industryPlanService} from './industry-plan-service.js';
+import {leaderLineService} from './leader-line-service.js';
 import {Processor} from './processor.js';
 import {I_PROCESS_DATA, processService} from './process-service.js';
 import {ProductIcon} from './product-icon.js';
@@ -186,16 +186,23 @@ class Process {
         if (this.outputs.includes(inputOrOutput)) {
             // Output product clicked => set as primary output
             this.setPrimaryOutput(inputOrOutput);
-            industryPlanService.toggleLinesForOutput(inputOrOutput);
+            leaderLineService.toggleLinesForOutput(inputOrOutput);
+            leaderLineService.increaseLinesForOutput(inputOrOutput);
         }
     }
 
     public onInputOrOutputMouseenter(inputOrOutput: ProductIcon): void {
-        //// TO DO: show connections to inputs / outputs from other processes
+        if (this.outputs.includes(inputOrOutput)) {
+            // Output product
+            leaderLineService.increaseLinesForOutput(inputOrOutput);
+        }
     }
 
     public onInputOrOutputMouseleave(inputOrOutput: ProductIcon): void {
-        //// TO DO: hide connections to inputs / outputs from other processes
+        if (this.outputs.includes(inputOrOutput)) {
+            // Output product
+            leaderLineService.decreaseLinesForOutput(inputOrOutput);
+        }
     }
 
     private makeHtmlElement(): HTMLElement {

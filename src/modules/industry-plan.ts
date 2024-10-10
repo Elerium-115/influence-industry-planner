@@ -1,6 +1,6 @@
-import {uniquePushToArray} from './abstract-core.js';
 import {createEl} from './dom-core.js';
 import {RefiningPenalty} from './refining-penalty.js';
+import {leaderLineService} from './leader-line-service.js';
 import {industryPlanService} from './industry-plan-service.js';
 import {StartupProduct} from './startup-product.js';
 import {IndustryTier} from './industry-tier.js';
@@ -340,7 +340,7 @@ class IndustryPlan {
             this.markHasSecondaryOutputs();
             //// TO DO: highlight processes whose inputs are no longer available (e.g. if removed Startup Products / Processors / Processes)
             //// -- mark them as "disabled" + exclude their outputs from "getAvailableInputsForIndustryTier"
-            industryPlanService.refreshLines();
+            leaderLineService.refreshLines();
         }
     }
 

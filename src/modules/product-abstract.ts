@@ -1,5 +1,5 @@
 import {removeFromArray} from './abstract-core.js';
-import {LineDataWithTarget} from './industry-plan-service.js';
+import {LineDataWithTarget} from './leader-line-service.js';
 import {I_PRODUCT_DATA, productService} from './product-service.js';
 
 class ProductAbstract {

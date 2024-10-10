@@ -8,17 +8,14 @@ global.industryPlanService = industryPlanService;
 // Pre-load the latest saved industry plan, if any
 const latestSavedIndustryPlanJSON = industryPlanService.getLatestSavedIndustryPlanJSON();
 if (latestSavedIndustryPlanJSON) {
-    console.log(`--- LOADING latestSavedIndustryPlanJSON:`, latestSavedIndustryPlanJSON); //// TEST
     industryPlanService.loadIndustryPlanJSON(latestSavedIndustryPlanJSON);
 } else {
-    console.log(`--- MOCKING new industry plan`); //// TEST
+    // Mock a new industry plan
     const testIndustryPlan = new IndustryPlan('Test Plan');
-
-    // Test add startup products
+    // Mock startup products
     const testStartupProductIds = ['3', '15', '23', '44', '48', '52', '55', '81'];
     testIndustryPlan.batchAddStartupProductsByIds(testStartupProductIds);
-
-    // Test add processors + processes into the last industry tier
+    // Mock processors + processes
     const testProcessorsAndProcesses = [
         {id: PROCESSOR_BUILDING_IDS.EXTRACTOR, processIds: [1, 5, 6, 8, 19]},
         {id: PROCESSOR_BUILDING_IDS.BIOREACTOR, processIds: []},
@@ -28,12 +25,10 @@ if (latestSavedIndustryPlanJSON) {
         {id: PROCESSOR_BUILDING_IDS.EMPTY_LOT, processIds: [306]},
     ];
     testProcessorsAndProcesses.forEach(processorData => {
-        const industryTier = testIndustryPlan.getIndustryTierLast();
-        const processor = industryTier.addProcessorById(processorData.id);
+        const lastIndustryTier = testIndustryPlan.getIndustryTierLast();
+        const processor = lastIndustryTier.addProcessorById(processorData.id);
         processorData.processIds.forEach(processId => {
             processor.addProcessById(processId);
         });
     });
-
-    console.log(`--- testIndustryPlan:`, testIndustryPlan); //// TEST
 }
