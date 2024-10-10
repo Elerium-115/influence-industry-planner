@@ -5,6 +5,7 @@ import {industryPlanService} from './industry-plan-service.js';
 import {StartupProduct} from './startup-product.js';
 import {IndustryTier} from './industry-tier.js';
 import {Process} from './process.js';
+import {ProductIcon} from './product-icon.js';
 import {productService} from './product-service.js';
 import {OverlayAddStartupProducts} from './overlays/overlay-add-startup-products.js';
 import {OverlayGeneratePlanForTargetProducts} from './overlays/overlay-generate-plan-for-product.js';
@@ -115,19 +116,17 @@ class IndustryPlan {
         return processes;
     }
 
-    //// TO DO: cleanup if still not used, after some time...
-    // /**
-    //  * Get the DISTINCT product IDs of all outputs in this industry plan
-    //  */
-    // private getAllOutputProductIdsInPlan(): string[] {
-    //     const outputProductIds: string[] = [];
-    //     this.getAllProcessesInPlan().forEach(process => {
-    //         process.getOutputs().forEach(output => {
-    //             uniquePushToArray(outputProductIds, output.getId());
-    //         });
-    //     });
-    //     return outputProductIds;
-    // }
+    public getAllInputsMatchingProductId(productId: string): ProductIcon[] {
+        const inputs: ProductIcon[] = [];
+        this.getAllProcessesInPlan().forEach(process => {
+            process.getInputs().forEach(input => {
+                if (input.getId() === productId) {
+                    inputs.push(input);
+                }
+            });
+        });
+        return inputs;
+    }
 
     private getElStartupProdutsList(): HTMLElement {
         // Always "HTMLElement", never "null"
@@ -327,6 +326,7 @@ class IndustryPlan {
             this.markHasSecondaryOutputs();
             //// TO DO: highlight processes whose inputs are no longer available (e.g. if removed Startup Products / Processors / Processes)
             //// -- mark them as "disabled" + exclude their outputs from "getAvailableInputsForIndustryTier"
+            industryPlanService.refreshLines();
         }
     }
 

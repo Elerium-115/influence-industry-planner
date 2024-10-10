@@ -333,6 +333,13 @@
                     padding: 2px 16px 2px 2px;
                     position: relative;
 
+                    &.has-lines {
+                        outline: 1px dashed rgba(255, 255, 255, 0.75);
+                        z-index: 1;
+
+                        .remove-product { z-index: -1; }
+                    }
+
                     .product-name {
                         @include single-line-with-ellipsis;
                         font-size: 90%;

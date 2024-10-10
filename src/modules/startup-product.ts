@@ -1,10 +1,18 @@
+import {removeFromArray} from './abstract-core.js';
 import {createEl} from './dom-core.js';
 import {IndustryPlan} from './industry-plan.js';
+import {industryPlanService} from './industry-plan-service.js';
 import {ProductAbstract} from './product-abstract.js';
 import {productService} from './product-service.js';
 
+interface LineDataStartupProduct {
+    line: any, // LeaderLine instance
+    elTarget: HTMLElement,
+}
+
 class StartupProduct extends ProductAbstract {
     private parentIndustryPlan: IndustryPlan;
+    private lines: LineDataStartupProduct[] = [];
     private htmlElement: HTMLElement;
 
     constructor(id: string, parentIndustryPlan: IndustryPlan) {
@@ -22,8 +30,35 @@ class StartupProduct extends ProductAbstract {
         this.htmlElement = this.makeHtmlElement();
     }
 
+    public getLines(): any[] {
+        return this.lines;
+    }
+
+    public removeLines(): void {
+        this.lines.forEach(lineData => lineData.line.remove());
+        this.lines = [];
+    }
+
+    public removeLinesByList(linesToRemove: LineDataStartupProduct[]): void {
+        linesToRemove.forEach(lineData => this.removeLineData(lineData));
+    }
+
+    private removeLineData(lineData: LineDataStartupProduct): void {
+        lineData.line.remove();
+        this.lines = removeFromArray(this.lines, lineData);
+    }
+
+    public markHasLines(hasLines: boolean): void {
+        this.htmlElement.classList.toggle('has-lines', hasLines);
+    }
+
     public getHtmlElement(): HTMLElement {
         return this.htmlElement;
+    }
+
+    private onClickStartupProduct(): void {
+        industryPlanService.toggleLinesForStartupProduct(this);
+        this.markHasLines(Boolean(this.lines.length));
     }
 
     private makeHtmlElement(): HTMLElement {
@@ -34,6 +69,7 @@ class StartupProduct extends ProductAbstract {
             <div class="remove-product"></div>
         `;
         el.querySelector('.remove-product')?.addEventListener('click', this.remove.bind(this));
+        el.addEventListener('click', this.onClickStartupProduct.bind(this));
         return el;
     }
 
@@ -44,5 +80,6 @@ class StartupProduct extends ProductAbstract {
 }
 
 export {
+    LineDataStartupProduct,
     StartupProduct,
 }

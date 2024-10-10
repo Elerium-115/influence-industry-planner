@@ -1,6 +1,7 @@
 import * as InfluenceSDK from '@influenceth/sdk';
 import {uniquePushToArray} from './abstract-core.js';
 import {IndustryPlan} from './industry-plan.js';
+import {LineDataStartupProduct, StartupProduct} from './startup-product.js';
 import {IndustryTier} from './industry-tier.js';
 import {Processor} from './processor.js';
 import {
@@ -43,6 +44,23 @@ interface ProcessJSON {
 interface I_PROCESS_DATA_WITH_PRIMARY_OUTPUT_PRODUCT_ID extends I_PROCESS_DATA {
     primaryOutputProductId: string,
 }
+
+const LeaderLineOptionsDefault = {
+    dash: {animation: true, len: 6, gap: 6},
+    dropShadow: {dx: 0, dy: 6, blur: 0},
+    endPlugSize: 2,
+    gradient: true,
+    size: 1,
+    startPlug: 'disc',
+    startPlugSize: 2,
+};
+
+const LeaderLineOptionsByType = {
+    fromStartupProduct: {
+        ...LeaderLineOptionsDefault,
+        color: 'rgba(255, 255, 255, 0.75)',
+    },
+};
 
 /**
  * Singleton
@@ -722,6 +740,52 @@ class IndustryPlanService {
         addedProcess.setPrimaryOutputByProductId(process.primaryOutputProductId);
         // Add its outputs into "availableInputProductIds"
         Object.keys(process.outputs).forEach(outputProductId => uniquePushToArray(this.availableInputProductIds, outputProductId));
+    }
+
+    public refreshLines(): void {
+        const industryPlan = this.industryPlan as IndustryPlan;
+        industryPlan.getStartupProducts().forEach(startupProduct => {
+            if (!startupProduct.getLines().length) {
+                // Skip startup product without lines
+                return;
+            }
+            const linesToRemove: LineDataStartupProduct[] = [];
+            startupProduct.getLines().forEach(lineData => {
+                if (document.contains(lineData.elTarget)) {
+                    lineData.line.position();
+                } else {
+                    // Mark the lines to be removed, AFTER the list of lines has been parsed
+                    linesToRemove.push(lineData);
+                }
+            });
+            startupProduct.removeLinesByList(linesToRemove);
+            if (!startupProduct.getLines().length) {
+                startupProduct.markHasLines(false);
+            }
+        });
+    }
+
+    public toggleLinesForStartupProduct(startupProduct: StartupProduct): void {
+        if (startupProduct.getLines().length) {
+            startupProduct.removeLines();
+        } else {
+            // Line targets = same product @ inputs of processes (higher-tier)
+            const elTargets = (this.industryPlan as IndustryPlan)
+                .getAllInputsMatchingProductId(startupProduct.getId())
+                .map(input => input.getHtmlElement());
+            elTargets.forEach(elTarget => {
+                const line = new LeaderLine(
+                    startupProduct.getHtmlElement(),
+                    elTarget,
+                    LeaderLineOptionsByType.fromStartupProduct,
+                );
+                const lineData: LineDataStartupProduct = {
+                    line,
+                    elTarget,
+                };
+                startupProduct.getLines().push(lineData);
+            });
+        }
     }
 }
 

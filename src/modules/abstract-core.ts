@@ -23,6 +23,19 @@ function uniquePushToArray(arr: any[], value: any): void {
     }
 }
 
+/**
+ * NOTE: Do NOT call this function on the elements of an array
+ * while that array is being parsed (e.g. via "forEach"), because
+ * it mutates that array, leading to skipped elements!
+ */
+function removeFromArray(arr: any[], value: any): any[] {
+    const index = arr.indexOf(value);
+    if (index > -1) {
+        arr.splice(index, 1);
+    }
+    return arr;
+}
+
 function delay(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -32,5 +45,6 @@ export {
     getFormattedRoundNumber,
     getProductImageSrc,
     getItemNameSafe,
+    removeFromArray,
     uniquePushToArray,
 }
