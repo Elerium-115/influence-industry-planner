@@ -227,9 +227,7 @@ class IndustryPlanService {
 
     public loadIndustryPlanJSON(industryPlanJSON: IndustryPlanJSON): void {
         if (this.industryPlan) {
-            // Remove all lines from the old plan
-            this.industryPlan.getStartupProducts().forEach(startupProduct => startupProduct.removeAllLines());
-            this.industryPlan.getAllOutputsInPlan().forEach(output => output.removeAllLines());
+            this.industryPlan.onIndustryPlanUnloading();
         }
         const loadedIndustryPlan = new IndustryPlan(
             industryPlanJSON.title,
@@ -265,10 +263,19 @@ class IndustryPlanService {
     }
 
     public removeIndustryPlanJSON(): void {
+        if (this.industryPlan) {
+            this.industryPlan.onIndustryPlanUnloading();
+        }
         let savedIndustryPlansJSON = industryPlanService.getSavedIndustryPlansJSON();
         savedIndustryPlansJSON = savedIndustryPlansJSON.filter(industryPlanJSON => industryPlanJSON.id !== this.industryPlan?.getId());
         // Commit remaining saved industry plans into local-storage
         localStorage.setItem('savedIndustryPlans', JSON.stringify(savedIndustryPlansJSON));
+    }
+
+    public unloadIndustryPlan(): void {
+        if (this.industryPlan) {
+            this.industryPlan.onIndustryPlanUnloading();
+        }
     }
 
     public duplicateIndustryPlan(): void {

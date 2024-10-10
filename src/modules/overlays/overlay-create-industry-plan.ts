@@ -36,6 +36,7 @@ class OverlayCreateIndustryPlan extends OverlayAbstract {
             this.elOverlayContent.classList.add('invalid-title');
             return;
         }
+        industryPlanService.unloadIndustryPlan();
         new IndustryPlan(planTitle);
         this.remove();
     }

@@ -202,6 +202,12 @@ class LeaderLineService {
             lineData.line.startPlugSize = 2;
         });
     }
+
+    public removeAllLines(): void {
+        const industryPlan = industryPlanService.getIndustryPlan() as IndustryPlan;
+        industryPlan.getStartupProducts().forEach(startupProduct => startupProduct.removeAllLines());
+        industryPlan.getAllOutputsInPlan().forEach(output => output.removeAllLines());
+    }
 }
 
 const leaderLineService: LeaderLineService = LeaderLineService.getInstance(); // singleton

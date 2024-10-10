@@ -344,6 +344,11 @@ class IndustryPlan {
         }
     }
 
+    public onIndustryPlanUnloading(): void {
+        // Remove all lines from the plan being unloaded
+        leaderLineService.removeAllLines();
+    }
+
     private populateIndustryPlanHeader(): void {
         // Add plan-menu
         this.industryPlanHeaderHtmlElement.append(this.makePlanMenuHtmlElement());
