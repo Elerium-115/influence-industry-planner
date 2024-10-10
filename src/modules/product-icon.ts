@@ -18,6 +18,10 @@ class ProductIcon extends ProductAbstract {
         this.htmlElement = this.makeHtmlElement();
     }
 
+    public getParentProcess(): Process {
+        return this.parentProcess;
+    }
+
     public toggleIsPrimary(isPrimary: boolean, isPrimaryChanged: boolean = true): void {
         this.htmlElement.classList.toggle('is-primary', isPrimary);
         if (isPrimary && isPrimaryChanged) {

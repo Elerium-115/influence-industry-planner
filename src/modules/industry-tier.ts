@@ -7,16 +7,22 @@ import {AddProcessorPanel} from './add-processor-panel.js';
 import {OverlayAddOutputProduct} from './overlays/overlay-add-output-product.js';
 
 class IndustryTier {
+    private id: number;
     private title: string;
     private parentIndustryPlan: IndustryPlan;
     private processors: Processor[] = [];
     private addProcessorPanel: AddProcessorPanel;
     private htmlElement: HTMLElement;
 
-    constructor(title: string, parentIndustryPlan: IndustryPlan) {
-        this.title = title;
+    constructor(id: number, parentIndustryPlan: IndustryPlan) {
+        this.id = id;
+        this.title = `Industry Tier #${id}`;
         this.parentIndustryPlan = parentIndustryPlan;
         this.htmlElement = this.makeHtmlElement();
+    }
+
+    public getId(): number {
+        return this.id;
     }
 
     public getTitle(): string {

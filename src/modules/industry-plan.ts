@@ -116,9 +116,13 @@ class IndustryPlan {
         return processes;
     }
 
-    public getAllInputsMatchingProductId(productId: string): ProductIcon[] {
+    public getAllInputsMatchingProductId(productId: string, minimumTierId: number = 1): ProductIcon[] {
         const inputs: ProductIcon[] = [];
         this.getAllProcessesInPlan().forEach(process => {
+            if (process.getParentProcessor().getParentIndustryTier().getId() < minimumTierId) {
+                // Skip process re: tier too low
+                return;
+            }
             process.getInputs().forEach(input => {
                 if (input.getId() === productId) {
                     inputs.push(input);
@@ -126,6 +130,16 @@ class IndustryPlan {
             });
         });
         return inputs;
+    }
+
+    public getAllOutputsInPlan(): ProductIcon[] {
+        const outputs: ProductIcon[] = [];
+        this.getAllProcessesInPlan().forEach(process => {
+            process.getOutputs().forEach(output => {
+                outputs.push(output);
+            });
+        });
+        return outputs;
     }
 
     private getElStartupProdutsList(): HTMLElement {
@@ -188,8 +202,8 @@ class IndustryPlan {
     }
 
     private addIndustryTier(): void {
-        const industryTierTitle = `Industry Tier #${this.industryTiers.length + 1}`;
-        const industryTier = new IndustryTier(industryTierTitle, this);
+        const industryTierId = this.industryTiers.length + 1;
+        const industryTier = new IndustryTier(industryTierId, this);
         this.industryTiers.push(industryTier);
         // Add new industry tier into the DOM
         this.industryTiersHtmlElement.append(industryTier.getHtmlElement());

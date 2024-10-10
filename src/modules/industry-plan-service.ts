@@ -8,6 +8,7 @@ import {
     TYPE_PROCESSOR_BUILDING_IDS,
     MOCK_PROCESSOR_ID_EXTRACTOR,
     SDK_PROCESSOR_IDS_BY_BUILDING_ID,
+    PROCESSOR_COLOR_BY_BUILDING_ID,
     processorService,
 } from './processor-service.js';
 import {Process} from './process.js';
@@ -51,7 +52,7 @@ interface LineDataWithTarget {
     elTarget: HTMLElement,
 }
 
-const LeaderLineOptionsDefault = {
+const LeaderLineOptions = {
     dash: {animation: true, len: 6, gap: 6},
     dropShadow: {dx: 0, dy: 6, blur: 0},
     endPlugSize: 2,
@@ -59,13 +60,6 @@ const LeaderLineOptionsDefault = {
     size: 1,
     startPlug: 'disc',
     startPlugSize: 2,
-};
-
-const LeaderLineOptionsByType = {
-    fromStartupProduct: {
-        ...LeaderLineOptionsDefault,
-        color: 'rgba(255, 255, 255, 0.75)',
-    },
 };
 
 /**
@@ -246,6 +240,11 @@ class IndustryPlanService {
     }
 
     public loadIndustryPlanJSON(industryPlanJSON: IndustryPlanJSON): void {
+        if (this.industryPlan) {
+            // Remove all lines from the old plan
+            this.industryPlan.getStartupProducts().forEach(startupProduct => startupProduct.removeAllLines());
+            this.industryPlan.getAllOutputsInPlan().forEach(output => output.removeAllLines());
+        }
         const loadedIndustryPlan = new IndustryPlan(
             industryPlanJSON.title,
             industryPlanJSON.scientistsInCrew,
@@ -749,9 +748,17 @@ class IndustryPlanService {
     }
 
     private getLineTargetsForStartupProduct(startupProduct: StartupProduct): HTMLElement[] {
-        // Line targets = same product @ inputs of processes (higher-tier)
+        // Line targets = same product @ inputs of HIGHER-tier processes
         return (this.industryPlan as IndustryPlan)
             .getAllInputsMatchingProductId(startupProduct.getId())
+            .map(input => input.getHtmlElement());
+    }
+
+    private getLineTargetsForOutput(output: ProductIcon): HTMLElement[] {
+        // Line targets = same product @ inputs of HIGHER-tier processes
+        const minimumTierId = output.getParentProcess().getParentProcessor().getParentIndustryTier().getId() + 1;
+        return (this.industryPlan as IndustryPlan)
+            .getAllInputsMatchingProductId(output.getId(), minimumTierId)
             .map(input => input.getHtmlElement());
     }
 
@@ -759,7 +766,21 @@ class IndustryPlanService {
         const line = new LeaderLine(
             startupProduct.getHtmlElement(),
             elTarget,
-            LeaderLineOptionsByType.fromStartupProduct,
+            {...LeaderLineOptions, color: 'rgba(255, 255, 255, 0.75)'},
+        );
+        const lineData: LineDataWithTarget = {
+            line,
+            elTarget,
+        };
+        return lineData;
+    }
+
+    private makeLineDataForOutput(output: ProductIcon, elTarget: HTMLElement): LineDataWithTarget {
+        const processorId = output.getParentProcess().getParentProcessor().getId();
+        const line: any = new LeaderLine(
+            output.getHtmlElement(),
+            elTarget,
+            {...LeaderLineOptions, color: PROCESSOR_COLOR_BY_BUILDING_ID[processorId]},
         );
         const lineData: LineDataWithTarget = {
             line,
@@ -770,12 +791,13 @@ class IndustryPlanService {
 
     public refreshLines(): void {
         const industryPlan = this.industryPlan as IndustryPlan;
+        // Refresh lines from startup products
         industryPlan.getStartupProducts().forEach(startupProduct => {
             // FIRST: skip startup product without lines
             if (!startupProduct.getLines().length) {
                 return;
             }
-            // THEN: remove lines to any inputs that have been removed
+            // THEN: reposition valid lines, and remove lines to any inputs that have been removed
             const linesToRemove: LineDataWithTarget[] = [];
             startupProduct.getLines().forEach(lineData => {
                 if (document.contains(lineData.elTarget)) {
@@ -798,6 +820,34 @@ class IndustryPlanService {
             });
             startupProduct.markHasLines();
         });
+        // Refresh lines from outputs
+        industryPlan.getAllOutputsInPlan().forEach(output => {
+            // FIRST: skip outputs without lines
+            if (!output.getLines().length) {
+                return;
+            }
+            // THEN: reposition valid lines, and remove lines to any inputs that have been removed
+            const linesToRemove: LineDataWithTarget[] = [];
+            output.getLines().forEach(lineData => {
+                if (document.contains(lineData.elTarget)) {
+                    lineData.line.position();
+                } else {
+                    // Mark the lines to be removed, AFTER the list of lines has been parsed
+                    linesToRemove.push(lineData);
+                }
+            });
+            output.removeLinesByList(linesToRemove);
+            // FINALLY: add lines to any newly added inputs (inside newly added processes)
+            const elTargets = this.getLineTargetsForOutput(output);
+            elTargets.forEach(elTarget => {
+                if (output.getLines().some(lineData => lineData.elTarget === elTarget)) {
+                    // Skip target if it already has a line
+                    return;
+                }
+                const lineData = this.makeLineDataForOutput(output, elTarget);
+                output.addLineData(lineData);
+            });
+        });
     }
 
     public toggleLinesForStartupProduct(startupProduct: StartupProduct): void {
@@ -814,7 +864,16 @@ class IndustryPlanService {
     }
 
     public toggleLinesForOutput(output: ProductIcon): void {
-        //// ...
+        if (output.getLines().length) {
+            output.removeAllLines();
+        } else {
+            const elTargets = this.getLineTargetsForOutput(output);
+            elTargets.forEach(elTarget => {
+                const lineData = this.makeLineDataForOutput(output, elTarget);
+                output.addLineData(lineData);
+            });
+        }
+        output.markHasLines();
     }
 }
 
