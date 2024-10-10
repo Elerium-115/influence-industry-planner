@@ -38,7 +38,10 @@ class StartupProduct extends ProductAbstract {
         return el;
     }
 
-    private remove(): void {
+    private remove(event: MouseEvent): void {
+        // Prevent this event from triggering "onClickStartupProduct"
+        event.stopPropagation();
+        this.removeAllLines();
         this.htmlElement.parentElement?.removeChild(this.htmlElement);
         this.parentIndustryPlan.onStartupProductRemoved(this);
     }
