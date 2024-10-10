@@ -10,7 +10,7 @@ function getItemNameSafe(itemName: string): string {
  * Valid formats: "thumb" (low-res) / "default" (medium-res) / "original" (high-res)
  */
 function getProductImageSrc(productName: string, format: 'thumb'|'default'|'original' = 'default'): string {
-    return `../assets/products/${format}/${getItemNameSafe(productName)}.png`;
+    return `/assets/products/${format}/${getItemNameSafe(productName)}.png`;
 }
 
 function getFormattedRoundNumber(num: number, roundUp: boolean = true): string {

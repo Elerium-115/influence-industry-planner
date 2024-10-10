@@ -1,5 +1,6 @@
 import {defineConfig} from 'vite';
 import {nodePolyfills} from 'vite-plugin-node-polyfills';
+import {viteStaticCopy} from 'vite-plugin-static-copy';
 import path from 'path';
 import * as glob from 'glob';
 
@@ -26,6 +27,14 @@ export default defineConfig({
             globals: {
                 Buffer: true, // fix for error "Buffer is not defined" from Influence SDK dependencies
             }
+        }),
+        viteStaticCopy({
+            targets: [
+                {
+                    src: 'assets/**/*', // copy all files from "src/assets"
+                    dest: 'assets', // output to "dist/assets"
+                },
+            ],
         }),
     ],
 });
