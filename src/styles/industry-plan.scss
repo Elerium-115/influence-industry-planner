@@ -334,8 +334,10 @@
                     position: relative;
 
                     &.has-lines {
-                        outline: 1px dashed rgba(255, 255, 255, 0.75);
+                        outline: 1px dashed var(--color-text-normal);
                         z-index: 1;
+
+                        &:hover { outline-color: white; }
 
                         .remove-product { z-index: -1; }
                     }

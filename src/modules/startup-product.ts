@@ -30,17 +30,12 @@ class StartupProduct extends ProductAbstract {
         this.htmlElement = this.makeHtmlElement();
     }
 
-    public getLines(): any[] {
+    public getLines(): LineDataStartupProduct[] {
         return this.lines;
     }
 
-    public removeLines(): void {
-        this.lines.forEach(lineData => lineData.line.remove());
-        this.lines = [];
-    }
-
-    public removeLinesByList(linesToRemove: LineDataStartupProduct[]): void {
-        linesToRemove.forEach(lineData => this.removeLineData(lineData));
+    public addLineData(lineData: LineDataStartupProduct): void {
+        this.lines.push(lineData);
     }
 
     private removeLineData(lineData: LineDataStartupProduct): void {
@@ -48,8 +43,23 @@ class StartupProduct extends ProductAbstract {
         this.lines = removeFromArray(this.lines, lineData);
     }
 
-    public markHasLines(hasLines: boolean): void {
-        this.htmlElement.classList.toggle('has-lines', hasLines);
+    public removeLinesByList(linesToRemove: LineDataStartupProduct[]): void {
+        linesToRemove.forEach(lineData => this.removeLineData(lineData));
+    }
+
+    public removeAllLines(): void {
+        this.lines.forEach(lineData => lineData.line.remove());
+        this.lines = [];
+    }
+
+    /**
+     * NOTE: This function should NOT be called from within
+     * "addLineData", "removeLineData" etc. in this class,
+     * but instead from the overall handlers which call those
+     * functions, at the very end of each such handler.
+     */
+    public markHasLines(): void {
+        this.htmlElement.classList.toggle('has-lines', Boolean(this.lines.length));
     }
 
     public getHtmlElement(): HTMLElement {
@@ -58,7 +68,6 @@ class StartupProduct extends ProductAbstract {
 
     private onClickStartupProduct(): void {
         industryPlanService.toggleLinesForStartupProduct(this);
-        this.markHasLines(Boolean(this.lines.length));
     }
 
     private makeHtmlElement(): HTMLElement {

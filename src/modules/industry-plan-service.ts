@@ -742,13 +742,34 @@ class IndustryPlanService {
         Object.keys(process.outputs).forEach(outputProductId => uniquePushToArray(this.availableInputProductIds, outputProductId));
     }
 
+    private getLineTargetsForStartupProduct(startupProduct: StartupProduct): HTMLElement[] {
+        // Line targets = same product @ inputs of processes (higher-tier)
+        return (this.industryPlan as IndustryPlan)
+            .getAllInputsMatchingProductId(startupProduct.getId())
+            .map(input => input.getHtmlElement());
+    }
+
+    private makeLineDataForStartupProduct(startupProduct: StartupProduct, elTarget: HTMLElement): LineDataStartupProduct {
+        const line = new LeaderLine(
+            startupProduct.getHtmlElement(),
+            elTarget,
+            LeaderLineOptionsByType.fromStartupProduct,
+        );
+        const lineData: LineDataStartupProduct = {
+            line,
+            elTarget,
+        };
+        return lineData;
+    }
+
     public refreshLines(): void {
         const industryPlan = this.industryPlan as IndustryPlan;
         industryPlan.getStartupProducts().forEach(startupProduct => {
+            // FIRST: skip startup product without lines
             if (!startupProduct.getLines().length) {
-                // Skip startup product without lines
                 return;
             }
+            // THEN: remove lines to any inputs that have been removed
             const linesToRemove: LineDataStartupProduct[] = [];
             startupProduct.getLines().forEach(lineData => {
                 if (document.contains(lineData.elTarget)) {
@@ -759,33 +780,31 @@ class IndustryPlanService {
                 }
             });
             startupProduct.removeLinesByList(linesToRemove);
-            if (!startupProduct.getLines().length) {
-                startupProduct.markHasLines(false);
-            }
+            // FINALLY: add lines to any newly added inputs (inside newly added processes)
+            const elTargets = this.getLineTargetsForStartupProduct(startupProduct);
+            elTargets.forEach(elTarget => {
+                if (startupProduct.getLines().some(lineData => lineData.elTarget === elTarget)) {
+                    // Skip target if it already has a line
+                    return;
+                }
+                const lineData = this.makeLineDataForStartupProduct(startupProduct, elTarget);
+                startupProduct.addLineData(lineData);
+            });
+            startupProduct.markHasLines();
         });
     }
 
     public toggleLinesForStartupProduct(startupProduct: StartupProduct): void {
         if (startupProduct.getLines().length) {
-            startupProduct.removeLines();
+            startupProduct.removeAllLines();
         } else {
-            // Line targets = same product @ inputs of processes (higher-tier)
-            const elTargets = (this.industryPlan as IndustryPlan)
-                .getAllInputsMatchingProductId(startupProduct.getId())
-                .map(input => input.getHtmlElement());
+            const elTargets = this.getLineTargetsForStartupProduct(startupProduct);
             elTargets.forEach(elTarget => {
-                const line = new LeaderLine(
-                    startupProduct.getHtmlElement(),
-                    elTarget,
-                    LeaderLineOptionsByType.fromStartupProduct,
-                );
-                const lineData: LineDataStartupProduct = {
-                    line,
-                    elTarget,
-                };
-                startupProduct.getLines().push(lineData);
+                const lineData = this.makeLineDataForStartupProduct(startupProduct, elTarget);
+                startupProduct.addLineData(lineData);
             });
         }
+        startupProduct.markHasLines();
     }
 }
 
