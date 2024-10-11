@@ -137,6 +137,7 @@ class LeaderLineService {
                 output.addLineData(lineData);
             });
         });
+        this.markHasLines();
     }
 
     public toggleLinesForStartupProduct(startupProduct: StartupProduct): void {
@@ -150,6 +151,7 @@ class LeaderLineService {
             });
         }
         startupProduct.markHasLines();
+        this.markHasLines();
     }
 
     public increaseLinesForStartupProduct(startupProduct: StartupProduct): void {
@@ -181,6 +183,7 @@ class LeaderLineService {
             });
         }
         output.markHasLines();
+        this.markHasLines();
     }
 
     public increaseLinesForOutput(output: ProductIcon): void {
@@ -207,6 +210,15 @@ class LeaderLineService {
         const industryPlan = industryPlanService.getIndustryPlan() as IndustryPlan;
         industryPlan.getStartupProducts().forEach(startupProduct => startupProduct.removeAllLines());
         industryPlan.getAllOutputsInPlan().forEach(output => output.removeAllLines());
+        this.markHasLines();
+    }
+
+    public markHasLines(): void {
+        const industryPlan = industryPlanService.getIndustryPlan() as IndustryPlan;
+        let linesCount = 0;
+        linesCount += industryPlan.getStartupProducts().filter(startupProduct => startupProduct.getLines().length).length;
+        linesCount += industryPlan.getAllOutputsInPlan().filter(output => output.getLines().length).length;
+        industryPlan.getHtmlElement().classList.toggle('has-lines', Boolean(linesCount));
     }
 }
 

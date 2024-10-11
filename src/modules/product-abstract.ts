@@ -55,6 +55,7 @@ class ProductAbstract {
     public removeAllLines(): void {
         this.lines.forEach(lineData => lineData.line.remove());
         this.lines = [];
+        this.markHasLines();
     }
 
     /**

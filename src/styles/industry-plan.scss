@@ -60,6 +60,8 @@
         }
     }
 
+    &:not(.has-lines) .remove-lines { display: none; }
+
     #industry-plan-header {
         align-items: center;
         display: flex;
@@ -275,32 +277,42 @@
             }
         }
 
+        .button-with-icon {
+            align-items: center;
+            background-color: var(--color-button-bg);
+            color: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            display: flex;
+            gap: 16px;
+            position: relative;
+
+            &:hover {
+                @include hover-lighten-bg;
+                color: white;
+            }
+
+            &::before {
+                @include button-icon-pseudo-element;
+                font-size: 150%;
+            }
+
+            &::after {
+                padding-right: 16px;
+                white-space: nowrap;
+            }
+        }
+
+        .remove-lines {
+            .remove-lines-button {
+                &::before { content: '♺'; }
+                &::after { content: 'Remove Lines'; }
+            }
+        }
+
         .generate-plan-for-target-products {
             .generate-plan-button {
-                align-items: center;
-                background-color: var(--color-button-bg);
-                color: rgba(255, 255, 255, 0.6);
-                cursor: pointer;
-                display: flex;
-                gap: 16px;
-                position: relative;
-
-                &:hover {
-                    @include hover-lighten-bg;
-                    color: white;
-                }
-
-                &::before {
-                    @include button-icon-pseudo-element;
-                    content: '⚛';
-                    font-size: 150%;
-                }
-
-                &::after {
-                    content: 'Generate Plan for Target Products';
-                    padding-right: 16px;
-                    white-space: nowrap;
-                }
+                &::before { content: '⚛'; }
+                &::after { content: 'Generate Plan'; }
             }
         }
 

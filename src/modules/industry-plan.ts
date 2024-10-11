@@ -160,6 +160,10 @@ class IndustryPlan {
         this.industryPlanHeaderHtmlElement.querySelector('.save-icon')?.classList.toggle('saved', isSaved);
     }
 
+    public getHtmlElement(): HTMLElement {
+        return this.industryPlanHtmlElement;
+    }
+
     public setIsPendingOperation(isPendingOperation: boolean): void {
         this.isPendingOperation = isPendingOperation;
         this.industryPlanHtmlElement.classList.toggle('is-pending-operation', isPendingOperation);
@@ -326,6 +330,10 @@ class IndustryPlan {
         this.setSavedStatusAndIcon(true);
     }
 
+    private onClickRemoveLines(): void {
+        leaderLineService.removeAllLines();
+    }
+
     private onClickGeneratePlan(): void {
         new OverlayGeneratePlanForTargetProducts(this);
     }
@@ -380,11 +388,18 @@ class IndustryPlan {
         this.industryPlanHeaderHtmlElement.append(this.refiningPenalty.getHtmlElement());
         // Add "Generate Plan for Target Products"
         const elGeneratePlan = createEl('div', null, ['generate-plan-for-target-products']);
-        elGeneratePlan.innerHTML = '<div class="generate-plan-button"></div>';
+        elGeneratePlan.innerHTML = '<div class="button-with-icon generate-plan-button"></div>';
         elGeneratePlan.dataset.tooltipPosition = 'bottom-left';
         elGeneratePlan.dataset.tooltip = 'Generate the entire industry plan required to make any target products';
         elGeneratePlan.addEventListener('click', this.onClickGeneratePlan.bind(this));
         this.industryPlanHeaderHtmlElement.append(elGeneratePlan);
+        // Add "Remove Lines"
+        const elRemoveLines = createEl('div', null, ['remove-lines']);
+        elRemoveLines.innerHTML = '<div class="button-with-icon remove-lines-button"></div>';
+        elRemoveLines.dataset.tooltipPosition = 'bottom-right';
+        elRemoveLines.dataset.tooltip = 'Remove line connections between products';
+        elRemoveLines.addEventListener('click', this.onClickRemoveLines.bind(this));
+        this.industryPlanHeaderHtmlElement.append(elRemoveLines);
     }
 
     private populateIndustryPlanMain(): void {
