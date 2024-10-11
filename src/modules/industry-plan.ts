@@ -142,6 +142,23 @@ class IndustryPlan {
         return outputs;
     }
 
+    public getAllInputsInPlan(): ProductIcon[] {
+        const inputs: ProductIcon[] = [];
+        this.getAllProcessesInPlan().forEach(process => {
+            process.getInputs().forEach(input => {
+                inputs.push(input);
+            });
+        });
+        return inputs;
+    }
+
+    public getAllProductsInPlan(): (StartupProduct|ProductIcon)[] {
+        const startupProducts = this.getStartupProducts();
+        const outputs = this.getAllOutputsInPlan();
+        const inputs = this.getAllInputsInPlan();
+        return [...startupProducts, ...outputs, ...inputs];
+    }
+
     private getElStartupProdutsList(): HTMLElement {
         // Always "HTMLElement", never "null"
         return this.startupProductsHtmlElement.querySelector('.startup-products-list') as HTMLElement;

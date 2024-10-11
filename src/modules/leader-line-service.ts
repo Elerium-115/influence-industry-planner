@@ -208,17 +208,14 @@ class LeaderLineService {
 
     public removeAllLines(): void {
         const industryPlan = industryPlanService.getIndustryPlan() as IndustryPlan;
-        industryPlan.getStartupProducts().forEach(startupProduct => startupProduct.removeAllLines());
-        industryPlan.getAllOutputsInPlan().forEach(output => output.removeAllLines());
+        industryPlan.getAllProductsInPlan().forEach(product => product.removeAllLines());
         this.markHasLines();
     }
 
     public markHasLines(): void {
         const industryPlan = industryPlanService.getIndustryPlan() as IndustryPlan;
-        let linesCount = 0;
-        linesCount += industryPlan.getStartupProducts().filter(startupProduct => startupProduct.getLines().length).length;
-        linesCount += industryPlan.getAllOutputsInPlan().filter(output => output.getLines().length).length;
-        industryPlan.getHtmlElement().classList.toggle('has-lines', Boolean(linesCount));
+        const hasLines = industryPlan.getAllProductsInPlan().some(product => product.getLines().length);
+        industryPlan.getHtmlElement().classList.toggle('has-lines', hasLines);
     }
 }
 
