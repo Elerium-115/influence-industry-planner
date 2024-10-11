@@ -189,6 +189,11 @@ class Process {
             leaderLineService.toggleLinesForOutput(inputOrOutput);
             leaderLineService.increaseLinesForOutput(inputOrOutput);
         }
+        if (this.inputs.includes(inputOrOutput)) {
+            // Input product clicked
+            leaderLineService.toggleLinesForInput(inputOrOutput);
+            leaderLineService.increaseLinesForInput(inputOrOutput);
+        }
     }
 
     public onInputOrOutputMouseenter(inputOrOutput: ProductIcon): void {
@@ -196,12 +201,20 @@ class Process {
             // Output product
             leaderLineService.increaseLinesForOutput(inputOrOutput);
         }
+        if (this.inputs.includes(inputOrOutput)) {
+            // Input product
+            leaderLineService.increaseLinesForInput(inputOrOutput);
+        }
     }
 
     public onInputOrOutputMouseleave(inputOrOutput: ProductIcon): void {
         if (this.outputs.includes(inputOrOutput)) {
             // Output product
             leaderLineService.decreaseLinesForOutput(inputOrOutput);
+        }
+        if (this.inputs.includes(inputOrOutput)) {
+            // Input product
+            leaderLineService.decreaseLinesForInput(inputOrOutput);
         }
     }
 

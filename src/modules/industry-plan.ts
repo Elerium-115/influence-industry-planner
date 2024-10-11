@@ -6,7 +6,7 @@ import {StartupProduct} from './startup-product.js';
 import {IndustryTier} from './industry-tier.js';
 import {Process} from './process.js';
 import {ProductIcon} from './product-icon.js';
-import {productService} from './product-service.js';
+import {ProductAny, productService} from './product-service.js';
 import {OverlayAddStartupProducts} from './overlays/overlay-add-startup-products.js';
 import {OverlayGeneratePlanForTargetProducts} from './overlays/overlay-generate-plan-for-product.js';
 
@@ -116,6 +116,29 @@ class IndustryPlan {
         return processes;
     }
 
+    public getAllOutputsMatchingProductId(productId: string, maximumTierId: number = 99): ProductAny[] {
+        const outputs: ProductAny[] = [];
+        // Get startup products matching "productId"
+        this.startupProducts.forEach(startupProduct => {
+            if (startupProduct.getId() === productId) {
+                outputs.push(startupProduct);
+            }
+        });
+        // Get actual outputs matching "productId"
+        this.getAllProcessesInPlan().forEach(process => {
+            if (process.getParentProcessor().getParentIndustryTier().getId() > maximumTierId) {
+                // Skip process re: tier too high
+                return;
+            }
+            process.getOutputs().forEach(output => {
+                if (output.getId() === productId) {
+                    outputs.push(output);
+                }
+            });
+        });
+        return outputs;
+    }
+
     public getAllInputsMatchingProductId(productId: string, minimumTierId: number = 1): ProductIcon[] {
         const inputs: ProductIcon[] = [];
         this.getAllProcessesInPlan().forEach(process => {
@@ -152,7 +175,7 @@ class IndustryPlan {
         return inputs;
     }
 
-    public getAllProductsInPlan(): (StartupProduct|ProductIcon)[] {
+    public getAllProductsInPlan(): ProductAny[] {
         const startupProducts = this.getStartupProducts();
         const outputs = this.getAllOutputsInPlan();
         const inputs = this.getAllInputsInPlan();

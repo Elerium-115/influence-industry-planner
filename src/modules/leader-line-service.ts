@@ -3,6 +3,7 @@ import {industryPlanService} from './industry-plan-service.js';
 import {StartupProduct} from './startup-product.js';
 import {PROCESSOR_COLOR_BY_BUILDING_ID, PROCESSOR_COLOR_FADED_BY_BUILDING_ID} from './processor-service.js';
 import {ProductIcon} from './product-icon.js';
+import {ProductAny} from './product-service.js';
 
 interface LineDataWithTarget {
     line: any, // LeaderLine instance
@@ -19,7 +20,8 @@ const LeaderLineOptions = {
     startPlugSize: 2,
 };
 
-const LeaderLineColorDefault = 'rgba(255, 255, 255, 0.5)';
+const LeaderLineColorDefault = 'white';
+const LeaderLineColorFadedDefault = 'rgba(255, 255, 255, 0.5)';
 
 /**
  * Singleton
@@ -36,26 +38,32 @@ class LeaderLineService {
         return LeaderLineService.instance;
     }
 
-    private getLineTargetsForStartupProduct(startupProduct: StartupProduct): HTMLElement[] {
+    private getLineTargetsForStartupProduct(startupProduct: StartupProduct): ProductIcon[] {
         // Line targets = same product @ inputs of HIGHER-tier processes
         return (industryPlanService.getIndustryPlan() as IndustryPlan)
-            .getAllInputsMatchingProductId(startupProduct.getId())
-            .map(input => input.getHtmlElement());
+            .getAllInputsMatchingProductId(startupProduct.getId());
     }
 
-    private getLineTargetsForOutput(output: ProductIcon): HTMLElement[] {
+    private getLineTargetsForOutput(output: ProductIcon): ProductIcon[] {
         // Line targets = same product @ inputs of HIGHER-tier processes
         const minimumTierId = output.getParentProcess().getParentProcessor().getParentIndustryTier().getId() + 1;
         return (industryPlanService.getIndustryPlan() as IndustryPlan)
-            .getAllInputsMatchingProductId(output.getId(), minimumTierId)
-            .map(input => input.getHtmlElement());
+            .getAllInputsMatchingProductId(output.getId(), minimumTierId);
+    }
+
+    private getLineSourcesForInput(input: ProductIcon): ProductAny[] {
+        // Line sources = same product @ startup products / outputs of LOWER-tier processes
+        const maximumTierId = input.getParentProcess().getParentProcessor().getParentIndustryTier().getId() - 1;
+        return (industryPlanService.getIndustryPlan() as IndustryPlan)
+            .getAllOutputsMatchingProductId(input.getId(), maximumTierId)
+            .map(output => output);
     }
 
     private makeLineDataForStartupProduct(startupProduct: StartupProduct, elTarget: HTMLElement): LineDataWithTarget {
         const line = new LeaderLine(
             startupProduct.getHtmlElement(),
             elTarget,
-            {...LeaderLineOptions, color: LeaderLineColorDefault},
+            {...LeaderLineOptions, color: LeaderLineColorFadedDefault},
         );
         const lineData: LineDataWithTarget = {
             line,
@@ -74,6 +82,25 @@ class LeaderLineService {
         const lineData: LineDataWithTarget = {
             line,
             elTarget,
+        };
+        return lineData;
+    }
+
+    private makeLineDataForInput(source: ProductAny, input: ProductIcon): LineDataWithTarget {
+        let color = LeaderLineColorFadedDefault;
+        if (source instanceof ProductIcon) {
+            // Actual output product, NOT startup product
+            const processorId = source.getParentProcess().getParentProcessor().getId();
+            color = PROCESSOR_COLOR_FADED_BY_BUILDING_ID[processorId];
+        }
+        const line: any = new LeaderLine(
+            source.getHtmlElement(),
+            input.getHtmlElement(),
+            {...LeaderLineOptions, color},
+        );
+        const lineData: LineDataWithTarget = {
+            line,
+            elTarget: input.getHtmlElement(),
         };
         return lineData;
     }
@@ -98,8 +125,9 @@ class LeaderLineService {
             });
             startupProduct.removeLinesByList(linesToRemove);
             // FINALLY: add lines to any newly added inputs (inside newly added processes)
-            const elTargets = this.getLineTargetsForStartupProduct(startupProduct);
-            elTargets.forEach(elTarget => {
+            const targets = this.getLineTargetsForStartupProduct(startupProduct);
+            targets.forEach(target => {
+                const elTarget = target.getHtmlElement();
                 if (startupProduct.getLines().some(lineData => lineData.elTarget === elTarget)) {
                     // Skip target if it already has a line
                     return;
@@ -127,8 +155,9 @@ class LeaderLineService {
             });
             output.removeLinesByList(linesToRemove);
             // FINALLY: add lines to any newly added inputs (inside newly added processes)
-            const elTargets = this.getLineTargetsForOutput(output);
-            elTargets.forEach(elTarget => {
+            const targets = this.getLineTargetsForOutput(output);
+            targets.forEach(target => {
+                const elTarget = target.getHtmlElement();
                 if (output.getLines().some(lineData => lineData.elTarget === elTarget)) {
                     // Skip target if it already has a line
                     return;
@@ -144,9 +173,9 @@ class LeaderLineService {
         if (startupProduct.getLines().length) {
             startupProduct.removeAllLines();
         } else {
-            const elTargets = this.getLineTargetsForStartupProduct(startupProduct);
-            elTargets.forEach(elTarget => {
-                const lineData = this.makeLineDataForStartupProduct(startupProduct, elTarget);
+            const targets = this.getLineTargetsForStartupProduct(startupProduct);
+            targets.forEach(target => {
+                const lineData = this.makeLineDataForStartupProduct(startupProduct, target.getHtmlElement());
                 startupProduct.addLineData(lineData);
             });
         }
@@ -154,9 +183,47 @@ class LeaderLineService {
         this.markHasLines();
     }
 
+    public toggleLinesForOutput(output: ProductIcon): void {
+        if (output.getLines().length) {
+            output.removeAllLines();
+        } else {
+            const targets = this.getLineTargetsForOutput(output);
+            targets.forEach(target => {
+                const lineData = this.makeLineDataForOutput(output, target.getHtmlElement());
+                output.addLineData(lineData);
+            });
+        }
+        output.markHasLines();
+        this.markHasLines();
+    }
+
+    public toggleLinesForInput(input: ProductIcon): void {
+        // Toggle lines from sources of this input, to this input
+        const sources = this.getLineSourcesForInput(input);
+        if (sources.some(source => source.getLineToElTarget(input.getHtmlElement()))) {
+            // At least one source of this input, has a line to this input => REMOVE lines to this input
+            sources.forEach(source => {
+                // Get and remove the line to this input
+                const lineData = source.getLineToElTarget(input.getHtmlElement());
+                if (lineData) {
+                    source.removeLinesByList([lineData]);
+                    source.markHasLines();
+                }
+            });
+        } else {
+            // No line from any source of this input, to this input => ADD lines to this input
+            sources.forEach(source => {
+                const lineData = this.makeLineDataForInput(source, input);
+                source.addLineData(lineData);
+                source.markHasLines();
+            });
+        }
+        this.markHasLines();
+    }
+
     public increaseLinesForStartupProduct(startupProduct: StartupProduct): void {
         startupProduct.getLines().forEach(lineData => {
-            lineData.line.color = 'white';
+            lineData.line.color = LeaderLineColorDefault;
             lineData.line.endPlugSize = 1.5;
             lineData.line.size = 2;
             lineData.line.startPlugSize = 1.5;
@@ -165,25 +232,11 @@ class LeaderLineService {
 
     public decreaseLinesForStartupProduct(startupProduct: StartupProduct): void {
         startupProduct.getLines().forEach(lineData => {
-            lineData.line.color = LeaderLineColorDefault;
+            lineData.line.color = LeaderLineColorFadedDefault;
             lineData.line.endPlugSize = 2;
             lineData.line.size = 1;
             lineData.line.startPlugSize = 2;
         });
-    }
-
-    public toggleLinesForOutput(output: ProductIcon): void {
-        if (output.getLines().length) {
-            output.removeAllLines();
-        } else {
-            const elTargets = this.getLineTargetsForOutput(output);
-            elTargets.forEach(elTarget => {
-                const lineData = this.makeLineDataForOutput(output, elTarget);
-                output.addLineData(lineData);
-            });
-        }
-        output.markHasLines();
-        this.markHasLines();
     }
 
     public increaseLinesForOutput(output: ProductIcon): void {
@@ -200,6 +253,46 @@ class LeaderLineService {
         const processorId = output.getParentProcess().getParentProcessor().getId();
         output.getLines().forEach(lineData => {
             lineData.line.color = PROCESSOR_COLOR_FADED_BY_BUILDING_ID[processorId];
+            lineData.line.endPlugSize = 2;
+            lineData.line.size = 1;
+            lineData.line.startPlugSize = 2;
+        });
+    }
+
+    public increaseLinesForInput(input: ProductIcon): void {
+        const sources = this.getLineSourcesForInput(input);
+        sources.forEach(source => {
+            const lineData = source.getLineToElTarget(input.getHtmlElement());
+            if (!lineData) {
+                return;
+            }
+            let color = LeaderLineColorDefault;
+            if (source instanceof ProductIcon) {
+                // Actual output product, NOT startup product
+                const processorId = source.getParentProcess().getParentProcessor().getId();
+                color = PROCESSOR_COLOR_BY_BUILDING_ID[processorId];
+            }
+            lineData.line.color = color;
+            lineData.line.endPlugSize = 1.5;
+            lineData.line.size = 2;
+            lineData.line.startPlugSize = 1.5;
+        });
+    }
+
+    public decreaseLinesForInput(input: ProductIcon): void {
+        const sources = this.getLineSourcesForInput(input);
+        sources.forEach(source => {
+            const lineData = source.getLineToElTarget(input.getHtmlElement());
+            if (!lineData) {
+                return;
+            }
+            let color = LeaderLineColorFadedDefault;
+            if (source instanceof ProductIcon) {
+                // Actual output product, NOT startup product
+                const processorId = source.getParentProcess().getParentProcessor().getId();
+                color = PROCESSOR_COLOR_FADED_BY_BUILDING_ID[processorId];
+            }
+            lineData.line.color = color;
             lineData.line.endPlugSize = 2;
             lineData.line.size = 1;
             lineData.line.startPlugSize = 2;

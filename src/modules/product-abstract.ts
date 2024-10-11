@@ -39,6 +39,10 @@ class ProductAbstract {
         return this.lines;
     }
 
+    public getLineToElTarget(elTarget: HTMLElement): LineDataWithTarget|null {
+        return this.lines.find(lineData => lineData.elTarget === elTarget) || null;
+    }
+
     public addLineData(lineData: LineDataWithTarget): void {
         this.lines.push(lineData);
     }

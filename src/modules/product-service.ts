@@ -212,6 +212,7 @@ const productService: ProductService = ProductService.getInstance(); // singleto
 
 export {
     I_PRODUCT_DATA,
+    type ProductAny,
     SDK_RAW_MATERIAL_CATEGORIES_SORTED,
     productService,
 }
