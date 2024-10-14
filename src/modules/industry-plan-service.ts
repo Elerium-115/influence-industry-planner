@@ -1,6 +1,7 @@
 import * as InfluenceSDK from '@influenceth/sdk';
 import {uniquePushToArray} from './abstract-core.js';
 import {IndustryPlan} from './industry-plan.js';
+import {StartupProduct} from './startup-product.js';
 import {IndustryTier} from './industry-tier.js';
 import {Processor} from './processor.js';
 import {
@@ -11,8 +12,9 @@ import {
 } from './processor-service.js';
 import {Process} from './process.js';
 import {I_PROCESS_DATA, processService} from './process-service.js';
+import {ProductIcon} from './product-icon.js';
 import {ProductSelectable} from './product-selectable.js';
-import {productService} from './product-service.js';
+import {ProductAny, productService} from './product-service.js';
 import {OverlayCreateIndustryPlan} from './overlays/overlay-create-industry-plan.js';
 import {OverlayMyIndustryPlans} from './overlays/overlay-my-industry-plans.js';
 import {OverlaySharedIndustryPlans} from './overlays/overlay-shared-industry-plans.js';
@@ -570,7 +572,7 @@ class IndustryPlanService {
          *   - also go 1 level deeper with this filtering, for each of the inputs
          * - from the remaining process variants, select the process w/ highest throughput
          */
-        let allProcessVariants = processService.getProcessVariantsForOutputProductId(outputProductId);
+        let allProcessVariants = processService.getProcessVariantsForProductId(outputProductId);
         let filteredProcessVariants: I_PROCESS_DATA[] = [...allProcessVariants];
         // OPTIMIZATION #1
         if (productService.isRawMaterialByProductId(outputProductId)) {
@@ -610,7 +612,7 @@ class IndustryPlanService {
             throw Error(`No valid process variant for "${productService.getProductNameById(outputProductId)}".`, errorCause);
         }
         // Select the preferred process, from among the filtered variants
-        const selectedProcess = this.getPreferredProcessVariantForOutputProductId(outputProductId, filteredProcessVariants);
+        const selectedProcess = this.getPreferredProcessVariantForProductId(outputProductId, filteredProcessVariants);
         let primaryOutputProductId = outputProductId;
         // Check if the same process was already planned, e.g. with a different primary output
         const alreadyPlannedProcess = this.plannedProcesses.find(processData => processData.i === selectedProcess.i);
@@ -654,7 +656,7 @@ class IndustryPlanService {
                  * Ensure this input can be made with at least one process variant
                  * which does NOT require an input from among "ancestorOutputProductIds".
                  */
-                let inputProcessVariants = processService.getProcessVariantsForOutputProductId(inputProcessId);
+                let inputProcessVariants = processService.getProcessVariantsForProductId(inputProcessId);
                 //// DISABLED re: unverified optimization, high performance cost
                 // if (inputProcessVariants.length && recursedLevel <= 5) {
                 //     recursedLevel++;
@@ -675,16 +677,16 @@ class IndustryPlanService {
         return extraFilteredProcessVariants;
     }
 
-    public getPreferredProcessVariantForOutputProductId(outputProductId: string, filteredProcessVariants?: I_PROCESS_DATA[]): I_PROCESS_DATA {
+    public getPreferredProcessVariantForProductId(outputProductId: string, filteredProcessVariants?: I_PROCESS_DATA[]): I_PROCESS_DATA {
         // Preferred process = highest throughput
         let maxThroughput = 0;
         if (!filteredProcessVariants) {
-            filteredProcessVariants = processService.getProcessVariantsForOutputProductId(outputProductId);
+            filteredProcessVariants = processService.getProcessVariantsForProductId(outputProductId);
         }
         let preferredProcess = filteredProcessVariants[0];
         filteredProcessVariants.some(process => {
             if (this.isExtractionByProcessData(process)) {
-                // Mining process is always preferred => stop parsing other processes
+                // Extraction process is always preferred => stop parsing other processes
                 preferredProcess = process;
                 return true;
             }
@@ -694,7 +696,6 @@ class IndustryPlanService {
                 preferredProcess = process;
             }
         });
-        // return filteredProcessVariants[0]; //// TEST always use the 1st process variant
         return preferredProcess;
     }
 
@@ -738,6 +739,61 @@ class IndustryPlanService {
         addedProcess.setPrimaryOutputByProductId(process.primaryOutputProductId);
         // Add its outputs into "availableInputProductIds"
         Object.keys(process.outputs).forEach(outputProductId => uniquePushToArray(this.availableInputProductIds, outputProductId));
+    }
+
+    public getPreferredSource(sources: ProductAny[]): ProductAny|null {
+        if (sources.length <= 1) {
+            return sources[0] || null;
+        }
+        /**
+         * Prioritize the preferred source:
+         * - first from startup products (first match)
+         * - then from extractions (first match)
+         * - then from processes which require only raw materials (highest throughput)
+         * - then from remaining processes (highest throughput)
+         */
+        // PREFERRED #1 = startup product (first match, if any)
+        const startupProductSource = sources.find(source => source instanceof StartupProduct);
+        if (startupProductSource) {
+            return startupProductSource;
+        }
+        // At this point, each "source" is definitely a "ProductIcon"
+        const productIconSources: ProductIcon[] = sources as ProductIcon[];
+        // PREFERRED #2 = from extraction (first match, if any)
+        const extractionSource = productIconSources.find(productIconSource => {
+            const sourceProcess = productIconSource.getParentProcess();
+            if (this.isExtractionByProcessData(sourceProcess.getData())) {
+                return true;
+            }
+            return false;
+        });
+        if (extractionSource) {
+            return extractionSource;
+        }
+        // PREFERRED #3 = from processes which require only raw materials (if any)
+        let filteredSources = productIconSources.filter(source => {
+            const process = source.getParentProcess();
+            // Ensure all inputs are raw materials
+            return process.getInputs().every(input => productService.isRawMaterialByProductId(input.getId()));
+        });
+        // PREFERRED #4 = remaining processes
+        if (!filteredSources.length) {
+            filteredSources = [...sources] as ProductIcon[];
+        }
+        let maxThroughput = 0;
+        let preferredSource = filteredSources[0];
+        if (filteredSources.length >= 2) {
+            // Preferred source = from process w/ highest throughput
+            filteredSources.forEach(source => {
+                const process = source.getParentProcess();
+                const throughput = processService.getThroughputForProcessOutput(source.getId(), process.getData());
+                if (throughput > maxThroughput) {
+                    maxThroughput = throughput;
+                    preferredSource = source;
+                }
+            });
+        }
+        return preferredSource;
     }
 }
 

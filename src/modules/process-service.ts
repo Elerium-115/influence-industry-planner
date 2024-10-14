@@ -68,9 +68,9 @@ class ProcessService {
         return p1.name.localeCompare(p2.name);
     }
 
-    public getProcessVariantsForOutputProductId(outputProductId: string): I_PROCESS_DATA[] {
+    public getProcessVariantsForProductId(productId: string): I_PROCESS_DATA[] {
         return Object.values(this.allProcessesData)
-            .filter(processData => Object.keys(processData.outputs).includes(outputProductId));
+            .filter(processData => Object.keys(processData.outputs).includes(productId));
     }
 
     public getThroughputForProcessOutput(outputProductId: string, processData: I_PROCESS_DATA): number {

@@ -39,7 +39,9 @@ class ProductIcon extends ProductAbstract {
         this.htmlElement.dataset.tooltip = `${this.getName()}: ${qtyInTooltip}`;
     }
 
-    private onClickProductIcon(): void {
+    private onClickProductIcon(event: MouseEvent): void {
+        // Prevent this event from triggering "Process.onClickProcess"
+        event.stopPropagation();
         this.parentProcess.onInputOrOutputClicked(this);
     }
 

@@ -12,6 +12,7 @@ class Process {
     private inputs: ProductIcon[] = [];
     private outputs: ProductIcon[] = [];
     private primaryOutput: ProductIcon;
+    private isActiveLines: boolean = false;
     private htmlElement: HTMLElement;
 
     constructor(id: number, parentProcessor: Processor) {
@@ -69,6 +70,14 @@ class Process {
 
     public getParentProcessor(): Processor {
         return this.parentProcessor;
+    }
+
+    public getIsActiveLines(): boolean {
+        return this.isActiveLines;
+    }
+
+    public setIsActiveLines(isActiveLines: boolean): void {
+        this.isActiveLines = isActiveLines;
     }
 
     public getHtmlElement(): HTMLElement {
@@ -218,6 +227,10 @@ class Process {
         }
     }
 
+    private onClickProcess(): void {
+        leaderLineService.toggleLinesForProcess(this);
+    }
+
     private makeHtmlElement(): HTMLElement {
         const el = createEl('div', null, ['process']);
         el.innerHTML = /*html*/ `
@@ -232,10 +245,13 @@ class Process {
             <div class="remove-process"></div>
         `;
         el.querySelector('.remove-process')?.addEventListener('click', this.remove.bind(this));
+        el.addEventListener('click', this.onClickProcess.bind(this));
         return el;
     }
 
-    private remove(): void {
+    private remove(event: MouseEvent): void {
+        // Prevent this event from triggering "onClickProcess"
+        event.stopPropagation();
         this.htmlElement.parentElement?.removeChild(this.htmlElement);
         this.parentProcessor.onProcessRemoved(this);
     }

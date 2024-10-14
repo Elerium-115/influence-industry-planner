@@ -2,6 +2,7 @@ import {IndustryPlan} from './industry-plan.js';
 import {industryPlanService} from './industry-plan-service.js';
 import {StartupProduct} from './startup-product.js';
 import {PROCESSOR_COLOR_BY_BUILDING_ID, PROCESSOR_COLOR_FADED_BY_BUILDING_ID} from './processor-service.js';
+import {Process} from './process.js';
 import {ProductIcon} from './product-icon.js';
 import {ProductAny} from './product-service.js';
 
@@ -11,8 +12,8 @@ interface LineDataWithTarget {
 }
 
 const LeaderLineOptions = {
-    dash: {animation: true, len: 6, gap: 6},
-    dropShadow: {dx: 0, dy: 6, blur: 0},
+    // dash: {animation: true, len: 6, gap: 6}, //// DISABLED for performance
+    // dropShadow: {dx: 0, dy: 6, blur: 0}, //// DISABLED for visibility
     endPlugSize: 2,
     gradient: true,
     size: 1,
@@ -21,7 +22,7 @@ const LeaderLineOptions = {
 };
 
 const LeaderLineColorDefault = 'white';
-const LeaderLineColorFadedDefault = 'rgba(255, 255, 255, 0.5)';
+const LeaderLineColorFadedDefault = 'rgba(255, 255, 255, 0.25)';
 
 /**
  * Singleton
@@ -302,6 +303,7 @@ class LeaderLineService {
     public removeAllLines(): void {
         const industryPlan = industryPlanService.getIndustryPlan() as IndustryPlan;
         industryPlan.getAllProductsInPlan().forEach(product => product.removeAllLines());
+        industryPlan.getAllProcessesInPlan().forEach(process => process.setIsActiveLines(false));
         this.markHasLines();
     }
 
@@ -309,6 +311,53 @@ class LeaderLineService {
         const industryPlan = industryPlanService.getIndustryPlan() as IndustryPlan;
         const hasLines = industryPlan.getAllProductsInPlan().some(product => product.getLines().length);
         industryPlan.getHtmlElement().classList.toggle('has-lines', hasLines);
+    }
+
+    /**
+     * Recursive function which ends after rendering the
+     * "preferred lines" for all "inputs" and their sub-chains.
+     * 
+     * NOTE: This function assumes there are NO lines in the plan.
+     */
+    private addPreferredLinesForInputs(inputs: ProductIcon[]): void {
+        inputs.forEach(input => {
+            // Add "preferred line" for this input, and then recursively for the inputs in the "source" process
+            const sources = this.getLineSourcesForInput(input);
+            const preferredSource = industryPlanService.getPreferredSource(sources);
+            if (!preferredSource) {
+                // console.warn(`--- WARNING: [addPreferredLinesForInputs] no source for input "${input.getName()}".`);
+                // Exit this recursion branch re: NO source for input
+                return;
+            }
+            // Ensure NO other line from the preferred source, to this input
+            if (preferredSource.getLineToElTarget(input.getHtmlElement())) {
+                // Exit this recursion re: sub-chain already parsed
+                return;
+            }
+            // Add line from the preferred source, to this input
+            const lineData = this.makeLineDataForInput(preferredSource, input);
+            preferredSource.addLineData(lineData);
+            preferredSource.markHasLines();
+            if (preferredSource instanceof ProductIcon) {
+                // NOT startup product => add preferred lines for all inputs of "preferredSource", if any
+                this.addPreferredLinesForInputs(preferredSource.getParentProcess().getInputs());
+            }
+        });
+    }
+
+    public toggleLinesForProcess(process: Process): void {
+        // Save this flag, before resetting it via "removeAllLines"
+        const wasActiveLines = process.getIsActiveLines();
+        // Always remove all lines, as the first step in this handler
+        this.removeAllLines();
+        if (wasActiveLines) {
+            // Toggle lines OFF (done)
+            return;
+        }
+        // Toggle lines ON
+        this.addPreferredLinesForInputs(process.getInputs());
+        process.setIsActiveLines(true);
+        this.markHasLines();
     }
 }
 
