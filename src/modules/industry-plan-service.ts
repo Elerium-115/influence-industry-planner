@@ -453,7 +453,7 @@ class IndustryPlanService {
         this.availableInputProductIds = [];
     }
 
-    public async generatePlanForTargetProductIds(targetProductIds: string[], isRecursiveCall: boolean = false): Promise<void> {
+    public generatePlanForTargetProductIds(targetProductIds: string[], isRecursiveCall: boolean = false): void {
         const industryPlan = this.industryPlan as IndustryPlan;
         // Initially available inputs = "startupProducts"
         this.availableInputProductIds = industryPlan.getStartupProducts().map(startupProduct => startupProduct.getId());
@@ -739,6 +739,43 @@ class IndustryPlanService {
         addedProcess.setPrimaryOutputByProductId(process.primaryOutputProductId);
         // Add its outputs into "availableInputProductIds"
         Object.keys(process.outputs).forEach(outputProductId => uniquePushToArray(this.availableInputProductIds, outputProductId));
+    }
+
+    /**
+     * Cleanup the generated plan re: any redundant processes, whose outputs are NOT actually used
+     * at higher tiers (except for "targetProductIds"). This may happen when the outputs of
+     * a process planned for a higher tier become available as outputs from lower tiers.
+     * 
+     * Example: "Computer Chip" => redundant processes:
+     * - Polypropylene Chrolination and Basification @ tier 5
+     * - Sodium Chloralkali Process @ tier 4
+     */
+    public cleanupPlanForTargetProductIds(targetProductIds: string[]): void {
+        const industryPlan = this.industryPlan as IndustryPlan;
+        /**
+         * Parse all processes, starting from the HIGHEST tier - potentially making it possible
+         * for more lower-level processes to become redundant, by the time they are parsed.
+         */
+        const industryTiersDescending = [...industryPlan.getIndustryTiers()].reverse();
+        industryTiersDescending.forEach(industryTier => {
+            const redundantProcessesFromTier: Process[] = [];
+            industryTier.getProcessesFromTier().forEach(process => {
+                const outputs = process.getOutputs();
+                if (outputs.some(output => targetProductIds.includes(output.getId()))) {
+                    // Target product among the outputs of this process => KEEP this process
+                    return;
+                }
+                const minimumTierId = industryTier.getId() + 1;
+                const isUsefulProcess = outputs.some(output => {
+                    const matchingInputs = industryPlan.getAllInputsMatchingProductId(output.getId(), minimumTierId);
+                    return Boolean(matchingInputs.length);
+                });
+                if (!isUsefulProcess) {
+                    redundantProcessesFromTier.push(process);
+                }
+            });
+            redundantProcessesFromTier.forEach(redundantProcess => redundantProcess.remove());
+        });
     }
 
     public getPreferredSource(sources: ProductAny[]): ProductAny|null {

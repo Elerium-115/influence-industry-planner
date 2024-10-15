@@ -4,6 +4,7 @@ import {IndustryPlan} from './industry-plan.js';
 import {Processor} from './processor.js';
 import {type TYPE_PROCESSOR_BUILDING_IDS} from './processor-service.js';
 import {AddProcessorPanel} from './add-processor-panel.js';
+import {Process} from './process.js';
 import {OverlayAddOutputProduct} from './overlays/overlay-add-output-product.js';
 
 class IndustryTier {
@@ -31,6 +32,12 @@ class IndustryTier {
 
     public getProcessors(): Processor[] {
         return this.processors;
+    }
+
+    public getProcessesFromTier(): Process[] {
+        let processes: Process[] = [];
+        this.processors.forEach(processor => processes = [...processes, ...processor.getProcesses()]);
+        return processes;
     }
 
     public getOutputProductIdsFromTier(): string[] {

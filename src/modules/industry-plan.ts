@@ -204,7 +204,7 @@ class IndustryPlan {
         return this.industryPlanHtmlElement;
     }
 
-    public setIsPendingOperation(isPendingOperation: boolean): void {
+    private setIsPendingOperation(isPendingOperation: boolean): void {
         this.isPendingOperation = isPendingOperation;
         this.industryPlanHtmlElement.classList.toggle('is-pending-operation', isPendingOperation);
     }
@@ -237,11 +237,17 @@ class IndustryPlan {
     }
 
     public onGeneratePlanForTargetProductIds(targetProductIds: string[]): void {
-        // Async execution, to show the "pending" overlay during that time
         this.setIsPendingOperation(true);
-        setTimeout(async () => {
-            await industryPlanService.generatePlanForTargetProductIds(targetProductIds);
+        // Async execution, to show the "pending" overlay during that time
+        setTimeout(() => {
+            industryPlanService.generatePlanForTargetProductIds(targetProductIds);
+            industryPlanService.cleanupPlanForTargetProductIds(targetProductIds);
             this.setIsPendingOperation(false);
+            /**
+             * Explicitly trigger "onIndustryPlanChanged", because its core
+             * logic has NOT been executed while "isPendingOperation" was TRUE.
+             */
+            this.onIndustryPlanChanged();
         });
     }
 
@@ -378,9 +384,13 @@ class IndustryPlan {
         new OverlayGeneratePlanForTargetProducts(this);
     }
 
-    public async onIndustryPlanChanged(isFunctionalChange: boolean = true): Promise<void> {
+    public onIndustryPlanChanged(isFunctionalChange: boolean = true): void {
         if (this.isLoading) {
             // Bypass this while the industry plan is being loaded
+            return;
+        }
+        if (this.isPendingOperation) {
+            // Bypass this while the industry plan is being auto-generated
             return;
         }
         this.setSavedStatusAndIcon(false);

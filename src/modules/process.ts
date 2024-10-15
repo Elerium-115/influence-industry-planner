@@ -249,9 +249,12 @@ class Process {
         return el;
     }
 
-    private remove(event: MouseEvent): void {
-        // Prevent this event from triggering "onClickProcess"
-        event.stopPropagation();
+    public remove(event?: MouseEvent): void {
+        /**
+         * Prevent this event from triggering "onClickProcess",
+         * if this function was triggered via a click event.
+         */
+        event?.stopPropagation();
         this.htmlElement.parentElement?.removeChild(this.htmlElement);
         this.parentProcessor.onProcessRemoved(this);
     }
