@@ -106,7 +106,7 @@ class Processor {
         return el;
     }
 
-    private remove(): void {
+    public remove(): void {
         this.htmlElement.parentElement?.removeChild(this.htmlElement);
         this.parentIndustryTier.onProcessorRemoved(this);
     }

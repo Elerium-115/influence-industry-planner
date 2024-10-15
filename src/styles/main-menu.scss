@@ -2,13 +2,17 @@
     align-items: center;
     background-color: var(--color-nav-bg);
     display: flex;
+    gap: 32px;
     height: var(--nav-height);
     justify-content: space-between;
     left: 0;
+    padding-right: 32px;
     position: fixed;
     top: 0;
     width: 100%;
     z-index: 2;
+
+    > .separator { flex-grow: 1; }
 
     #side-menu {
         align-items: center;
@@ -87,8 +91,15 @@
     }
 
     #account-menu {
-        padding-right: 32px;
-
         &::before { color: var(--color-text-normal); content: 'Account'; } //// TEST
+    }
+
+    #minimap-wrapper {
+        color: var(--color-text-normal);
+        cursor: pointer;
+
+        #minimap-toggle {
+            &::before { content: 'Minimap'; }
+        }
     }
 }

@@ -775,6 +775,15 @@ class IndustryPlanService {
                 }
             });
             redundantProcessesFromTier.forEach(redundantProcess => redundantProcess.remove());
+            /**
+             * Also cleanup any redundant processors, if any,
+             * after having removed redundant processes from this tier.
+             * 
+             * Example: "Computer Chip" plan generated w/ startup product "Deionized Water"
+             * => redundant processor "Refinery" @ tier 8
+             */
+            const redundantProcessors = industryTier.getProcessors().filter(processor => !processor.getProcesses().length);
+            redundantProcessors.forEach(processor => processor.remove());
         });
     }
 

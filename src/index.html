@@ -6,6 +6,7 @@
     <title>Industry Planner - Production Tool for Influence</title>
     <link rel="stylesheet" href="./styles/industry-plan.scss">
     <script src="/scripts/leader-line.min.js"></script>
+    <script src="/scripts/pagemap.min.js"></script>
     <script type="module" src="./test.ts"></script>
 </head>
 <body>
@@ -21,7 +22,11 @@
                 <li onclick="industryPlanService.onClickSharedIndustryPlans()">Shared Industry Plans</li>
             </ul>
         </div>
+        <div class="separator"></div>
         <div id="account-menu"></div>
+        <div id="minimap-wrapper">
+            <div id="minimap-toggle" onclick="minimapService.toggleMinimap()"></div>
+        </div>
     </nav>
     <div id="industry-plan">
         <div id="industry-plan-header"></div>

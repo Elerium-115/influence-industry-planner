@@ -1,0 +1,237 @@
+{
+    "id": "648f96e5-33dc-47e9-abcd-9b2d01a51c3a",
+    "title": "Example Plan",
+    "updatedTs": 1729034890394,
+    "scientistsInCrew": 2,
+    "startupProductIds":
+    [
+        "24",
+        "19",
+        "21"
+    ],
+    "industryTiers":
+    [
+        {
+            "processors":
+            [
+                {
+                    "id": 2,
+                    "processes":
+                    [
+                        {
+                            "id": 6,
+                            "primaryOutputId": "6"
+                        },
+                        {
+                            "id": 8,
+                            "primaryOutputId": "8"
+                        },
+                        {
+                            "id": 5,
+                            "primaryOutputId": "5"
+                        },
+                        {
+                            "id": 9,
+                            "primaryOutputId": "9"
+                        },
+                        {
+                            "id": 13,
+                            "primaryOutputId": "13"
+                        },
+                        {
+                            "id": 1,
+                            "primaryOutputId": "1"
+                        },
+                        {
+                            "id": 10,
+                            "primaryOutputId": "10"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "processors":
+            [
+                {
+                    "id": 3,
+                    "processes":
+                    [
+                        {
+                            "id": 185,
+                            "primaryOutputId": "23"
+                        },
+                        {
+                            "id": 26,
+                            "primaryOutputId": "58"
+                        },
+                        {
+                            "id": 24,
+                            "primaryOutputId": "25"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "processors":
+            [
+                {
+                    "id": 4,
+                    "processes":
+                    [
+                        {
+                            "id": 180,
+                            "primaryOutputId": "140"
+                        }
+                    ]
+                },
+                {
+                    "id": 3,
+                    "processes":
+                    [
+                        {
+                            "id": 44,
+                            "primaryOutputId": "55"
+                        },
+                        {
+                            "id": 42,
+                            "primaryOutputId": "53"
+                        },
+                        {
+                            "id": 39,
+                            "primaryOutputId": "47"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "processors":
+            [
+                {
+                    "id": 5,
+                    "processes":
+                    [
+                        {
+                            "id": 142,
+                            "primaryOutputId": "162"
+                        }
+                    ]
+                },
+                {
+                    "id": 3,
+                    "processes":
+                    [
+                        {
+                            "id": 67,
+                            "primaryOutputId": "83"
+                        },
+                        {
+                            "id": 75,
+                            "primaryOutputId": "90"
+                        },
+                        {
+                            "id": 74,
+                            "primaryOutputId": "76"
+                        },
+                        {
+                            "id": 34,
+                            "primaryOutputId": "38"
+                        },
+                        {
+                            "id": 72,
+                            "primaryOutputId": "85"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "processors":
+            [
+                {
+                    "id": 5,
+                    "processes":
+                    [
+                        {
+                            "id": 86,
+                            "primaryOutputId": "100"
+                        }
+                    ]
+                },
+                {
+                    "id": 3,
+                    "processes":
+                    [
+                        {
+                            "id": 27,
+                            "primaryOutputId": "27"
+                        },
+                        {
+                            "id": 70,
+                            "primaryOutputId": "84"
+                        },
+                        {
+                            "id": 49,
+                            "primaryOutputId": "194"
+                        },
+                        {
+                            "id": 94,
+                            "primaryOutputId": "106"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "processors":
+            [
+                {
+                    "id": 3,
+                    "processes":
+                    [
+                        {
+                            "id": 40,
+                            "primaryOutputId": "50"
+                        },
+                        {
+                            "id": 234,
+                            "primaryOutputId": "61"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "processors":
+            [
+                {
+                    "id": 3,
+                    "processes":
+                    [
+                        {
+                            "id": 62,
+                            "primaryOutputId": "74"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "processors":
+            [
+                {
+                    "id": 5,
+                    "processes":
+                    [
+                        {
+                            "id": 160,
+                            "primaryOutputId": "174"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
