@@ -34,6 +34,10 @@ export default defineConfig({
                     src: 'assets/**/*', // copy all files from "src/assets"
                     dest: 'assets', // output to "dist/assets"
                 },
+                {
+                    src: 'data/**/*', // copy all files from "src/data"
+                    dest: 'data', // output to "dist/data"
+                },
             ],
         }),
     ],
