@@ -1,5 +1,6 @@
 import {industryPlanService} from './modules/industry-plan-service.js';
 import {minimapService} from './modules/minimap-service.js';
+import {OverlayCreateIndustryPlan} from './modules/overlays/overlay-create-industry-plan.js';
 
 // Expose services for inline scripts in HTML - e.g. "onclick"
 global.industryPlanService = industryPlanService;
@@ -14,7 +15,12 @@ if (latestSavedIndustryPlanJSON) {
 }
 
 async function loadExamplePlan(): Promise<void> {
-    const examplePlanResponse = await fetch('/data/example-plan.json');
-    const examplePlanJSON = await examplePlanResponse.json();
-    industryPlanService.loadIndustryPlanJSON(examplePlanJSON);
+    try {
+        const examplePlanResponse = await fetch('/data/example-plan.json');
+        const examplePlanJSON = await examplePlanResponse.json();
+        industryPlanService.loadIndustryPlanJSON(examplePlanJSON);
+    } catch (error: any) {
+        // Prompt the user to create a new industry plan
+        new OverlayCreateIndustryPlan();
+    }
 }
