@@ -24,3 +24,5 @@ async function loadExamplePlan(): Promise<void> {
         new OverlayCreateIndustryPlan();
     }
 }
+
+minimapService.resetMinimap();

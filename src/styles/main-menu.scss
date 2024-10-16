@@ -95,11 +95,43 @@
     }
 
     #minimap-wrapper {
+        align-items: center;
         color: var(--color-text-normal);
         cursor: pointer;
+        display: flex;
+        height: 100%;
+        position: relative;
 
         #minimap-toggle {
+            padding-right: 24px;
+            position: relative;
+
+            &:hover { color: white; }
+
             &::before { content: 'Minimap'; }
+
+            &::after {
+                bottom: -1px;
+                content: '✕';
+                position: absolute;
+                right: 0;
+            }
+        }
+
+        #minimap-canvas {
+            background-color: var(--color-nav-bg);
+            max-height: 96px;
+            position: absolute;
+            right: -32px;
+            top: 100%;
+        }
+
+        &:not(:hover) #minimap-canvas { opacity: 0.5; }
+
+        &.minimized {
+            #minimap-toggle::after { content: '▼'; }
+
+            #minimap-canvas { display: none; }
         }
     }
 }
