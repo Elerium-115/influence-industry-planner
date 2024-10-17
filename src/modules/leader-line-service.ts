@@ -1,6 +1,7 @@
 import {IndustryPlan} from './industry-plan.js';
 import {industryPlanService} from './industry-plan-service.js';
 import {StartupProduct} from './startup-product.js';
+import {Processor} from './processor.js';
 import {PROCESSOR_COLOR_BY_BUILDING_ID, PROCESSOR_COLOR_FADED_BY_BUILDING_ID} from './processor-service.js';
 import {Process} from './process.js';
 import {ProductIcon} from './product-icon.js';
@@ -53,11 +54,7 @@ class LeaderLineService {
     }
 
     private getLineSourcesForInput(input: ProductIcon): ProductAny[] {
-        // Line sources = same product @ startup products / outputs of LOWER-tier processes
-        const maximumTierId = input.getParentProcess().getParentProcessor().getParentIndustryTier().getId() - 1;
-        return (industryPlanService.getIndustryPlan() as IndustryPlan)
-            .getAllOutputsMatchingProductId(input.getId(), maximumTierId)
-            .map(output => output);
+        return (industryPlanService.getIndustryPlan() as IndustryPlan).getSourcesForInput(input, false);
     }
 
     private makeLineDataForStartupProduct(startupProduct: StartupProduct, elTarget: HTMLElement): LineDataWithTarget {
@@ -358,6 +355,18 @@ class LeaderLineService {
         this.addPreferredLinesForInputs(process.getInputs());
         process.setIsActiveLines(true);
         this.markHasLines();
+    }
+
+    public removeLinesForProcess(process: Process): void {
+        // Remove lines for all inputs and outputs in this process
+        [...process.getInputs(), ...process.getOutputs()].forEach(product => product.removeAllLines());
+        process.setIsActiveLines(false);
+        this.markHasLines();
+    }
+
+    public removeLinesForProcessor(processor: Processor): void {
+        // Remove lines for all processes in this processor
+        processor.getProcesses().forEach(process => this.removeLinesForProcess(process));
     }
 }
 

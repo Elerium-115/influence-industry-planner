@@ -13,6 +13,7 @@ class Process {
     private outputs: ProductIcon[] = [];
     private primaryOutput: ProductIcon;
     private isActiveLines: boolean = false;
+    private isBroken: boolean = false;
     private htmlElement: HTMLElement;
 
     constructor(id: number, parentProcessor: Processor) {
@@ -78,6 +79,15 @@ class Process {
 
     public setIsActiveLines(isActiveLines: boolean): void {
         this.isActiveLines = isActiveLines;
+    }
+
+    public getIsBroken(): boolean {
+        return this.isBroken;
+    }
+
+    public setIsBroken(isBroken: boolean): void {
+        this.isBroken = isBroken;
+        this.htmlElement.classList.toggle('broken', isBroken);
     }
 
     public getHtmlElement(): HTMLElement {
@@ -255,6 +265,7 @@ class Process {
          * if this function was triggered via a click event.
          */
         event?.stopPropagation();
+        leaderLineService.removeLinesForProcess(this);
         this.htmlElement.parentElement?.removeChild(this.htmlElement);
         this.parentProcessor.onProcessRemoved(this);
     }

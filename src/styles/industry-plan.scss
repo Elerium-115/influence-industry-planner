@@ -62,6 +62,21 @@
 
     &:not(.has-lines) .remove-lines { display: none; }
 
+    &.broken {
+        #industry-plan-main {
+            #startup-products {
+                &::before {
+                    background-color: var(--color-warning);
+                    content: 'Some processes are broken, due to inputs without any source.';
+                    display: block;
+                    font-size: 90%;
+                    margin-bottom: 32px;
+                    padding: 8px;
+                }
+            }
+        }
+    }
+
     #industry-plan-header {
         align-items: center;
         display: flex;
@@ -591,6 +606,8 @@
                                             }
 
                                             &:hover { border-color: white; }
+
+                                            &.broken { outline: 1px solid var(--color-warning); }
                                         }
                                     }
 
@@ -666,6 +683,8 @@
                                 }
 
                                 &:not(:hover) .remove-process { display: none; }
+
+                                &.broken { outline: 1px solid var(--color-warning); }
                             }
 
                             &:empty + .add-process-button {

@@ -257,10 +257,11 @@ class IndustryPlanService {
                 });
             });
         });
-        loadedIndustryPlan.markHasSecondaryOutputs();
-        loadedIndustryPlan.setSavedStatusAndIcon(true);
-        // Finish loading
         loadedIndustryPlan.setIsLoading(false);
+        // Call "onIndustryPlanChanged" AFTER "isLoading" set to FALSE
+        loadedIndustryPlan.onIndustryPlanChanged(true);
+        // Call "setSavedStatusAndIcon" AFTER calling "onIndustryPlanChanged"
+        loadedIndustryPlan.setSavedStatusAndIcon(true);
         this.industryPlan = loadedIndustryPlan;
     }
 

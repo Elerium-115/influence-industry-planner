@@ -1,6 +1,7 @@
 import {getItemNameSafe} from './abstract-core.js';
 import {createEl} from './dom-core.js';
 import {IndustryTier} from './industry-tier.js';
+import {leaderLineService} from './leader-line-service.js';
 import {
     PROCESSOR_BUILDING_IDS,
     type TYPE_PROCESSOR_BUILDING_IDS,
@@ -107,6 +108,7 @@ class Processor {
     }
 
     public remove(): void {
+        leaderLineService.removeLinesForProcessor(this);
         this.htmlElement.parentElement?.removeChild(this.htmlElement);
         this.parentIndustryTier.onProcessorRemoved(this);
     }

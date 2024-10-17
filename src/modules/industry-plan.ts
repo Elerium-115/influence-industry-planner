@@ -19,6 +19,7 @@ class IndustryPlan {
     private refiningPenalty: RefiningPenalty;
     private startupProducts: StartupProduct[] = [];
     private industryTiers: IndustryTier[] = [];
+    private isBroken: boolean = false;
     private isLoading: boolean = false;
     private isSaved: boolean = false;
     private isPendingOperation: boolean = false;
@@ -182,9 +183,31 @@ class IndustryPlan {
         return [...startupProducts, ...outputs, ...inputs];
     }
 
+    public getSourcesForInput(input: ProductIcon, excludeBrokenProcesses: boolean = true): ProductAny[] {
+        // Sources = same product @ startup products / outputs of LOWER-tier processes
+        const maximumTierId = input.getParentProcess().getParentProcessor().getParentIndustryTier().getId() - 1;
+        let sources = this.getAllOutputsMatchingProductId(input.getId(), maximumTierId);
+        if (excludeBrokenProcesses) {
+            sources = sources.filter(source => {
+                if (source instanceof StartupProduct) {
+                    // Startup products are never broken
+                    return true;
+                }
+                // At this point, each "source" is definitely a "ProductIcon"
+                return !(source as ProductIcon).getParentProcess().getIsBroken();
+            });
+        }
+        return sources;
+    }
+
     private getElStartupProdutsList(): HTMLElement {
         // Always "HTMLElement", never "null"
         return this.startupProductsHtmlElement.querySelector('.startup-products-list') as HTMLElement;
+    }
+
+    public setIsBroken(isBroken: boolean): void {
+        this.isBroken = isBroken;
+        this.industryPlanHtmlElement.classList.toggle('broken', isBroken);
     }
 
     public setIsLoading(isLoading: boolean): void {
@@ -213,6 +236,33 @@ class IndustryPlan {
         // Show "Scientists in Crew" only if the industry plan contains processes with secondary outputs
         const hasSecondaryOutputs = this.getAllProcessesInPlan().some(process => process.getOutputs().length >= 2);
         this.industryPlanHeaderHtmlElement.classList.toggle('has-secondary-outputs', hasSecondaryOutputs);
+    }
+
+    /**
+     * Mark broken parts:
+     * - broken input, if it has no valid source
+     * - broken process, if it contains any broken input
+     * - broken industry plan, if it contains any broken process
+     */
+    public markBrokenParts(): void {
+        let isBrokenIndustryPlan = false;
+        this.getAllProcessesInPlan().forEach(process => {
+            const inputs = process.getInputs();
+            if (!inputs.length) {
+                // Processes without inputs are never broken (i.e. extractions)
+                process.setIsBroken(false);
+                return;
+            }
+            let isBrokenProcess = false;
+            inputs.forEach(input => {
+                const isBrokenInput = !this.getSourcesForInput(input).length;
+                input.setIsBroken(isBrokenInput);
+                isBrokenProcess = isBrokenProcess || isBrokenInput;
+            });
+            process.setIsBroken(isBrokenProcess);
+            isBrokenIndustryPlan = isBrokenIndustryPlan || isBrokenProcess;
+        });
+        this.setIsBroken(isBrokenIndustryPlan);
     }
 
     public addStartupProductById(id: string, shouldSortAndUpdate: boolean = true): void {
@@ -396,9 +446,12 @@ class IndustryPlan {
         this.setSavedStatusAndIcon(false);
         if (isFunctionalChange) {
             this.markHasSecondaryOutputs();
-            //// TO DO: highlight processes whose inputs are no longer available (e.g. if removed Startup Products / Processors / Processes)
-            //// -- mark them as "disabled" + exclude their outputs from "getAvailableInputsForIndustryTier"
-            leaderLineService.refreshLines();
+            this.markBrokenParts();
+            if (this.isBroken) {
+                leaderLineService.removeAllLines();
+            } else {
+                leaderLineService.refreshLines();
+            }
         }
     }
 

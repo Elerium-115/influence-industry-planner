@@ -11,6 +11,7 @@ class ProductAbstract {
      */
     protected id: string;
     protected data: I_PRODUCT_DATA;
+    protected isBroken: boolean = false;
     protected lines: LineDataWithTarget[] = [];
     protected htmlElement: HTMLElement;
 
@@ -33,6 +34,11 @@ class ProductAbstract {
 
     public getName(): string {
         return this.data.name;
+    }
+
+    public setIsBroken(isBroken: boolean): void {
+        this.isBroken = isBroken;
+        this.htmlElement.classList.toggle('broken', isBroken);
     }
 
     public getLines(): LineDataWithTarget[] {
