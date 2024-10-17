@@ -56,6 +56,7 @@ class IndustryPlan {
         this.industryPlanHeaderHtmlElement.textContent = '';
         this.industryPlanMainHtmlElement.textContent = '';
         this.markHasSecondaryOutputs(); // required when creating a new plan, while another plan with secondary outputs is loaded
+        this.setIsBroken(false); // required when creating a new plan, while another plan with broken parts is loaded
         this.populateIndustryPlanHeader();
         this.populateIndustryPlanMain();
     }

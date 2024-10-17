@@ -314,20 +314,22 @@ class IndustryPlanService {
                 return true;
             }
             // Parse outputs of all processes, from all processors, in this industry tier
-            industryTier.getProcessors().forEach(processor => {
-                processor.getProcesses().forEach(process => {
-                    process.getOutputs().forEach(outputProduct => {
-                        const outputProductId = outputProduct.getId();
-                        if (availableInputs.find(product => product.getId() === outputProductId)) {
-                            // Product already added
-                            return ;
-                        }
-                        if (!productService.isInputProductId(outputProductId)) {
-                            // Product not an input for any process
-                            return;
-                        }
-                        availableInputs.push(new ProductSelectable(outputProduct.getId()));
-                    });
+            industryTier.getProcessesFromTier().forEach(process => {
+                if (process.getIsBroken()) {
+                    // Exclude broken processes
+                    return;
+                }
+                process.getOutputs().forEach(outputProduct => {
+                    const outputProductId = outputProduct.getId();
+                    if (availableInputs.find(product => product.getId() === outputProductId)) {
+                        // Product already added
+                        return ;
+                    }
+                    if (!productService.isInputProductId(outputProductId)) {
+                        // Product not an input for any process
+                        return;
+                    }
+                    availableInputs.push(new ProductSelectable(outputProduct.getId()));
                 });
             });
         });
