@@ -132,7 +132,7 @@
             }
 
             .products-list {
-                background-color: var(--color-available-products-bg);
+                background-color: var(--color-dark-bg);
                 height: 50vh;
 
                 &:not(:empty) {
@@ -243,7 +243,7 @@
 
                 .raw-material {
                     align-items: center;
-                    background-color: var(--color-available-products-bg);
+                    background-color: var(--color-dark-bg);
                     cursor: pointer;
                     display: flex;
                     font-size: 90%;
@@ -320,7 +320,7 @@
                     margin-top: 16px;
 
                     label {
-                        background-color: var(--color-available-products-bg);
+                        background-color: var(--color-dark-bg);
                         color: var(--color-text-normal);
                         margin-left: -2px;
                         padding: 2px 16px 2px 2px;
@@ -464,7 +464,7 @@
             .overlay-list-title { margin-bottom: 16px; }
 
             .products-list {
-                background-color: var(--color-available-products-bg);
+                background-color: var(--color-dark-bg);
                 display: inline-block;
 
                 &:empty {

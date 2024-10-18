@@ -7,6 +7,7 @@
 :root {
     --button-icon-size: 32px;
     --color-button-bg: #2a2a2a; // avg. of grayscaled processor-header bg-colors
+    --color-button-text: rgba(255, 255, 255, 0.6);
 }
 
 @mixin button-icon-pseudo-element {
@@ -71,6 +72,7 @@
                     display: block;
                     font-size: 90%;
                     margin-bottom: 32px;
+                    min-width: 150px;
                     padding: 8px;
                 }
             }
@@ -112,7 +114,7 @@
                 }
 
                 ul {
-                    background-color: var(--color-nav-bg);
+                    background-color: var(--color-dark-bg);
                     display: flex;
                     filter: drop-shadow(4px 4px 4px black);
                     flex-direction: column;
@@ -174,7 +176,7 @@
 
             &:hover {
                 .plan-menu-inner {
-                    background-color: var(--color-nav-bg);
+                    background-color: var(--color-dark-bg);
 
                     &::before {
                         color: white;
@@ -209,7 +211,7 @@
                 padding: 0;
 
                 &:hover, &:focus {
-                    background-color: var(--color-nav-bg);
+                    background-color: var(--color-dark-bg);
                     color: white;
                 }
 
@@ -261,41 +263,61 @@
         }
 
         #refining-penalty {
+            --option-size: 32px;
             align-items: center;
+            background-color: var(--color-button-bg);
             display: flex;
+            height: var(--option-size);
+            padding: 0 16px 0 calc(var(--option-size) + 16px);
+            position: relative;
 
-            &::before {
-                content: 'Scientists in Crew:';
-                margin-right: 16px;
-                opacity: 0.5;
+            &::after {
+                color: var(--color-button-text);
+                content: 'Scientists in Crew';
             }
 
-            .scientists-count {
-                color: var(--color-text-normal);
-                cursor: pointer;
-                line-height: 32px;
-                text-align: center;
-                width: 32px;
+            #scientists-count-options {
+                background-color: var(--color-dark-bg);
+                display: flex;
+                left: 0;
+                position: absolute;
+                top: 0;
 
-                &:hover {
-                    @include hover-lighten-bg;
-                    color: white;
-                }
+                .scientists-count {
+                    color: var(--color-text-normal);
+                    cursor: pointer;
+                    line-height: var(--option-size);
+                    text-align: center;
+                    width: var(--option-size);
 
-                &.selected {
-                    background-color: rgba(var(--rgb-processor-refinery), 0.75);
+                    &:hover {
+                        @include hover-lighten-bg;
+                        color: white;
+                    }
 
-                    &:hover { color: white; }
+                    &.selected {
+                        background-color: rgba(var(--rgb-processor-refinery), 0.75);
 
-                    &.warning-if-selected { background-color: var(--color-warning); }
+                        &:hover { color: white; }
+
+                        &.warning-if-selected { background-color: var(--color-warning); }
+                    }
                 }
             }
+
+            &:hover {
+                background-color: unset;
+
+                #scientists-count-options { filter: drop-shadow(4px 4px 4px black); }
+            }
+
+            &:not(:hover) #scientists-count-options .scientists-count:not(.selected) { display: none; }
         }
 
         .button-with-icon {
             align-items: center;
             background-color: var(--color-button-bg);
-            color: rgba(255, 255, 255, 0.6);
+            color: var(--color-button-text);
             cursor: pointer;
             display: flex;
             gap: 16px;
@@ -352,7 +374,7 @@
             .startup-products-list {
                 .startup-product {
                     align-items: center;
-                    background-color: var(--color-available-products-bg);
+                    background-color: var(--color-dark-bg);
                     color: var(--color-text-normal);
                     cursor: pointer;
                     display: flex;
@@ -376,7 +398,7 @@
                     }
 
                     .remove-product {
-                        background-color: var(--color-available-products-bg);
+                        background-color: var(--color-dark-bg);
                         bottom: 0;
                         cursor: pointer;
                         display: flex;
@@ -419,7 +441,7 @@
 
             .add-startup-products-button {
                 align-items: center;
-                background-color: var(--color-available-products-bg);
+                background-color: var(--color-dark-bg);
                 color: var(--color-add-button);
                 cursor: pointer;
                 display: flex;
@@ -684,6 +706,8 @@
 
                                 &:not(:hover) .remove-process { display: none; }
 
+                                &.is-active-lines { outline: 1px dashed var(--color-text-normal); }
+
                                 &.broken { outline: 1px solid var(--color-warning); }
                             }
 
@@ -752,7 +776,7 @@
                 .add-processor-panel {
                     align-items: center;
                     background-color: var(--color-button-bg);
-                    color: rgba(255, 255, 255, 0.6);
+                    color: var(--color-button-text);
                     cursor: pointer;
                     display: flex;
                     gap: 16px;

@@ -79,6 +79,7 @@ class Process {
 
     public setIsActiveLines(isActiveLines: boolean): void {
         this.isActiveLines = isActiveLines;
+        this.htmlElement.classList.toggle('is-active-lines', isActiveLines);
     }
 
     public getIsBroken(): boolean {

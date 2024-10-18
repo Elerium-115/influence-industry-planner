@@ -63,10 +63,12 @@ class RefiningPenalty {
 
     private makeHtmlElement(): HTMLElement {
         const el = createEl('div', 'refining-penalty');
+        const elScientistsCountOptions = createEl('div', 'scientists-count-options');
         // Add options to select number of scientists in crew, between 0 and 5
         for (let i = 0; i <= 5; i++) {
-            el.append(this.makeElScientistsCount(i));
+            elScientistsCountOptions.append(this.makeElScientistsCount(i));
         }
+        el.append(elScientistsCountOptions);
         return el;
     }
 }

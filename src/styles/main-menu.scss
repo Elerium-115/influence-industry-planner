@@ -1,6 +1,6 @@
 #main-menu {
     align-items: center;
-    background-color: var(--color-nav-bg);
+    background-color: var(--color-dark-bg);
     display: flex;
     gap: 32px;
     height: var(--nav-height);
@@ -60,7 +60,7 @@
         }
 
         ul {
-            background-color: var(--color-nav-bg);
+            background-color: var(--color-dark-bg);
             display: flex;
             filter: drop-shadow(4px 4px 4px black);
             flex-direction: column;
@@ -119,7 +119,7 @@
         }
 
         #minimap-canvas {
-            background-color: var(--color-nav-bg);
+            background-color: var(--color-dark-bg);
             max-height: 96px;
             position: absolute;
             right: -32px;
