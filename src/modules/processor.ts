@@ -69,6 +69,13 @@ class Processor {
         return process;
     }
 
+    private onClickRemoveProcessor(): void {
+        if (!confirm('Are you sure you want to remove this building and all its processes?')) {
+            return; // Abort action
+        }
+        this.remove();
+    }
+
     private onClickAddProcessButton(): void {
         if (this.id === PROCESSOR_BUILDING_IDS.EXTRACTOR) {
             new OverlayAddExtraction(this);
@@ -102,7 +109,7 @@ class Processor {
             <div class="processes-list"></div>
             <div class="add-process-button"></div>
         `;
-        el.querySelector('.remove-processor')?.addEventListener('click', this.remove.bind(this));
+        el.querySelector('.remove-processor')?.addEventListener('click', this.onClickRemoveProcessor.bind(this));
         el.querySelector('.add-process-button')?.addEventListener('click', this.onClickAddProcessButton.bind(this));
         return el;
     }

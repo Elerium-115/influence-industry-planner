@@ -238,6 +238,13 @@ class Process {
         }
     }
 
+    private onClickRemoveProcess(event: MouseEvent): void {
+        if (!confirm('Are you sure you want to remove this process?')) {
+            return; // Abort action
+        }
+        this.remove(event);
+    }
+
     private onClickProcess(): void {
         leaderLineService.toggleLinesForProcess(this);
     }
@@ -255,7 +262,7 @@ class Process {
             </div>
             <div class="remove-process"></div>
         `;
-        el.querySelector('.remove-process')?.addEventListener('click', this.remove.bind(this));
+        el.querySelector('.remove-process')?.addEventListener('click', this.onClickRemoveProcess.bind(this));
         el.addEventListener('click', this.onClickProcess.bind(this));
         return el;
     }
