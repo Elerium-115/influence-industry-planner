@@ -1,4 +1,4 @@
-import {industryPlanService} from './modules/industry-plan-service.js';
+import {PlannedProductJSON, industryPlanService} from './modules/industry-plan-service.js';
 import {minimapService} from './modules/minimap-service.js';
 import {OverlayCreateIndustryPlan} from './modules/overlays/overlay-create-industry-plan.js';
 
@@ -6,12 +6,19 @@ import {OverlayCreateIndustryPlan} from './modules/overlays/overlay-create-indus
 global.industryPlanService = industryPlanService;
 global.minimapService = minimapService;
 
-// Pre-load the latest saved industry plan, if any
-const latestSavedIndustryPlanJSON = industryPlanService.getLatestSavedIndustryPlanJSON();
-if (latestSavedIndustryPlanJSON) {
-    industryPlanService.loadIndustryPlanJSON(latestSavedIndustryPlanJSON);
+// Generate industry plan if planned product JSON in URL
+const urlParams = new URLSearchParams(location.search);
+const plannedProductJSON: PlannedProductJSON|null = JSON.parse(urlParams.get('planned-product-json') || 'null');
+if (plannedProductJSON) {
+    industryPlanService.generateIndustryPlanFromPlannedProductJSON(plannedProductJSON);
 } else {
-    loadExamplePlan();
+    // Pre-load the latest saved industry plan (if any), or the example plan
+    const latestSavedIndustryPlanJSON = industryPlanService.getLatestSavedIndustryPlanJSON();
+    if (latestSavedIndustryPlanJSON) {
+        industryPlanService.loadIndustryPlanJSON(latestSavedIndustryPlanJSON);
+    } else {
+        loadExamplePlan();
+    }
 }
 
 async function loadExamplePlan(): Promise<void> {

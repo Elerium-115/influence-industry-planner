@@ -46,6 +46,15 @@ interface I_PROCESS_DATA_WITH_PRIMARY_OUTPUT_PRODUCT_ID extends I_PROCESS_DATA {
     primaryOutputProductId: string,
 }
 
+interface PlannedProductJSON {
+    startupProductIds: string[],
+    plannedProcessDataById: {
+        id: number,
+        primaryOutputId: string,
+    }[],
+    plannedProductId: string,
+}
+
 /**
  * Singleton
  */
@@ -291,6 +300,48 @@ class IndustryPlanService {
         localStorage.setItem('savedIndustryPlans', JSON.stringify(savedIndustryPlansJSON));
         this.loadIndustryPlanJSON(duplicatedIndustryPlanJSON);
         this.industryPlan?.onDuplicatedPlan();
+    }
+
+    public generateIndustryPlanFromPlannedProductJSON(plannedProductJSON: PlannedProductJSON): void {
+        const plannedProductName = productService.getProductNameById(plannedProductJSON.plannedProductId);
+        const industryPlanJSON: IndustryPlanJSON = {
+            id: this.generateIndustryPlanId(),
+            title: `${plannedProductName} plan`,
+            updatedTs: new Date().getTime(),
+            scientistsInCrew: 1,
+            startupProductIds: plannedProductJSON.startupProductIds,
+            industryTiers: [],
+        };
+        this.loadIndustryPlanJSON(industryPlanJSON);
+        // Add planned processes into the generated plan
+        let failsafeCount = 0;
+        const addedProcessIds: number[] = [];
+        while (addedProcessIds.length < Object.keys(plannedProductJSON.plannedProcessDataById).length) {
+            failsafeCount++;
+            if (failsafeCount > 100) {
+                // This should not happen, for a valid "plannedProductJSON"
+                console.error(`--- ERROR: [generateIndustryPlanFromPlannedProductJSON] unexpected error`);
+                break;
+            }
+            Object.values(plannedProductJSON.plannedProcessDataById).forEach(plannedProcessData => {
+                const plannedProcessId = plannedProcessData.id;
+                if (addedProcessIds.includes(plannedProcessId)) {
+                    // Skip process already added into the generated plan
+                    return;
+                }
+                const processData = processService.getProcessDataById(plannedProcessId);
+                const processDataWithPrimaryOutput: I_PROCESS_DATA_WITH_PRIMARY_OUTPUT_PRODUCT_ID = {
+                    ...processData,
+                    primaryOutputProductId: plannedProcessData.primaryOutputId,
+                };
+                try {
+                    this.addProcessIntoGeneratedPlan(processDataWithPrimaryOutput);
+                    addedProcessIds.push(plannedProcessId);
+                } catch (error: any) {
+                    // Swallow this error => this process will be retried in the next "while" loop
+                }
+            });
+        }
     }
 
     public getAvailableInputsForIndustryTier(targetIndustryTier: IndustryTier): ProductSelectable[] {
@@ -850,5 +901,6 @@ const industryPlanService: IndustryPlanService = IndustryPlanService.getInstance
 
 export {
     IndustryPlanJSON,
+    PlannedProductJSON,
     industryPlanService,
 }
