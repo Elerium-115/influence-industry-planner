@@ -23,7 +23,13 @@
             </ul>
         </div>
         <div class="separator"></div>
-        <div id="account-menu"></div>
+        <div id="account-menu">
+            <div id="starknet-connect" class="hidden" onclick="starknetService.starknetConnect()">Connect</div>
+            <div id="starknet-wallet" class="hidden">
+                <img class="icon" alt="">
+                <div class="address"></div>
+            </div>
+        </div>
         <div id="minimap-wrapper">
             <div id="minimap-toggle" onclick="minimapService.toggleMinimap()"></div>
         </div>

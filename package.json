@@ -12,7 +12,8 @@
 	"license": "ISC",
 	"dependencies": {
 		"@influenceth/sdk": "^2.3.4",
-		"axios": "^1.7.7"
+		"axios": "^1.7.7",
+		"get-starknet": "^3.3.3"
 	},
 	"devDependencies": {
 		"glob": "^11.0.0",

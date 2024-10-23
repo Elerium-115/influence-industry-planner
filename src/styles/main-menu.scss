@@ -91,7 +91,21 @@
     }
 
     #account-menu {
-        &::before { color: var(--color-text-normal); content: 'Account'; } //// TEST
+        color: var(--color-text-normal);
+
+        #starknet-connect {
+            cursor: pointer;
+
+            &:hover { color: white; }
+        }
+
+        #starknet-wallet {
+            align-items: center;
+            display: flex;
+            gap: 8px;
+
+            img { height: 16px; }
+        }
     }
 
     #minimap-wrapper {

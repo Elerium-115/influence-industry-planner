@@ -314,15 +314,15 @@ class IndustryPlanService {
         };
         this.loadIndustryPlanJSON(industryPlanJSON);
         // Add planned processes into the generated plan
-        let failsafeCount = 0;
+        let noProcessAdded = false;
         const addedProcessIds: number[] = [];
         while (addedProcessIds.length < Object.keys(plannedProductJSON.plannedProcessDataById).length) {
-            failsafeCount++;
-            if (failsafeCount > 100) {
+            if (noProcessAdded) {
                 // This should not happen, for a valid "plannedProductJSON"
                 console.error(`--- ERROR: [generateIndustryPlanFromPlannedProductJSON] unexpected error`);
                 break;
             }
+            noProcessAdded = true;
             Object.values(plannedProductJSON.plannedProcessDataById).forEach(plannedProcessData => {
                 const plannedProcessId = plannedProcessData.id;
                 if (addedProcessIds.includes(plannedProcessId)) {
@@ -337,6 +337,7 @@ class IndustryPlanService {
                 try {
                     this.addProcessIntoGeneratedPlan(processDataWithPrimaryOutput);
                     addedProcessIds.push(plannedProcessId);
+                    noProcessAdded = false;
                 } catch (error: any) {
                     // Swallow this error => this process will be retried in the next "while" loop
                 }

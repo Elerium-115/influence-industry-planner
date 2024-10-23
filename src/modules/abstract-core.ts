@@ -17,6 +17,13 @@ function getFormattedRoundNumber(num: number, roundUp: boolean = true): string {
     return Intl.NumberFormat().format(roundUp ? Math.ceil(num) : Math.floor(num));
 }
 
+function getCompactAddress(address: string): string|null {
+    if (!address) {
+        return null;
+    }
+    return address.replace(/^(.{6}).+(.{4})$/, '$1...$2');
+}
+
 function uniquePushToArray(arr: any[], value: any): void {
     if (arr.indexOf(value) === -1) {
         arr.push(value);
@@ -42,6 +49,7 @@ function delay(ms: number): Promise<void> {
 
 export {
     delay,
+    getCompactAddress,
     getFormattedRoundNumber,
     getProductImageSrc,
     getItemNameSafe,
