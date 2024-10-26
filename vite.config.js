@@ -16,11 +16,18 @@ export default defineConfig({
             input: Object.fromEntries(
                 htmlFiles.map(file => [
                     path.basename(file, '.html'),
-                    path.resolve(__dirname, file)
-                ])
+                    path.resolve(__dirname, file),
+                ]),
             ),
         },
         sourcemap: true,
+    },
+    css: {
+        preprocessorOptions: {
+            scss: {
+                api: 'modern',
+            },
+        },
     },
     plugins: [
         nodePolyfills({

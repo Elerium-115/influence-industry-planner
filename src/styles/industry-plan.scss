@@ -1,8 +1,7 @@
-@import './_core.scss';
-@import './_processor.scss';
-// Above imports required for below imports
-@import './main-menu.scss';
-@import './overlay.scss';
+@use 'core';
+@use 'processor';
+@use 'main-menu';
+@use 'overlay';
 
 :root {
     --button-icon-size: 32px;
@@ -134,7 +133,7 @@
                         white-space: nowrap;
 
                         &:hover {
-                            @include hover-lighten-bg;
+                            @include core.hover-lighten-bg;
                             color: white !important;
                         }
 
@@ -291,7 +290,7 @@
                     width: var(--option-size);
 
                     &:hover {
-                        @include hover-lighten-bg;
+                        @include core.hover-lighten-bg;
                         color: white;
                     }
 
@@ -324,7 +323,7 @@
             position: relative;
 
             &:hover {
-                @include hover-lighten-bg;
+                @include core.hover-lighten-bg;
                 color: white;
             }
 
@@ -392,7 +391,7 @@
                     }
 
                     .product-name {
-                        @include single-line-with-ellipsis;
+                        @include core.single-line-with-ellipsis;
                         font-size: 90%;
                         max-width: 160px;
                     }
@@ -422,10 +421,10 @@
                     }
 
                     &:hover {
-                        @include hover-lighten-bg;
+                        @include core.hover-lighten-bg;
                         color: white !important;
 
-                        .remove-product { @include hover-lighten-bg; }
+                        .remove-product { @include core.hover-lighten-bg; }
                     }
 
                     &:not(:hover) .remove-product { display: none; }
@@ -465,7 +464,7 @@
                 }
 
                 &:hover {
-                    @include hover-lighten-bg;
+                    @include core.hover-lighten-bg;
                     color: white;
                 }
             }
@@ -589,7 +588,7 @@
                                         opacity: 0.75;
                                     }
 
-                                    .process-name { @include single-line-with-ellipsis; }
+                                    .process-name { @include core.single-line-with-ellipsis; }
                                 }
 
                                 .process-materials {
@@ -618,7 +617,7 @@
                                             &.flash-primary {
                                                 animation: flash-primary 500ms;
 
-                                                &::after { @include flash-tooltip(var(--color-processor)); }
+                                                &::after { @include core.flash-tooltip(var(--color-processor)); }
 
                                                 @keyframes flash-primary {
                                                     25% { background-color: var(--color-processor-highlight-subtle); }
@@ -783,7 +782,7 @@
                     position: relative;
 
                     &:hover {
-                        @include hover-lighten-bg;
+                        @include core.hover-lighten-bg;
                         color: white;
                     }
                 }
@@ -829,7 +828,7 @@
                             padding: 8px 8px 8px calc(var(--processor-icon-size) + 16px);
 
                             &:hover {
-                                @include hover-lighten-bg;
+                                @include core.hover-lighten-bg;
                                 color: white;
                             }
                         }

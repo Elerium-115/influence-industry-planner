@@ -1,3 +1,5 @@
+@use 'core';
+
 #main-menu {
     align-items: center;
     background-color: var(--color-dark-bg);
@@ -77,7 +79,7 @@
                 white-space: nowrap;
 
                 &:hover {
-                    @include hover-lighten-bg;
+                    @include core.hover-lighten-bg;
                     color: white !important;
                 }
 
