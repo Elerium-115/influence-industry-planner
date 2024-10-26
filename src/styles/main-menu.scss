@@ -107,6 +107,8 @@
             gap: 8px;
 
             img { height: 16px; }
+
+            .test-signature { cursor: pointer; padding-right: 24px; &:hover { color: white; } } //// TEST
         }
     }
 

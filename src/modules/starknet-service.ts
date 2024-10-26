@@ -8,16 +8,19 @@ import * as starknet from 'starknet';
 import {type Signature} from 'starknet';
 import {getCompactAddress} from './abstract-core.js';
 
+type ChainId = 'SN_MAIN'|'SN_SEPOLIA';
+
 /**
  * Singleton
  */
 class StarknetService {
     private static instance: StarknetService;
 
-    private starknet: any;
-    private wallet: StarknetWindowObject|null|undefined;
-    private connector: StarknetkitConnector|null;
-    private connectorData: ConnectorData|null;
+    private wallet: StarknetWindowObject|null|undefined = null;
+    private connector: StarknetkitConnector|null = null;
+    private connectorData: ConnectorData|null = null;
+    private connectedAddress: string|'' = ''; // 64-bit address prefixed by "0x"
+    private connectedChainId: ChainId|'' = '';
     private elStarknetConnect: HTMLElement;
     private elStarknetWallet: HTMLElement;
     private elStarknetWalletIcon: HTMLImageElement;
@@ -31,17 +34,8 @@ class StarknetService {
         this.elStarknetWalletIcon = this.elStarknetWallet.querySelector('.icon') as HTMLImageElement;
         this.elStarknetWalletAddress = this.elStarknetWallet.querySelector('.address') as HTMLElement;
         this.elStarknetWalletAddress.dataset.tooltipPosition = 'bottom-right';
-        // Call via setTimeout, to allow "starknet" to become set on page-load, if previously connected
-        setTimeout(async () => {
-            this.starknet = global.starknet;
-            if (typeof this.starknet === 'undefined') {
-                // NOT previously connected => show the "Connect" button (do NOT auto-trigger the modal)
-                this.starknetUpdateState();
-            } else {
-                // Previously connected => auto-connect (this will also trigger "starknetUpdateState")
-                await this.starknetConnect();
-            }
-        }, 100);
+        // Do NOT trigger the wallet connection modal on page-load
+        this.starknetConnect('neverAsk');
     }
 
     public static getInstance(): StarknetService {
@@ -51,17 +45,55 @@ class StarknetService {
         return StarknetService.instance;
     }
 
-    private getAddress64Bit(): string {
+    private updateAddress(): void {
         if (!this.connectorData) {
-            return '';
+            this.connectedAddress = '';
+            return;
         }
         let address = this.connectorData.account as string;
         // Remove any "0x" prefix, then pad to 64 hex characters and add back "0x"
-        address = '0x' + address.replace(/^0x/, '').padStart(64, '0');
-        return address;
+        this.connectedAddress = '0x' + address.replace(/^0x/, '').padStart(64, '0');
     }
 
-    private makeTypedData(chainId: 'SN_MAIN'|'SN_SEPOLIA', message: string): starknet.TypedData {
+    private async updateChainId(): Promise<void> {
+        if (!this.wallet) {
+            this.connectedChainId = '';
+            return;
+        }
+        const chainId = await this.wallet.request({type: 'wallet_requestChainId'});
+        switch (chainId) {
+            case 'SN_MAIN':
+            case '0x534e5f4d41494e':
+                this.connectedChainId = 'SN_MAIN';
+                break;
+            case 'SN_SEPOLIA':
+            case '0x534e5f5345504f4c4941':
+                this.connectedChainId = 'SN_SEPOLIA';
+                break;
+            default:
+                this.connectedChainId = '';
+                break;
+        }
+    }
+
+    private getRpcNodeUrl(): string {
+        // Source: http://starknetjs.com/docs/guides/connect_network
+        if (this.connectedChainId === 'SN_MAIN') {
+            // Mainnet
+            return 'https://starknet-mainnet.public.blastapi.io/rpc/v0_7';
+        } else {
+            // Sepolia (or not connected)
+            return 'https://starknet-sepolia.public.blastapi.io/rpc/v0_7';
+        }
+    }
+
+    private generateNonce(): string {
+        const array = new Uint32Array(1); // creates a typed array with one 32-bit integer
+        window.crypto.getRandomValues(array); // fills the array with random values
+        return array[0].toString(); // convert to string for use as a nonce
+    }
+
+    private makeTypedData(message: string, nonce: string): starknet.TypedData {
         return {
             types: {
                 StarkNetDomain: [
@@ -71,60 +103,56 @@ class StarknetService {
                 ],
                 StarknetMessage: [
                     {name: 'message', type: 'felt'},
+                    {name: 'nonce', type: 'felt'},
                 ],
             },
             primaryType: 'StarknetMessage',
             domain: {
                 name: 'Industry Planner for Influence',
                 version: '0.0.1',
-                chainId,
+                chainId: this.connectedChainId,
             },
             message: {
                 message,
+                nonce,
             },
         };
     }
 
-    private resetElStarknetWallet(): void {
-        this.elStarknetWallet.classList.add('hidden');
-        this.elStarknetWalletIcon.src = '';
-        this.elStarknetWalletAddress.textContent = '';
-        delete this.elStarknetWalletAddress.dataset.tooltip;
-    }
-
-    private starknetUpdateState(): void {
-        const debugStarknet = {...this.starknet}; delete debugStarknet.icon; console.log(`--- starknet:`, debugStarknet); //// TEST
-        if (typeof this.starknet === 'undefined') {
-            // NO starknet
-            this.elStarknetConnect.classList.remove('hidden');
-            this.resetElStarknetWallet();
-            return;
-        }
-        if (!this.starknet.isConnected) {
+    private starknetUpdate(): void {
+        // console.log(`--- starknetkit:`, {wallet: this.wallet, connector: this.connector, connectorData: this.connectorData}); //// TEST
+        this.updateAddress();
+        this.updateChainId();
+        if (!this.wallet) {
             // starknet NOT connected
             this.elStarknetConnect.classList.remove('hidden');
-            this.resetElStarknetWallet();
+            this.elStarknetWallet.classList.add('hidden');
+            this.elStarknetWalletIcon.src = '';
+            this.elStarknetWalletAddress.textContent = '';
+            delete this.elStarknetWalletAddress.dataset.tooltip;
             return;
         }
         // starknet CONNECTED
-        const address = this.getAddress64Bit()
-        this.elStarknetWalletIcon.src = this.starknet.icon;
-        this.elStarknetWalletAddress.textContent = getCompactAddress(address);
-        this.elStarknetWalletAddress.dataset.tooltip = address;
+        this.elStarknetWalletIcon.src = this.wallet.icon as string;
+        this.elStarknetWalletAddress.textContent = getCompactAddress(this.connectedAddress);
+        this.elStarknetWalletAddress.dataset.tooltip = this.connectedAddress;
         this.elStarknetConnect.classList.add('hidden');
         this.elStarknetWallet.classList.remove('hidden');
     }
 
-    private async starknetConnect(): Promise<void> {
-        const {wallet, connector, connectorData} = await connect({});
-        console.log(`--- connected wallet:`, {wallet, connector, connectorData}); //// TEST
+    private async starknetConnect(modalMode: 'alwaysAsk'|'canAsk'|'neverAsk' = 'alwaysAsk'): Promise<void> {
+        const wasConnected = Boolean(this.wallet);
+        const {wallet, connector, connectorData} = await connect({modalMode});
         this.wallet = wallet;
         this.connector = connector;
         this.connectorData = connectorData;
+        this.starknetUpdate();
         if (!wallet || !connector || !connectorData) {
             return;
         }
         /**
+         * Wallet connected, at this point.
+         * 
          * NOTE: "type" values and responses when calling "wallet.request({type: ...})"
          * - "wallet_getPermissions" => ["accounts"]
          * - "wallet_requestAccounts" => ["0x1234...6789"] - connected wallet address
@@ -132,15 +160,20 @@ class StarknetService {
          * - "wallet_supportedSpecs" => ["0.4", "0.5", "0.6"] - as of 2024-10-25
          * - "wallet_signTypedData" => Signature
          */
-        wallet.on('accountsChanged', this.onAccountsChanged.bind(this));
-        wallet.on('networkChanged', this.onNetworkChanged.bind(this));
-        this.starknetUpdateState();
+        if (!wasConnected) {
+            /**
+             * Add event listeners only if the wallet was NOT already connected.
+             * This avoids re-adding the listeners multiple times, when this
+             * function is called from one of the existing event listeners.
+             */
+            wallet.on('accountsChanged', this.onAccountsChanged.bind(this));
+            wallet.on('networkChanged', this.onNetworkChanged.bind(this));
+        }
     }
 
     private async signMessage(typedData: starknet.TypedData): Promise<Signature|null> {
-        console.log(`--- [signMessage] typedData:`, typedData); //// TEST
+        // console.log(`--- [signMessage] typedData:`, typedData); //// TEST
         if (!this.wallet) {
-            console.log(`---> [signMessage] NO wallet`); //// TEST
             return null;
         }
         try {
@@ -156,19 +189,16 @@ class StarknetService {
                 type: 'wallet_signTypedData',
                 params: typedData,
             });
-            console.log(`---> [signMessage] signature:`, signature); //// TEST
             return signature;
         } catch (error) {
-            console.log(`---> [signMessage] ERROR:`, error); //// TEST
-            return null;
+            throw error;
         }
     }
 
-    //// TO DO: when to call this, without spamming it on each page-load?
+    //// TO DO: when to auto-call this, without spamming it on each page-load?
     private async login(): Promise<void> {
-        console.log(`--- [login]`); //// TEST
-        //// TO DO: set "chainId" based on currently connected wallet's chain
-        const typedDataLogin = this.makeTypedData('SN_MAIN', 'Login');
+        //// TO DO: generate this message in the API w/ random "nonce"
+        const typedDataLogin = this.makeTypedData('Login to Industry Planner', this.generateNonce());
         let signature: Signature|null = null;
         try {
             signature = await this.signMessage(typedDataLogin);
@@ -176,16 +206,14 @@ class StarknetService {
             console.log(`---> [login] ERROR signing the message:`, error); //// TEST
         }
         if (!signature) {
-            console.log(`---> [login] NO signature`); //// TEST
             return;
         }
         //// TO DO: this verification must be done in the API
         try {
             // Source: https://dev.to/bastienfaivre/a-guide-on-starknet-signatures-a3m
-            const nodeUrl: string = 'https://starknet-mainnet.public.blastapi.io/rpc/v0_7';
-            const rpcProvider = new starknet.RpcProvider({nodeUrl});
+            const rpcProvider = new starknet.RpcProvider({nodeUrl: this.getRpcNodeUrl()});
             // "0x123" is a placeholder for the user's private key (no access to it)
-            const verifierAccount = new starknet.Account(rpcProvider, this.getAddress64Bit(), '0x123');
+            const verifierAccount = new starknet.Account(rpcProvider, this.connectedAddress, '0x123');
             const isValidSignature = await verifierAccount.verifyMessage(typedDataLogin, signature);
             console.log(`---> [login] isValidSignature:`, isValidSignature); //// TEST
         } catch (error) {
@@ -195,6 +223,7 @@ class StarknetService {
 
     private onAccountsChanged(accounts: string[]): void {
         console.log(`--- [onAccountsChanged] args:`, {accounts}); //// TEST
+        this.starknetConnect('neverAsk');
     }
 
     private onNetworkChanged(networkId: string, accounts: string[]): void {
