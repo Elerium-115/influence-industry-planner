@@ -7,6 +7,7 @@ import {
 import * as starknet from 'starknet';
 import {type Signature} from 'starknet';
 import {getCompactAddress} from './abstract-core.js';
+import {mockApi} from './mock-api.js';
 
 type ChainId = 'SN_MAIN'|'SN_SEPOLIA';
 
@@ -74,49 +75,6 @@ class StarknetService {
                 this.connectedChainId = '';
                 break;
         }
-    }
-
-    private getRpcNodeUrl(): string {
-        // Source: http://starknetjs.com/docs/guides/connect_network
-        if (this.connectedChainId === 'SN_MAIN') {
-            // Mainnet
-            return 'https://starknet-mainnet.public.blastapi.io/rpc/v0_7';
-        } else {
-            // Sepolia (or not connected)
-            return 'https://starknet-sepolia.public.blastapi.io/rpc/v0_7';
-        }
-    }
-
-    private generateNonce(): string {
-        const array = new Uint32Array(1); // creates a typed array with one 32-bit integer
-        window.crypto.getRandomValues(array); // fills the array with random values
-        return array[0].toString(); // convert to string for use as a nonce
-    }
-
-    private makeTypedData(message: string, nonce: string): starknet.TypedData {
-        return {
-            types: {
-                StarkNetDomain: [
-                    {name: 'name', type: 'felt'},
-                    {name: 'chainId', type: 'felt'},
-                    {name: 'version', type: 'felt'},
-                ],
-                StarknetMessage: [
-                    {name: 'message', type: 'felt'},
-                    {name: 'nonce', type: 'felt'},
-                ],
-            },
-            primaryType: 'StarknetMessage',
-            domain: {
-                name: 'Industry Planner for Influence',
-                version: '0.0.1',
-                chainId: this.connectedChainId,
-            },
-            message: {
-                message,
-                nonce,
-            },
-        };
     }
 
     private starknetUpdate(): void {
@@ -197,27 +155,33 @@ class StarknetService {
 
     //// TO DO: when to auto-call this, without spamming it on each page-load?
     private async login(): Promise<void> {
-        //// TO DO: generate this message in the API w/ random "nonce"
-        const typedDataLogin = this.makeTypedData('Login to Industry Planner', this.generateNonce());
+        const {typedData, token} = await mockApi.generateMessageLogin(this.connectedAddress, this.connectedChainId as ChainId);
+
         let signature: Signature|null = null;
         try {
-            signature = await this.signMessage(typedDataLogin);
+            signature = await this.signMessage(typedData);
         } catch (error) {
             console.log(`---> [login] ERROR signing the message:`, error); //// TEST
         }
         if (!signature) {
+            // Login refused by user (or wallet not connected)
+            //// ...
             return;
         }
-        //// TO DO: this verification must be done in the API
         try {
-            // Source: https://dev.to/bastienfaivre/a-guide-on-starknet-signatures-a3m
-            const rpcProvider = new starknet.RpcProvider({nodeUrl: this.getRpcNodeUrl()});
-            // "0x123" is a placeholder for the user's private key (no access to it)
-            const verifierAccount = new starknet.Account(rpcProvider, this.connectedAddress, '0x123');
-            const isValidSignature = await verifierAccount.verifyMessage(typedDataLogin, signature);
-            console.log(`---> [login] isValidSignature:`, isValidSignature); //// TEST
+            const verifyResult = await mockApi.verifySignature(typedData, signature, token);
+            if (verifyResult.success) {
+                // Login success
+                console.log(`---> [login] SUCCESS`); //// TEST
+                //// ...
+            } else {
+                // Login failed verification
+                console.log(`---> [login] FAILED`); //// TEST
+                //// ...
+            }
         } catch (error) {
             console.log(`---> [login] ERROR verifying the signature:`, error); //// TEST
+            //// ...
         }
     }
 
