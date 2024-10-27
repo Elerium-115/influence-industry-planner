@@ -17,6 +17,13 @@ type ChainId = 'SN_MAIN'|'SN_SEPOLIA';
 class StarknetService {
     private static instance: StarknetService;
 
+    /**
+     * This becomes TRUE when all these conditions are met:
+     * - a Starknet wallet is connected
+     * - a valid auth token exists (or becomes set) in local-storage
+     */
+    private isAuthed: boolean = false;
+
     private wallet: StarknetWindowObject|null|undefined = null;
     private connector: StarknetkitConnector|null = null;
     private connectorData: ConnectorData|null = null;
@@ -44,6 +51,13 @@ class StarknetService {
             StarknetService.instance = new StarknetService();
         }
         return StarknetService.instance;
+    }
+
+    public setIsAuthed(isAuthed: boolean): void {
+        console.log(`--- SET isAuthed:`, isAuthed); //// TEST
+        this.isAuthed = isAuthed;
+        this.elStarknetWallet.classList.toggle('is-authed', isAuthed);
+        //// TO DO: update page elements accordingly
     }
 
     private updateAddress(): void {
@@ -106,6 +120,7 @@ class StarknetService {
         this.connectorData = connectorData;
         this.starknetUpdate();
         if (!wallet || !connector || !connectorData) {
+            this.setIsAuthed(false);
             return;
         }
         /**
@@ -126,6 +141,20 @@ class StarknetService {
              */
             wallet.on('accountsChanged', this.onAccountsChanged.bind(this));
             wallet.on('networkChanged', this.onNetworkChanged.bind(this));
+        }
+        // Validate the auth token from local-storage (if any), before setting "isAuthed"
+        const token = localStorage.getItem('authToken') || '';
+        console.log(`--- [starknetConnect] token:`, token); //// TEST
+        if (!token) {
+            // NO token in local-storage => trigger login flow
+            this.setIsAuthed(false);
+            await this.login();
+            // At this point, if the login was successful, the user is authed
+            return;
+        } else {
+            //// TO DO: validate "token" via API request
+            this.setIsAuthed(true); //// TEST assuming valid token
+            return;
         }
     }
 
@@ -153,8 +182,7 @@ class StarknetService {
         }
     }
 
-    //// TO DO: when to auto-call this, without spamming it on each page-load?
-    private async login(): Promise<void> {
+    public async login(): Promise<void> {
         const {typedData, token} = await mockApi.generateMessageLogin(this.connectedAddress, this.connectedChainId as ChainId);
 
         let signature: Signature|null = null;
@@ -169,18 +197,57 @@ class StarknetService {
             return;
         }
         try {
-            const verifyResult = await mockApi.verifySignature(typedData, signature, token);
-            if (verifyResult.success) {
+            const apiResponse = await mockApi.verifySignature(typedData, signature, token);
+            console.log(`--- [login] apiResponse:`, apiResponse); //// TEST
+            if (apiResponse.success) {
                 // Login success
                 console.log(`---> [login] SUCCESS`); //// TEST
+                localStorage.setItem('authToken', apiResponse.token as string);
+                this.setIsAuthed(true);
+                alert('Login SUCCESS'); //// TEST
                 //// ...
             } else {
                 // Login failed verification
                 console.log(`---> [login] FAILED`); //// TEST
+                alert(apiResponse.error); //// TEST
                 //// ...
             }
         } catch (error) {
             console.log(`---> [login] ERROR verifying the signature:`, error); //// TEST
+            alert('ERROR verifying the signature'); //// TEST
+            //// ...
+        }
+    }
+
+    public async apiAuthTest(): Promise<void> {
+        console.log(`--- [apiAuthTest]`); //// TEST
+        const token = localStorage.getItem('authToken') || '';
+        const data = {testRequest: 'Test Request'}; //// TEST
+        try {
+            //// TO DO: API call w/ "Authorization" header
+            /*
+            const response = await fetch('https://your-backend.com/protected-endpoint', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: {data},
+            });
+            */
+            const apiResponse = await mockApi.authTest(data, token);
+            console.log(`--- [apiAuthTest] apiResponse:`, apiResponse); //// TEST
+            if (apiResponse.success) {
+                console.log(`---> [apiAuthTest] SUCESS`); //// TEST
+                alert('API Auth Test SUCCESS'); //// TEST
+                //// ...
+            } else {
+                console.log(`---> [apiAuthTest] FAILED`); //// TEST
+                alert(apiResponse.error); //// TEST
+                //// ...
+            }
+        } catch (error) {
+            console.log(`---> [apiAuthTest] ERROR during authenticated request:`, error); //// TEST
+            alert('ERROR during authenticated request'); //// TEST
             //// ...
         }
     }

@@ -106,9 +106,18 @@
             display: flex;
             gap: 8px;
 
+            &.is-authed .login { display: none; }
+
+            &:not(.is-authed) .api-auth-test { display: none; }
+
             img { height: 16px; }
 
-            .test-signature { cursor: pointer; padding-right: 24px; &:hover { color: white; } } //// TEST
+            .connected-action {
+                cursor: pointer;
+                padding-right: 24px;
+                
+                &:hover { color: white; }
+            }
         }
     }
 

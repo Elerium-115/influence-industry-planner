@@ -6,15 +6,33 @@ import {
     SignJWT,
 } from 'jose';
 
-const JWT_SECRET = 'dummy-secret'; //// TEST
 // const JWT_SECRET = process.env.JWT_SECRET; // TO USE @ API
+const JWT_SECRET = 'dummy-secret'; //// TEST
+const JWT_ALGO = 'HS256';
 
 type ChainId = 'SN_MAIN'|'SN_SEPOLIA';
 
-interface JwtTokenPayload {
+interface JWTPayloadForAuth {
     walletAddress: string,
     chainId: string,
-    nonce: string,
+    nonce?: string,
+}
+
+interface GenerateMessageLoginResponse {
+    typedData: starknet.TypedData,
+    token: string,
+}
+
+interface VerifySignatureResponse {
+    success: boolean,
+    token?: string, // if "success" TRUE
+    error?: string, // if "success" FALSE
+}
+
+interface AuthedResponse {
+    success: boolean,
+    data?: any, // if "success" TRUE
+    error?: string, // if "success" FALSE
 }
 
 /**
@@ -78,28 +96,28 @@ class MockApi {
         // Sign the JWT with the secret key and expiration time
         const secret = new TextEncoder().encode(JWT_SECRET);
         return await new SignJWT(payload)
-            .setProtectedHeader({alg: 'HS256'})
+            .setProtectedHeader({alg: JWT_ALGO})
             .setExpirationTime(expiration)
             .sign(secret);
     }
 
-    private async verifyJwtToken(token: string): Promise<JwtTokenPayload> {
+    private async verifyJwtToken(token: string): Promise<JWTPayload> {
         const secret = new TextEncoder().encode(JWT_SECRET);
         try {
             // Extract the payload, if the token is valid and NOT expired
-            const {payload} = await jwtVerify(token, secret);
-            return payload as any as JwtTokenPayload;
+            const {payload} = await jwtVerify(token, secret, {algorithms: [JWT_ALGO]});
+            return payload;
         } catch (error) {
             throw new Error('Token verification failed');
         }
     }
 
-    public async generateMessageLogin(walletAddress: string, chainId: ChainId): Promise<any> {
+    public async generateMessageLogin(walletAddress: string, chainId: ChainId): Promise<GenerateMessageLoginResponse> {
         // const {walletAddress, chainId} = req.body; //// TO USE @ API
         // Generate secure random nonce
         const nonce = crypto.randomBytes(8).toString('hex');
         // Generate JWT token that includes walletAddress, chainId, and nonce
-        const token = await this.generateJwtToken({walletAddress, chainId, nonce}, '5m');
+        const token = await this.generateJwtToken({walletAddress, chainId, nonce}, '5 minutes');
         // Generate "typedData" message to be signed in the client
         const typedData = this.makeTypedData(
             'Login to Industry Planner',
@@ -115,11 +133,11 @@ class MockApi {
         typedData: starknet.TypedData,
         signature: starknet.Signature,
         token: string,
-    ): Promise<any> {
+    ): Promise<VerifySignatureResponse> {
         // const {typedData, signature, token} = req.body; //// TO USE @ API
         try {
             // Verify JWT token and extract its payload
-            const {walletAddress, chainId, nonce} = await this.verifyJwtToken(token);
+            const {walletAddress, chainId, nonce} = await this.verifyJwtToken(token) as any as JWTPayloadForAuth;
             // Ensure matching data in "typedData"
             const isMatchingAddress = (typedData.message as any).walletAddress === walletAddress;
             const isMatchingChainId = typedData.domain.chainId === chainId;
@@ -138,7 +156,9 @@ class MockApi {
             const verifierAccount = new starknet.Account(rpcProvider, walletAddress, '0x123');
             const isValidSignature = await verifierAccount.verifyMessage(typedData, signature);
             if (isValidSignature) {
-                return {success: true};
+                // Generate long-term JWT auth token that includes walletAddress, chainId
+                const token = await this.generateJwtToken({walletAddress, chainId}, '1 week');
+                return {success: true, token};
                 // res.json({success: true}); //// TO USE @ API
             } else {
                 return {success: false, error: 'Signature verification failed.'};
@@ -148,6 +168,32 @@ class MockApi {
             return {success: false, error: error.message};
             // res.status(500).json({success: false, error: error.message}); //// TO USE @ API
         }
+    }
+
+    public async authTest(data: any, token?: string): Promise<AuthedResponse> {
+        //// TO USE @ API
+        /*
+        const {data} = req.body;
+        const authHeader = req.headers['authorization'];
+        if (!authHeader) {
+            return res.status(401).json({success: false, error: 'Authorization header missing'});
+        }
+        const token = authHeader.split(' ')[1];
+        */
+        if (!token) {
+            // return res.status(401).json({success: false, error: 'Token missing'}); //// TO USE @ API
+            return {success: false, error: 'Token missing'};
+        }
+        try {
+            // Verify JWT token and extract its payload
+            const {walletAddress, chainId} = await this.verifyJwtToken(token) as any as JWTPayloadForAuth;
+            console.log(`--- [authTest] proceed for authed user:`, {walletAddress, chainId}); //// TEST
+            //// ...
+        } catch (error) {
+            // return res.status(401).json({success: false, error: 'Token invalid or expired'}); //// TO USE @ API
+            return {success: false, error: 'Token invalid or expired'};
+        }
+        return {success: true, data: {testResponse: 'Test Response'}}; //// TEST
     }
 }
 
