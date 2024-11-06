@@ -1,16 +1,11 @@
 import * as crypto from 'crypto';
 import * as starknet from 'starknet';
-import {
-    JWTPayload,
-    jwtVerify,
-    SignJWT,
-} from 'jose';
+import * as jose from 'jose';
+import {type ChainId} from './abstract-core.js';
 
-// const JWT_SECRET = process.env.JWT_SECRET; // TO USE @ API
+// const JWT_SECRET = process.env.JWT_SECRET; //// TO USE @ API
 const JWT_SECRET = 'dummy-secret'; //// TEST
 const JWT_ALGO = 'HS256';
-
-type ChainId = 'SN_MAIN'|'SN_SEPOLIA';
 
 interface JWTPayloadForAuth {
     walletAddress: string,
@@ -69,7 +64,7 @@ class MockApi {
             },
             primaryType: 'StarknetMessage',
             domain: {
-                name: 'Industry Planner for Influence',
+                name: 'Influence Tools by Elerium115',
                 version: '0.0.1',
                 chainId,
             },
@@ -92,42 +87,43 @@ class MockApi {
         }
     }
 
-    private async generateJwtToken(payload: JWTPayload, expiration: string): Promise<string> {
+    private async generateJwtToken(payload: jose.JWTPayload, expiration: string): Promise<string> {
         // Sign the JWT with the secret key and expiration time
         const secret = new TextEncoder().encode(JWT_SECRET);
-        return await new SignJWT(payload)
+        return await new jose.SignJWT(payload)
             .setProtectedHeader({alg: JWT_ALGO})
             .setExpirationTime(expiration)
             .sign(secret);
     }
 
-    private async verifyJwtToken(token: string): Promise<JWTPayload> {
+    private async verifyJwtToken(token: string): Promise<jose.JWTPayload> {
         const secret = new TextEncoder().encode(JWT_SECRET);
         try {
             // Extract the payload, if the token is valid and NOT expired
-            const {payload} = await jwtVerify(token, secret, {algorithms: [JWT_ALGO]});
+            const {payload} = await jose.jwtVerify(token, secret, {algorithms: [JWT_ALGO]});
             return payload;
-        } catch (error) {
+        } catch (error: any) {
             throw new Error('Token verification failed');
         }
     }
 
-    public async generateMessageLogin(walletAddress: string, chainId: ChainId): Promise<GenerateMessageLoginResponse> {
-        // const {walletAddress, chainId} = req.body; //// TO USE @ API
-        // Generate secure random nonce
-        const nonce = crypto.randomBytes(8).toString('hex');
-        // Generate JWT token that includes walletAddress, chainId, and nonce
-        const token = await this.generateJwtToken({walletAddress, chainId, nonce}, '5 minutes');
-        // Generate "typedData" message to be signed in the client
-        const typedData = this.makeTypedData(
-            'Login to Industry Planner',
-            walletAddress,
-            chainId,
-            nonce,
-        );
-        return {typedData, token};
-        // res.json({typedData, token}); //// TO USE @ API
-    }
+    //// DELME
+    // public async generateMessageLogin(walletAddress: string, chainId: ChainId): Promise<GenerateMessageLoginResponse> {
+    //     // const {walletAddress, chainId} = req.body; //// TO USE @ API
+    //     // Generate secure random nonce
+    //     const nonce = crypto.randomBytes(8).toString('hex');
+    //     // Generate JWT token that includes walletAddress, chainId, and nonce
+    //     const token = await this.generateJwtToken({walletAddress, chainId, nonce}, '5 minutes');
+    //     // Generate "typedData" message to be signed in the client
+    //     const typedData = this.makeTypedData(
+    //         'Login to Influence Tools',
+    //         walletAddress,
+    //         chainId,
+    //         nonce,
+    //     );
+    //     return {typedData, token};
+    //     // res.json({typedData, token}); //// TO USE @ API
+    // }
 
     public async verifySignature(
         typedData: starknet.TypedData,
@@ -164,7 +160,7 @@ class MockApi {
                 return {success: false, error: 'Signature verification failed.'};
                 // res.status(400).json({success: false, error: 'Signature verification failed.'}); //// TO USE @ API
             }
-        } catch (error) {
+        } catch (error: any) {
             return {success: false, error: error.message};
             // res.status(500).json({success: false, error: error.message}); //// TO USE @ API
         }
@@ -189,7 +185,7 @@ class MockApi {
             const {walletAddress, chainId} = await this.verifyJwtToken(token) as any as JWTPayloadForAuth;
             console.log(`--- [authTest] proceed for authed user:`, {walletAddress, chainId}); //// TEST
             //// ...
-        } catch (error) {
+        } catch (error: any) {
             // return res.status(401).json({success: false, error: 'Token invalid or expired'}); //// TO USE @ API
             return {success: false, error: 'Token invalid or expired'};
         }

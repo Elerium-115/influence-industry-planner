@@ -6,10 +6,9 @@ import {
 } from 'starknetkit';
 import * as starknet from 'starknet';
 import {type Signature} from 'starknet';
-import {getCompactAddress} from './abstract-core.js';
+import {type ChainId, getCompactAddress} from './abstract-core.js';
+import {apiService} from './api-service.js';
 import {mockApi} from './mock-api.js';
-
-type ChainId = 'SN_MAIN'|'SN_SEPOLIA';
 
 /**
  * Singleton
@@ -177,18 +176,29 @@ class StarknetService {
                 params: typedData,
             });
             return signature;
-        } catch (error) {
+        } catch (error: any) {
             throw error;
         }
     }
 
     public async login(): Promise<void> {
-        const {typedData, token} = await mockApi.generateMessageLogin(this.connectedAddress, this.connectedChainId as ChainId);
-
+        let typedData: starknet.TypedData;
+        let token: string;
+        try {
+            const messageLoginResponse = await apiService.generateMessageLogin(this.connectedAddress, this.connectedChainId as ChainId);
+            ({typedData, token} = messageLoginResponse);
+        } catch (error: any) {
+            console.log(`---> [login] ERROR generating the message:`, error); //// TEST
+            return;
+        }
+        if (!typedData || !token) {
+            console.log(`---> [login] ERROR parsing the message:`, {typedData, token}); //// TEST
+            return;
+        }
         let signature: Signature|null = null;
         try {
             signature = await this.signMessage(typedData);
-        } catch (error) {
+        } catch (error: any) {
             console.log(`---> [login] ERROR signing the message:`, error); //// TEST
         }
         if (!signature) {
@@ -212,7 +222,7 @@ class StarknetService {
                 alert(apiResponse.error); //// TEST
                 //// ...
             }
-        } catch (error) {
+        } catch (error: any) {
             console.log(`---> [login] ERROR verifying the signature:`, error); //// TEST
             alert('ERROR verifying the signature'); //// TEST
             //// ...
@@ -245,7 +255,7 @@ class StarknetService {
                 alert(apiResponse.error); //// TEST
                 //// ...
             }
-        } catch (error) {
+        } catch (error: any) {
             console.log(`---> [apiAuthTest] ERROR during authenticated request:`, error); //// TEST
             alert('ERROR during authenticated request'); //// TEST
             //// ...

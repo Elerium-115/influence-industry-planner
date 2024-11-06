@@ -1,3 +1,7 @@
+type ChainId = 'SN_MAIN'|'SN_SEPOLIA';
+
+const isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+
 /**
  * e.g. "Thin-film Resistor" => "thin-film-resistor"
  */
@@ -48,11 +52,13 @@ function delay(ms: number): Promise<void> {
 }
 
 export {
+    type ChainId,
     delay,
     getCompactAddress,
     getFormattedRoundNumber,
     getProductImageSrc,
     getItemNameSafe,
+    isLocalhost,
     removeFromArray,
     uniquePushToArray,
 }
