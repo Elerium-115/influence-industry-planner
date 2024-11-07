@@ -8,7 +8,6 @@ import * as starknet from 'starknet';
 import {type Signature} from 'starknet';
 import {type ChainId, getCompactAddress} from './abstract-core.js';
 import {apiService} from './api-service.js';
-import {mockApi} from './mock-api.js';
 
 /**
  * Singleton
@@ -90,10 +89,10 @@ class StarknetService {
         }
     }
 
-    private starknetUpdate(): void {
+    private async starknetUpdate(): Promise<void> {
         // console.log(`--- starknetkit:`, {wallet: this.wallet, connector: this.connector, connectorData: this.connectorData}); //// TEST
         this.updateAddress();
-        this.updateChainId();
+        await this.updateChainId();
         if (!this.wallet) {
             // starknet NOT connected
             this.elStarknetConnect.classList.remove('hidden');
@@ -117,7 +116,7 @@ class StarknetService {
         this.wallet = wallet;
         this.connector = connector;
         this.connectorData = connectorData;
-        this.starknetUpdate();
+        await this.starknetUpdate();
         if (!wallet || !connector || !connectorData) {
             this.setIsAuthed(false);
             return;
@@ -143,7 +142,7 @@ class StarknetService {
         }
         // Validate the auth token from local-storage (if any), before setting "isAuthed"
         const token = localStorage.getItem('authToken') || '';
-        console.log(`--- [starknetConnect] token:`, token); //// TEST
+        // console.log(`--- [starknetConnect] token:`, token); //// TEST
         if (!token) {
             // NO token in local-storage => trigger login flow
             this.setIsAuthed(false);
@@ -182,11 +181,12 @@ class StarknetService {
     }
 
     public async login(): Promise<void> {
-        let typedData: starknet.TypedData;
-        let token: string;
+        let typedData: starknet.TypedData|undefined;
+        let token: string|undefined;
         try {
             const messageLoginResponse = await apiService.generateMessageLogin(this.connectedAddress, this.connectedChainId as ChainId);
-            ({typedData, token} = messageLoginResponse);
+            typedData = messageLoginResponse.typedData;
+            token = messageLoginResponse.token;
         } catch (error: any) {
             console.log(`---> [login] ERROR generating the message:`, error); //// TEST
             return;
@@ -207,14 +207,14 @@ class StarknetService {
             return;
         }
         try {
-            const apiResponse = await mockApi.verifySignature(typedData, signature, token);
-            console.log(`--- [login] apiResponse:`, apiResponse); //// TEST
+            const apiResponse = await apiService.verifySignature(typedData, signature, token);
+            // console.log(`--- [login] apiResponse:`, apiResponse); //// TEST
             if (apiResponse.success) {
                 // Login success
                 console.log(`---> [login] SUCCESS`); //// TEST
                 localStorage.setItem('authToken', apiResponse.token as string);
                 this.setIsAuthed(true);
-                alert('Login SUCCESS'); //// TEST
+                // alert('Login SUCCESS'); //// TEST
                 //// ...
             } else {
                 // Login failed verification
@@ -234,17 +234,7 @@ class StarknetService {
         const token = localStorage.getItem('authToken') || '';
         const data = {testRequest: 'Test Request'}; //// TEST
         try {
-            //// TO DO: API call w/ "Authorization" header
-            /*
-            const response = await fetch('https://your-backend.com/protected-endpoint', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-                body: {data},
-            });
-            */
-            const apiResponse = await mockApi.authTest(data, token);
+            const apiResponse = await apiService.authTest(data, token);
             console.log(`--- [apiAuthTest] apiResponse:`, apiResponse); //// TEST
             if (apiResponse.success) {
                 console.log(`---> [apiAuthTest] SUCESS`); //// TEST

@@ -5,24 +5,23 @@ import {type ChainId, isLocalhost} from './abstract-core.js';
 const apiUrlV2Coolify = 'https://influence-api-v2.elerium.dev';
 const apiUrl = isLocalhost ? 'http://127.0.0.1:3001' : apiUrlV2Coolify;
 
-interface JWTPayloadForAuth {
-    walletAddress: string,
-    chainId: string,
-    nonce?: string,
-}
-
 interface GenerateMessageLoginResponse {
-    typedData: starknet.TypedData,
-    token: string,
+    status: number,
+    success: boolean,
+    typedData?: starknet.TypedData, // if "success" TRUE
+    token?: string, // if "success" TRUE
+    error?: string, // if "success" FALSE
 }
 
 interface VerifySignatureResponse {
+    status: number,
     success: boolean,
     token?: string, // if "success" TRUE
     error?: string, // if "success" FALSE
 }
 
 interface AuthedResponse {
+    status: number,
     success: boolean,
     data?: any, // if "success" TRUE
     error?: string, // if "success" FALSE
@@ -41,23 +40,87 @@ class ApiService {
         return ApiService.instance;
     }
 
-    public async generateMessageLogin(walletAddress: string, chainId: ChainId): Promise<GenerateMessageLoginResponse> {
+    public async generateMessageLogin(
+        walletAddress: string,
+        chainId: ChainId,
+    ): Promise<GenerateMessageLoginResponse> {
         try {
             const config = {
                 method: 'post',
                 url: `${apiUrl}/generate-message-login`,
-                body: {
+                data: {
                     walletAddress,
                     chainId,
                 },
             };
-            // console.log(`--- [generateMessageLogin] ${config.method.toUpperCase()} ${config.url} + body:`, config.body); //// TEST
+            // console.log(`--- [generateMessageLogin] ${config.method.toUpperCase()} ${config.url} + body:`, config.data); //// TEST
             const response = await axios(config);
-            const responseData = response.data;
+            const responseData = response.data as GenerateMessageLoginResponse;
             // console.log(`--- [generateMessageLogin] responseData:`, responseData); //// TEST
             return responseData;
         } catch (error: any) {
             // console.log(`--- [generateMessageLogin] ERROR:`, error); //// TEST
+            if (error.response?.data?.error) {
+                throw new Error(error.response.data.error);
+            }
+            throw error;
+        }
+    }
+
+    public async verifySignature(
+        typedData: starknet.TypedData,
+        signature: starknet.Signature,
+        token: string,
+    ): Promise<VerifySignatureResponse> {
+        try {
+            const config = {
+                method: 'post',
+                url: `${apiUrl}/verify-signature`,
+                data: {
+                    typedData,
+                    signature,
+                    token,
+                },
+            };
+            // console.log(`--- [verifySignature] ${config.method.toUpperCase()} ${config.url} + body:`, config.data); //// TEST
+            const response = await axios(config);
+            const responseData = response.data as VerifySignatureResponse;
+            // console.log(`--- [verifySignature] responseData:`, responseData); //// TEST
+            return responseData;
+        } catch (error: any) {
+            // console.log(`--- [verifySignature] ERROR:`, error); //// TEST
+            if (error.response?.data?.error) {
+                throw new Error(error.response.data.error);
+            }
+            throw error;
+        }
+    }
+
+    public async authTest(
+        data: any,
+        token?: string,
+    ): Promise<AuthedResponse> {
+        try {
+            const config = {
+                method: 'post',
+                url: `${apiUrl}/auth-test`,
+                data: {
+                    data,
+                },
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            };
+            // console.log(`--- [authTest] ${config.method.toUpperCase()} ${config.url} + body:`, config.data); //// TEST
+            const response = await axios(config);
+            const responseData = response.data as AuthedResponse;
+            // console.log(`--- [authTest] responseData:`, responseData); //// TEST
+            return responseData;
+        } catch (error: any) {
+            // console.log(`--- [authTest] ERROR:`, error); //// TEST
+            if (error.response?.data?.error) {
+                throw new Error(error.response.data.error);
+            }
             throw error;
         }
     }
