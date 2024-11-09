@@ -25,41 +25,6 @@
     gap: 32px;
     padding: 16px 64px 32px 64px;
 
-    &.is-pending-operation {
-        position: relative;
-
-        &::before,
-        &::after {
-            bottom: 0;
-            left: 0;
-            position: fixed;
-            right: 0;
-            top: 0;
-            z-index: 2;
-        }
-
-        &::before {
-            backdrop-filter: blur(16px);
-            background-color: rgba(0, 0, 0, 0.25);
-            content: '';
-            display: block;
-        }
-
-        &::after {
-            align-items: center;
-            animation: roate-pending 3000ms linear infinite;
-            content: '⚛';
-            display: flex;
-            font-size: 300%;
-            justify-content: center;
-            opacity: 0.75;
-
-            @keyframes roate-pending {
-                100% { transform: rotate(360deg); }
-            }
-        }
-    }
-
     &:not(.has-lines) .remove-lines { display: none; }
 
     &.broken {

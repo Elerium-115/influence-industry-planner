@@ -230,7 +230,6 @@ class StarknetService {
     }
 
     public async apiAuthTest(): Promise<void> {
-        console.log(`--- [apiAuthTest]`); //// TEST
         const token = localStorage.getItem('authToken') || '';
         const data = {testRequest: 'Test Request'}; //// TEST
         try {

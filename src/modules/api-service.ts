@@ -1,6 +1,7 @@
-import axios from 'axios';
+import axios, {AxiosResponse} from 'axios';
 import * as starknet from 'starknet';
 import {type ChainId, isLocalhost} from './abstract-core.js';
+import {globalService} from './global-service.js';
 
 const apiUrlV2Coolify = 'https://influence-api-v2.elerium.dev';
 const apiUrl = isLocalhost ? 'http://127.0.0.1:3001' : apiUrlV2Coolify;
@@ -40,6 +41,18 @@ class ApiService {
         return ApiService.instance;
     }
 
+    private async axios(config: Object): Promise<AxiosResponse> {
+        globalService.setIsPending(true);
+        try {
+            const responseData = await axios(config);
+            globalService.setIsPending(false);
+            return responseData;
+        } catch (error: any) {
+            globalService.setIsPending(false);
+            throw error;
+        }
+    }
+
     public async generateMessageLogin(
         walletAddress: string,
         chainId: ChainId,
@@ -54,7 +67,7 @@ class ApiService {
                 },
             };
             // console.log(`--- [generateMessageLogin] ${config.method.toUpperCase()} ${config.url} + body:`, config.data); //// TEST
-            const response = await axios(config);
+            const response = await this.axios(config);
             const responseData = response.data as GenerateMessageLoginResponse;
             // console.log(`--- [generateMessageLogin] responseData:`, responseData); //// TEST
             return responseData;
@@ -83,7 +96,7 @@ class ApiService {
                 },
             };
             // console.log(`--- [verifySignature] ${config.method.toUpperCase()} ${config.url} + body:`, config.data); //// TEST
-            const response = await axios(config);
+            const response = await this.axios(config);
             const responseData = response.data as VerifySignatureResponse;
             // console.log(`--- [verifySignature] responseData:`, responseData); //// TEST
             return responseData;
@@ -112,7 +125,7 @@ class ApiService {
                 }
             };
             // console.log(`--- [authTest] ${config.method.toUpperCase()} ${config.url} + body:`, config.data); //// TEST
-            const response = await axios(config);
+            const response = await this.axios(config);
             const responseData = response.data as AuthedResponse;
             // console.log(`--- [authTest] responseData:`, responseData); //// TEST
             return responseData;

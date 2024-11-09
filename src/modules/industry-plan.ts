@@ -1,4 +1,5 @@
 import {createEl} from './dom-core.js';
+import {globalService} from './global-service.js';
 import {RefiningPenalty} from './refining-penalty.js';
 import {leaderLineService} from './leader-line-service.js';
 import {industryPlanService} from './industry-plan-service.js';
@@ -22,7 +23,6 @@ class IndustryPlan {
     private isBroken: boolean = false;
     private isLoading: boolean = false;
     private isSaved: boolean = false;
-    private isPendingOperation: boolean = false;
     private industryPlanHtmlElement: HTMLElement;
     private industryPlanHeaderHtmlElement: HTMLElement;
     private industryPlanMainHtmlElement: HTMLElement;
@@ -228,11 +228,6 @@ class IndustryPlan {
         return this.industryPlanHtmlElement;
     }
 
-    private setIsPendingOperation(isPendingOperation: boolean): void {
-        this.isPendingOperation = isPendingOperation;
-        this.industryPlanHtmlElement.classList.toggle('is-pending-operation', isPendingOperation);
-    }
-
     public markHasSecondaryOutputs(): void {
         // Show "Scientists in Crew" only if the industry plan contains processes with secondary outputs
         const hasSecondaryOutputs = this.getAllProcessesInPlan().some(process => process.getOutputs().length >= 2);
@@ -288,15 +283,15 @@ class IndustryPlan {
     }
 
     public onGeneratePlanForTargetProductIds(targetProductIds: string[]): void {
-        this.setIsPendingOperation(true);
+        globalService.setIsPending(true);
         // Async execution, to show the "pending" overlay during that time
         setTimeout(() => {
             industryPlanService.generatePlanForTargetProductIds(targetProductIds);
             industryPlanService.cleanupPlanForTargetProductIds(targetProductIds);
-            this.setIsPendingOperation(false);
+            globalService.setIsPending(false);
             /**
              * Explicitly trigger "onIndustryPlanChanged", because its core
-             * logic has NOT been executed while "isPendingOperation" was TRUE.
+             * logic has NOT been executed while "isPending" was TRUE.
              */
             this.onIndustryPlanChanged();
         });
@@ -440,8 +435,11 @@ class IndustryPlan {
             // Bypass this while the industry plan is being loaded
             return;
         }
-        if (this.isPendingOperation) {
-            // Bypass this while the industry plan is being auto-generated
+        if (globalService.getIsPending()) {
+            /**
+             * Bypass this while the industry plan is being auto-generated,
+             * or while any other operation is pending globally.
+             */
             return;
         }
         this.setSavedStatusAndIcon(false);
