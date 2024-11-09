@@ -41,8 +41,8 @@ class ApiService {
         return ApiService.instance;
     }
 
-    private async axios(config: Object): Promise<AxiosResponse> {
-        globalService.setIsPending(true);
+    private async axios(config: Object, pendingMessage: string = ''): Promise<AxiosResponse> {
+        globalService.setIsPending(true, pendingMessage);
         try {
             const responseData = await axios(config);
             globalService.setIsPending(false);
@@ -67,7 +67,7 @@ class ApiService {
                 },
             };
             // console.log(`--- [generateMessageLogin] ${config.method.toUpperCase()} ${config.url} + body:`, config.data); //// TEST
-            const response = await this.axios(config);
+            const response = await this.axios(config, 'Generating login message for your wallet...');
             const responseData = response.data as GenerateMessageLoginResponse;
             // console.log(`--- [generateMessageLogin] responseData:`, responseData); //// TEST
             return responseData;
@@ -96,7 +96,7 @@ class ApiService {
                 },
             };
             // console.log(`--- [verifySignature] ${config.method.toUpperCase()} ${config.url} + body:`, config.data); //// TEST
-            const response = await this.axios(config);
+            const response = await this.axios(config, 'Verifying your signature...');
             const responseData = response.data as VerifySignatureResponse;
             // console.log(`--- [verifySignature] responseData:`, responseData); //// TEST
             return responseData;
@@ -125,7 +125,7 @@ class ApiService {
                 }
             };
             // console.log(`--- [authTest] ${config.method.toUpperCase()} ${config.url} + body:`, config.data); //// TEST
-            const response = await this.axios(config);
+            const response = await this.axios(config, 'Testing authenticated request...');
             const responseData = response.data as AuthedResponse;
             // console.log(`--- [authTest] responseData:`, responseData); //// TEST
             return responseData;

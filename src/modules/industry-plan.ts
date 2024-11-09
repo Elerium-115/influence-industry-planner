@@ -283,7 +283,7 @@ class IndustryPlan {
     }
 
     public onGeneratePlanForTargetProductIds(targetProductIds: string[]): void {
-        globalService.setIsPending(true);
+        globalService.setIsPending(true, 'Generating industry plan for your selected products...');
         // Async execution, to show the "pending" overlay during that time
         setTimeout(() => {
             industryPlanService.generatePlanForTargetProductIds(targetProductIds);

@@ -66,6 +66,9 @@ body {
         &::before,
         &::after {
             bottom: 0;
+            color: var(--color-text-normal);
+            display: flex;
+            justify-content: center;
             left: 0;
             position: fixed;
             right: 0;
@@ -76,18 +79,15 @@ body {
         &::before {
             backdrop-filter: blur(16px);
             background-color: rgba(0, 0, 0, 0.25);
-            content: '';
-            display: block;
+            content: attr(data-pending-message);
+            padding-top: calc(50vh - 64px);
         }
 
         &::after {
             align-items: center;
             animation: roate-pending 3000ms linear infinite;
             content: '⚛';
-            display: flex;
             font-size: 300%;
-            justify-content: center;
-            opacity: 0.75;
 
             @keyframes roate-pending {
                 100% { transform: rotate(360deg); }

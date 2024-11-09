@@ -130,6 +130,9 @@
         position: relative;
 
         #minimap-toggle {
+            align-items: center;
+            display: flex;
+            height: 100%;
             padding-right: 24px;
             position: relative;
 
@@ -138,7 +141,6 @@
             &::before { content: 'Minimap'; }
 
             &::after {
-                bottom: -1px;
                 content: '✕';
                 position: absolute;
                 right: 0;

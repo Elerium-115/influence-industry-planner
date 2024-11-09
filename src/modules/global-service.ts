@@ -17,9 +17,10 @@ class GlobalService {
         return this.isPending;
     }
 
-    public setIsPending(isPending: boolean): void {
+    public setIsPending(isPending: boolean, pendingMessage: string = 'Processing...'): void {
         this.isPending = isPending;
         document.body.classList.toggle('is-pending', isPending);
+        document.body.dataset.pendingMessage = isPending ? pendingMessage : '';
     }
 }
 
