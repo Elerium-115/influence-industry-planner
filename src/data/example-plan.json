@@ -46,7 +46,9 @@
                             "id": 10,
                             "primaryOutputId": "10"
                         }
-                    ]
+                    ],
+                    "asteroidId": 1,
+                    "lotId": 206085
                 }
             ]
         },
@@ -69,7 +71,9 @@
                             "id": 24,
                             "primaryOutputId": "25"
                         }
-                    ]
+                    ],
+                    "asteroidId": 1,
+                    "lotId": 205098
                 }
             ]
         },
@@ -84,7 +88,9 @@
                             "id": 180,
                             "primaryOutputId": "140"
                         }
-                    ]
+                    ],
+                    "asteroidId": 1,
+                    "lotId": 204111
                 },
                 {
                     "id": 3,
@@ -117,7 +123,9 @@
                             "id": 142,
                             "primaryOutputId": "162"
                         }
-                    ]
+                    ],
+                    "asteroidId": 1,
+                    "lotId": 203124
                 },
                 {
                     "id": 3,

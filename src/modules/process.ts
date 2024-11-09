@@ -108,12 +108,10 @@ class Process {
     }
 
     private getElInputs(): HTMLElement {
-        // Always "HTMLElement", never "null"
         return this.htmlElement.querySelector('.inputs') as HTMLElement;
     }
 
     private getElOutputs(): HTMLElement {
-        // Always "HTMLElement", never "null"
         return this.htmlElement.querySelector('.outputs') as HTMLElement;
     }
 

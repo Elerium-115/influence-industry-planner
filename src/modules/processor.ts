@@ -8,6 +8,7 @@ import {
     processorService,
 } from './processor-service.js';
 import {Process} from './process.js';
+import {gameDataService} from './game-data-service.js';
 import {OverlayAddProcess} from './overlays/overlay-add-process.js';
 import {OverlayAddExtraction} from './overlays/overlay-add-extraction.js';
 
@@ -15,7 +16,10 @@ class Processor {
     private id: TYPE_PROCESSOR_BUILDING_IDS;
     private parentIndustryTier: IndustryTier;
     private processes: Process[] = [];
+    private asteroidId: number|null = null;
+    private lotId: number|null = null;
     private htmlElement: HTMLElement;
+    private elProcessorLocation: HTMLElement;
 
     constructor(id: TYPE_PROCESSOR_BUILDING_IDS, parentIndustryTier: IndustryTier) {
         this.id = id;
@@ -43,13 +47,43 @@ class Processor {
         return this.parentIndustryTier;
     }
 
+    public getAsteroidId(): number|null {
+        return this.asteroidId;
+    }
+
+    public setAsteroidId(asteroidId: number|null): void {
+        this.asteroidId = asteroidId;
+        this.updateElProcessorLocation();
+    }
+
+    public getLotId(): number|null {
+        return this.lotId;
+    }
+
+    public setLotId(lotId: number|null): void {
+        this.lotId = lotId;
+        this.updateElProcessorLocation();
+    }
+
     public getHtmlElement(): HTMLElement {
         return this.htmlElement;
     }
 
     private getElProcessesList(): HTMLElement {
-        // Always "HTMLElement", never "null"
         return this.htmlElement.querySelector('.processes-list') as HTMLElement;
+    }
+
+    private updateElProcessorLocation(): void {
+        let processorLocationHtml = '';
+        if (this.asteroidId && this.lotId) {
+            const asteroidName = gameDataService.getAsteroidName(this.asteroidId);
+            const lotText = Intl.NumberFormat().format(this.lotId);
+            processorLocationHtml = /*html*/ `
+                <div class="location-asteroid">${asteroidName}</div>
+                <div class="location-lot">${lotText}</div>
+            `;
+        }
+        this.elProcessorLocation.innerHTML = processorLocationHtml;
     }
 
     public addProcessById(processId: number): Process|null {
@@ -99,8 +133,9 @@ class Processor {
 
     private makeHtmlElement(): HTMLElement {
         const el = createEl('div', null, ['processor', this.getProcessorClassName()]);
-        const tooltipText = `In-game lot not yet linked`;
+        const tooltipText = `Link in-game lot`;
         el.innerHTML = /*html*/ `
+            <div class="processor-location"></div>
             <div class="processor-header">
                 <div class="processor-name">${this.getName()}</div>
                 <div class="processor-info" data-tooltip-position="top-right" data-tooltip="${tooltipText}"></div>
@@ -111,6 +146,7 @@ class Processor {
         `;
         el.querySelector('.remove-processor')?.addEventListener('click', this.onClickRemoveProcessor.bind(this));
         el.querySelector('.add-process-button')?.addEventListener('click', this.onClickAddProcessButton.bind(this));
+        this.elProcessorLocation = el.querySelector('.processor-location') as HTMLElement;
         return el;
     }
 

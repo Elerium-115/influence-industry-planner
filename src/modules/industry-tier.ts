@@ -58,7 +58,6 @@ class IndustryTier {
     }
 
     private getElProcessorsList(): HTMLElement {
-        // Always "HTMLElement", never "null"
         return this.htmlElement.querySelector('.processors-list') as HTMLElement;
     }
 

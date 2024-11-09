@@ -461,6 +461,32 @@
                     .processor {
                         max-width: 240px;
 
+                        .processor-location {
+                            background-color: var(--color-processor-processes-bg);
+                            border: 1px solid var(--color-processor-highlight-subtle);
+                            border-bottom: none;
+                            border-right-style: outset;
+                            color: var(--color-processor);
+                            display: flex;
+                            font-size: 80%;
+                            gap: 8px;
+                            justify-content: space-between;
+                            opacity: 0.75;
+                            padding: 4px 8px;
+
+                            &:empty { display: none; }
+
+                            .location-asteroid { @include core.single-line-with-ellipsis; }
+
+                            .location-lot {
+                                &::before {
+                                    content: '#';
+                                    opacity: 0.5;
+                                    padding-right: 4px;
+                                }
+                            }
+                        }
+
                         .processor-header {
                             padding-right: calc(var(--processor-icon-size) + var(--processor-header-gap));
                             position: relative;

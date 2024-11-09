@@ -48,7 +48,6 @@ class IndustryPlan {
         // Set "scientistsInCrew" WITHOUT updating the qtys re: industry plan NOT yet populated
         this.setScientistsInCrew(scientistsInCrew, false);
         this.refiningPenalty = new RefiningPenalty(scientistsInCrew, this);
-        // Always "HTMLElement", never "null"
         this.industryPlanHtmlElement = document.getElementById('industry-plan') as HTMLElement;
         this.industryPlanHeaderHtmlElement = document.getElementById('industry-plan-header') as HTMLElement;
         this.industryPlanMainHtmlElement = document.getElementById('industry-plan-main') as HTMLElement;
@@ -202,7 +201,6 @@ class IndustryPlan {
     }
 
     private getElStartupProdutsList(): HTMLElement {
-        // Always "HTMLElement", never "null"
         return this.startupProductsHtmlElement.querySelector('.startup-products-list') as HTMLElement;
     }
 

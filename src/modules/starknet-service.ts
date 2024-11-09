@@ -34,7 +34,6 @@ class StarknetService {
     // NOTE: NO "Disconnect" button b/c calling "getStarknet.disconnect" does NOT disconnect the wallet
 
     constructor () {
-        // Always "HTMLElement", never "null"
         this.elStarknetConnect = document.getElementById('starknet-connect') as HTMLElement;
         this.elStarknetWallet = document.getElementById('starknet-wallet') as HTMLElement;
         this.elStarknetWalletIcon = this.elStarknetWallet.querySelector('.icon') as HTMLImageElement;

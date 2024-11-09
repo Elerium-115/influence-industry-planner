@@ -15,7 +15,6 @@ class MinimapService {
     private elMinimapWrapper: HTMLElement;
 
     constructor() {
-        // Always "HTMLElement", never "null"
         this.elMinimapWrapper = document.getElementById('minimap-wrapper') as HTMLElement;
     }
 
