@@ -235,16 +235,17 @@ class IndustryPlan {
     /**
      * Mark broken parts:
      * - broken input, if it has no valid source
-     * - broken process, if it contains any broken input
+     * - broken process, if it contains any broken input, or if parent processor has invalid location
      * - broken industry plan, if it contains any broken process
      */
     public markBrokenParts(): void {
         let isBrokenIndustryPlan = false;
         this.getAllProcessesInPlan().forEach(process => {
+            const isInvalidLocation = !process.getParentProcessor().getIsValidLocation();
             const inputs = process.getInputs();
             if (!inputs.length) {
-                // Processes without inputs are never broken (i.e. extractions)
-                process.setIsBroken(false);
+                // Processes without inputs (i.e. extractions) are only broken if parent processor has invalid location
+                process.setIsBroken(isInvalidLocation);
                 return;
             }
             let isBrokenProcess = false;
@@ -253,6 +254,7 @@ class IndustryPlan {
                 input.setIsBroken(isBrokenInput);
                 isBrokenProcess = isBrokenProcess || isBrokenInput;
             });
+            isBrokenProcess = isBrokenProcess || isInvalidLocation;
             process.setIsBroken(isBrokenProcess);
             isBrokenIndustryPlan = isBrokenIndustryPlan || isBrokenProcess;
         });

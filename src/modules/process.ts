@@ -83,7 +83,7 @@ class Process {
     }
 
     public getIsBroken(): boolean {
-        return this.isBroken;
+        return this.isBroken || !this.parentProcessor.getIsValidLocation();
     }
 
     public setIsBroken(isBroken: boolean): void {

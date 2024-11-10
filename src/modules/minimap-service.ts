@@ -47,6 +47,7 @@ class MinimapService {
                 '.processor.-factory': PROCESSOR_COLOR_SEMIFADED_BY_BUILDING_ID[PROCESSOR_BUILDING_IDS.FACTORY],
                 '.processor.-shipyard': PROCESSOR_COLOR_SEMIFADED_BY_BUILDING_ID[PROCESSOR_BUILDING_IDS.SHIPYARD],
                 '.processor.-empty-lot': PROCESSOR_COLOR_SEMIFADED_BY_BUILDING_ID[PROCESSOR_BUILDING_IDS.EMPTY_LOT],
+                '.processor.has-location.invalid-location': 'rgb(223, 67, 0)',
                 '.process.broken': 'rgb(223, 67, 0)',
             },
             view: 'rgba(255, 255, 255, 0.25)',

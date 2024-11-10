@@ -18,6 +18,8 @@ class Processor {
     private processes: Process[] = [];
     private asteroidId: number|null = null;
     private lotId: number|null = null;
+    private hasLocation: boolean = false;
+    private isValidLocation: boolean = true; // may become FALSE only if "hasLocation" TRUE
     private htmlElement: HTMLElement;
     private elProcessorLocation: HTMLElement;
 
@@ -65,6 +67,10 @@ class Processor {
         this.updateElProcessorLocation();
     }
 
+    public getIsValidLocation(): boolean {
+        return this.isValidLocation;
+    }
+
     public getHtmlElement(): HTMLElement {
         return this.htmlElement;
     }
@@ -76,14 +82,27 @@ class Processor {
     private updateElProcessorLocation(): void {
         let processorLocationHtml = '';
         if (this.asteroidId && this.lotId) {
+            this.hasLocation = true;
             const asteroidName = gameDataService.getAsteroidName(this.asteroidId);
             const lotText = Intl.NumberFormat().format(this.lotId);
             processorLocationHtml = /*html*/ `
                 <div class="location-asteroid">${asteroidName}</div>
                 <div class="location-lot">${lotText}</div>
             `;
+            //// TO DO: update "isValidLocation" based on in-game building matching this processor
+            this.isValidLocation = this.id >= 4 ? false : true; //// TEST invalid location
+        } else {
+            this.hasLocation = false;
+            this.isValidLocation = true;
         }
         this.elProcessorLocation.innerHTML = processorLocationHtml;
+        if (this.isValidLocation) {
+            delete this.elProcessorLocation.dataset.tooltip;
+        } else {
+            this.elProcessorLocation.dataset.tooltip = 'Incorrect building for this in-game lot';
+        }
+        this.htmlElement.classList.toggle('has-location', this.hasLocation);
+        this.htmlElement.classList.toggle('invalid-location', !this.isValidLocation);
     }
 
     public addProcessById(processId: number): Process|null {
@@ -147,6 +166,7 @@ class Processor {
         el.querySelector('.remove-processor')?.addEventListener('click', this.onClickRemoveProcessor.bind(this));
         el.querySelector('.add-process-button')?.addEventListener('click', this.onClickAddProcessButton.bind(this));
         this.elProcessorLocation = el.querySelector('.processor-location') as HTMLElement;
+        this.elProcessorLocation.dataset.tooltipPosition = 'top-right';
         return el;
     }
 
