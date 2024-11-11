@@ -54,7 +54,6 @@ class StarknetService {
         console.log(`--- SET isAuthed:`, isAuthed); //// TEST
         this.isAuthed = isAuthed;
         this.elStarknetWallet.classList.toggle('is-authed', isAuthed);
-        //// TO DO: update page elements accordingly
     }
 
     private updateAddress(): void {
@@ -89,7 +88,6 @@ class StarknetService {
     }
 
     private async starknetUpdate(): Promise<void> {
-        // console.log(`--- starknetkit:`, {wallet: this.wallet, connector: this.connector, connectorData: this.connectorData}); //// TEST
         this.updateAddress();
         await this.updateChainId();
         if (!this.wallet) {
@@ -141,7 +139,6 @@ class StarknetService {
         }
         // Validate the auth token from local-storage (if any), before setting "isAuthed"
         const token = localStorage.getItem('authToken') || '';
-        // console.log(`--- [starknetConnect] token:`, token); //// TEST
         if (!token) {
             // NO token in local-storage => trigger login flow
             this.setIsAuthed(false);
@@ -149,14 +146,16 @@ class StarknetService {
             // At this point, if the login was successful, the user is authed
             return;
         } else {
-            //// TO DO: validate "token" via API request
-            this.setIsAuthed(true); //// TEST assuming valid token
-            return;
+            try {
+                const isValidToken = await this.verifyToken(token);
+                this.setIsAuthed(isValidToken);
+            } catch (error: any) {
+                this.setIsAuthed(false);
+            }
         }
     }
 
     private async signMessage(typedData: starknet.TypedData): Promise<Signature|null> {
-        // console.log(`--- [signMessage] typedData:`, typedData); //// TEST
         if (!this.wallet) {
             return null;
         }
@@ -202,29 +201,36 @@ class StarknetService {
         }
         if (!signature) {
             // Login refused by user (or wallet not connected)
-            //// ...
             return;
         }
         try {
             const apiResponse = await apiService.verifySignature(typedData, signature, token);
-            // console.log(`--- [login] apiResponse:`, apiResponse); //// TEST
             if (apiResponse.success) {
                 // Login success
                 console.log(`---> [login] SUCCESS`); //// TEST
                 localStorage.setItem('authToken', apiResponse.token as string);
                 this.setIsAuthed(true);
-                // alert('Login SUCCESS'); //// TEST
-                //// ...
             } else {
                 // Login failed verification
                 console.log(`---> [login] FAILED`); //// TEST
                 alert(apiResponse.error); //// TEST
-                //// ...
             }
         } catch (error: any) {
             console.log(`---> [login] ERROR verifying the signature:`, error); //// TEST
             alert('ERROR verifying the signature'); //// TEST
-            //// ...
+        }
+    }
+
+    public async verifyToken(token: string): Promise<boolean> {
+        try {
+            const apiResponse = await apiService.authTest(null, token);
+            if (apiResponse.success) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (error: any) {
+            return false;
         }
     }
 

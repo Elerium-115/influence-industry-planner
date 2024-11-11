@@ -22,6 +22,15 @@ class StartupProduct extends ProductAbstract {
         this.htmlElement = this.makeHtmlElement();
     }
 
+    private onClickRemoveStartupProduct(event: MouseEvent): void {
+        // Prevent this event from triggering "onClickStartupProduct"
+        event.stopPropagation();
+        if (!confirm('Are you sure you want to remove this startup product?')) {
+            return; // Abort action
+        }
+        this.remove(event);
+    }
+
     private onClickStartupProduct(): void {
         leaderLineService.toggleLinesForStartupProduct(this);
         leaderLineService.increaseLinesForStartupProduct(this);
@@ -42,7 +51,7 @@ class StartupProduct extends ProductAbstract {
             <div class="product-name">${this.getName()}</div>
             <div class="remove-product"></div>
         `;
-        el.querySelector('.remove-product')?.addEventListener('click', this.remove.bind(this));
+        el.querySelector('.remove-product')?.addEventListener('click', this.onClickRemoveStartupProduct.bind(this));
         el.addEventListener('click', this.onClickStartupProduct.bind(this));
         el.addEventListener('mouseenter', this.onMouseenterStartupProduct.bind(this));
         el.addEventListener('mouseleave', this.onMouseleaveStartupProduct.bind(this));
@@ -50,8 +59,6 @@ class StartupProduct extends ProductAbstract {
     }
 
     private remove(event: MouseEvent): void {
-        // Prevent this event from triggering "onClickStartupProduct"
-        event.stopPropagation();
         this.removeAllLines();
         this.htmlElement.parentElement?.removeChild(this.htmlElement);
         this.parentIndustryPlan.onStartupProductRemoved(this);
