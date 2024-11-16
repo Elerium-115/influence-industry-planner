@@ -28,7 +28,7 @@ class StartupProduct extends ProductAbstract {
         if (!confirm('Are you sure you want to remove this startup product?')) {
             return; // Abort action
         }
-        this.remove(event);
+        this.remove();
     }
 
     private onClickStartupProduct(): void {
@@ -58,7 +58,7 @@ class StartupProduct extends ProductAbstract {
         return el;
     }
 
-    private remove(event: MouseEvent): void {
+    private remove(): void {
         this.removeAllLines();
         this.htmlElement.parentElement?.removeChild(this.htmlElement);
         this.parentIndustryPlan.onStartupProductRemoved(this);

@@ -1,6 +1,7 @@
 import {getFormattedRoundNumber} from '../abstract-core.js';
 import {createEl} from '../dom-core.js';
 import {OverlayAbstract} from './overlay-abstract';
+import {leaderLineService} from '../leader-line-service.js';
 import {industryPlanService} from '../industry-plan-service.js';
 import {IndustryTier} from '../industry-tier.js';
 import {Processor} from '../processor.js';
@@ -34,6 +35,30 @@ class OverlayAddProcess extends OverlayAbstract {
         this.parentProcessor = parentProcessor;
         this.availableInputs = industryPlanService.getAvailableInputsForIndustryTier(this.parentIndustryTier);
         this.populateElOverlayContent();
+    }
+
+    private onMouseenterAvailableInput(event: MouseEvent): void {
+        const el = event.target as HTMLElement;
+        const inputProductId = el.dataset.productId as string;
+        const matchingProcesses = this.eligibleProcesses.filter(process => Object.keys(process.inputs).includes(inputProductId));
+        if (!matchingProcesses.length) {
+            return;
+        }
+        matchingProcesses.forEach(process => {
+            const processName = process.name;
+            const elProcess = this.elEligibleProcessesList.querySelector(`[data-process-name="${processName}"]`) as HTMLElement;
+            if (!elProcess) {
+                return;
+            }
+            const line = leaderLineService.makeLineDataForOverlayAddProcess(el, elProcess);
+            this.lines.push(line);
+            elProcess.classList.add('has-lines');
+        });
+        el.classList.add('has-lines');
+    }
+
+    private onMouseleaveAvailableInput(): void {
+        this.removeAllLines();
     }
 
     private onClickProcess(processId: number): void {
@@ -111,6 +136,12 @@ class OverlayAddProcess extends OverlayAbstract {
             this.updateAndRenderEligibleProcesses();
             this.filterProcesses();
         }
+        if (elInput.checked) {
+            // Trigger "mouseenter" in order to show the lines, after this input becomes checked
+            elInput.closest('label')?.dispatchEvent(new MouseEvent('mouseenter'));
+        } else {
+            this.removeAllLines();
+        }
     }
 
     private populateElAvailableInputsList(): void {
@@ -123,6 +154,8 @@ class OverlayAddProcess extends OverlayAbstract {
                 <div class="product-name">${product.getName()}</div>
             `;
             el.querySelector('input[type="checkbox"]')?.addEventListener('change', this.onChangeAvailableInput.bind(this));
+            el.addEventListener('mouseenter', this.onMouseenterAvailableInput.bind(this));
+            el.addEventListener('mouseleave', this.onMouseleaveAvailableInput.bind(this));
             this.elAvailableInputsList.append(el);
         });
     }

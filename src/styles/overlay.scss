@@ -110,6 +110,12 @@
 
         &:hover { opacity: 1; }
     }
+
+    .has-lines { outline: 1px dashed var(--color-text-normal); }
+
+    // Lines created outside the overlay appear in the DOM before ".overlay".
+    // Lines created by the overlay appear in the DOM after ".overlay".
+    ~ .leader-line { z-index: 3; }
 }
 
 .overlay-generate-plan-for-target-products,

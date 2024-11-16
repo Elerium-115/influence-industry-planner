@@ -237,10 +237,12 @@ class Process {
     }
 
     private onClickRemoveProcess(event: MouseEvent): void {
+        // Prevent this event from triggering "onClickProcess"
+        event.stopPropagation();
         if (!confirm('Are you sure you want to remove this process?')) {
             return; // Abort action
         }
-        this.remove(event);
+        this.remove();
     }
 
     private onClickProcess(): void {
@@ -265,12 +267,7 @@ class Process {
         return el;
     }
 
-    public remove(event?: MouseEvent): void {
-        /**
-         * Prevent this event from triggering "onClickProcess",
-         * if this function was triggered via a click event.
-         */
-        event?.stopPropagation();
+    public remove(): void {
         leaderLineService.removeLinesForProcess(this);
         this.htmlElement.parentElement?.removeChild(this.htmlElement);
         this.parentProcessor.onProcessRemoved(this);

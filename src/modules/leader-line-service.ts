@@ -103,6 +103,19 @@ class LeaderLineService {
         return lineData;
     }
 
+    public makeLineDataForOverlayAddProcess(elAvailableInput: HTMLElement, elTarget: HTMLElement): LineDataWithTarget {
+        const line = new LeaderLine(
+            elAvailableInput,
+            elTarget,
+            {...LeaderLineOptions, color: LeaderLineColorDefault, startSocketGravity: 50, endSocketGravity: 50},
+        );
+        const lineData: LineDataWithTarget = {
+            line,
+            elTarget,
+        };
+        return lineData;
+    }
+
     public refreshLines(): void {
         const industryPlan = industryPlanService.getIndustryPlan() as IndustryPlan;
         // Refresh lines from startup products

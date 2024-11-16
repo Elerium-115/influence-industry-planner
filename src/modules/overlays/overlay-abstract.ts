@@ -1,4 +1,5 @@
 import {createEl} from '../dom-core.js';
+import {LineDataWithTarget} from '../leader-line-service.js';
 
 const overlaysActive: OverlayAbstract[] = [];
 
@@ -9,7 +10,8 @@ const overlaysActive: OverlayAbstract[] = [];
  * - trigger that overlay from other modules / services, by calling `new OverlayExample()`
  */
 abstract class OverlayAbstract {
-    private htmlElement: HTMLElement;
+    protected lines: LineDataWithTarget[] = [];
+    protected htmlElement: HTMLElement;
     protected elOverlayContent: HTMLElement;
 
     constructor() {
@@ -22,6 +24,16 @@ abstract class OverlayAbstract {
         document.body.append(this.htmlElement);
         // Listen for key strokes
         window.addEventListener('keydown', this.onKeydown);
+    }
+
+    public addLineData(lineData: LineDataWithTarget): void {
+        this.lines.push(lineData);
+    }
+
+    public removeAllLines(): void {
+        this.lines.forEach(lineData => lineData.line.remove());
+        this.lines = [];
+        this.htmlElement.querySelectorAll('.has-lines').forEach(elHasLines => elHasLines.classList.remove('has-lines'));
     }
 
     protected abstract makeElOverlayContent(): HTMLElement;
@@ -45,6 +57,7 @@ abstract class OverlayAbstract {
     }
 
     protected remove(): void {
+        this.removeAllLines();
         this.htmlElement.parentElement?.removeChild(this.htmlElement);
     }
 }
