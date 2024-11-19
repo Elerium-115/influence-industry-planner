@@ -1,3 +1,4 @@
+import {ChainId} from './abstract-core.js';
 import {createEl} from './dom-core.js';
 import {globalService} from './global-service.js';
 import {RefiningPenalty} from './refining-penalty.js';
@@ -16,6 +17,7 @@ class IndustryPlan {
     private title: string;
     private titleSaved: string;
     private updatedTs: number;
+    private chainId: ChainId;
     private scientistsInCrew: number;
     private refiningPenalty: RefiningPenalty;
     private startupProducts: StartupProduct[] = [];
@@ -31,6 +33,7 @@ class IndustryPlan {
 
     constructor(
         title: string,
+        chainId: ChainId = 'SN_MAIN',
         scientistsInCrew: number = 1,
         id?: string|null,
     ) {
@@ -45,6 +48,7 @@ class IndustryPlan {
         }
         this.title = title;
         this.titleSaved = title;
+        this.chainId = chainId;
         // Set "scientistsInCrew" WITHOUT updating the qtys re: industry plan NOT yet populated
         this.setScientistsInCrew(scientistsInCrew, false);
         this.refiningPenalty = new RefiningPenalty(scientistsInCrew, this);
@@ -70,6 +74,10 @@ class IndustryPlan {
 
     public getUpdatedTs(): number {
         return this.updatedTs;
+    }
+
+    public getChainId(): ChainId {
+        return this.chainId;
     }
 
     public getScientistsInCrew(): number {
@@ -422,6 +430,14 @@ class IndustryPlan {
         this.setSavedStatusAndIcon(true);
     }
 
+    private onClickChain(): void {
+        // Toggle between Mainnet and Sepolia
+        this.chainId = this.chainId === 'SN_MAIN' ? 'SN_SEPOLIA' : 'SN_MAIN';
+        const elChain = this.industryPlanHeaderHtmlElement.querySelector('.chain') as HTMLElement;
+        elChain.classList.toggle('chain-sepolia', this.chainId === 'SN_SEPOLIA');
+        this.onIndustryPlanChanged(false);
+    }
+
     private onClickRemoveLines(): void {
         leaderLineService.removeAllLines();
     }
@@ -486,6 +502,14 @@ class IndustryPlan {
         elSaveIcon.dataset.tooltip = 'Save this industry plan into local-storage';
         elSaveIcon.addEventListener('click', this.onClickSaveIcon.bind(this));
         this.industryPlanHeaderHtmlElement.append(elSaveIcon);
+        // Add "Chain"
+        const elChain = createEl('div', null, ['chain']);
+        elChain.classList.toggle('chain-sepolia', this.chainId === 'SN_SEPOLIA');
+        elChain.innerHTML = '<div class="button-with-icon chain-button"></div>';
+        elChain.dataset.tooltipPosition = 'bottom-left';
+        elChain.dataset.tooltip = 'Toggle the Starknet chain for linked in-game lots';
+        elChain.addEventListener('click', this.onClickChain.bind(this));
+        this.industryPlanHeaderHtmlElement.append(elChain);
         // Add "Scientists in Crew" (a.k.a. refining penalty)
         this.industryPlanHeaderHtmlElement.append(this.refiningPenalty.getHtmlElement());
         // Add "Generate Plan for Target Products"

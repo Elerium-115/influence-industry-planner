@@ -73,7 +73,7 @@ class OverlayAddOutputProduct extends OverlayAbstract {
         return p1.processData.name.localeCompare(p2.processData.name);
     }
 
-    private onChangeExcludeRawMaterials(event: InputEvent) {
+    private onChangeExcludeRawMaterials(event: InputEvent): void {
         this.shouldExcludeRawMaterials = (event.target as HTMLInputElement).checked;
         this.updateOutputProducts();
     }

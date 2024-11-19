@@ -1,5 +1,5 @@
 import * as InfluenceSDK from '@influenceth/sdk';
-import {uniquePushToArray} from './abstract-core.js';
+import {ChainId, uniquePushToArray} from './abstract-core.js';
 import {IndustryPlan} from './industry-plan.js';
 import {StartupProduct} from './startup-product.js';
 import {IndustryTier} from './industry-tier.js';
@@ -23,6 +23,7 @@ interface IndustryPlanJSON {
     id: string,
     title: string,
     updatedTs: number,
+    chainId: ChainId,
     scientistsInCrew: number,
     startupProductIds: string[],
     industryTiers: IndustryTierJSON[],
@@ -192,6 +193,7 @@ class IndustryPlanService {
             id: this.industryPlan.getId(),
             title: this.industryPlan.getTitle(),
             updatedTs: this.industryPlan.getUpdatedTs(),
+            chainId: this.industryPlan.getChainId(),
             scientistsInCrew: this.industryPlan.getScientistsInCrew(),
             startupProductIds: this.industryPlan.getStartupProducts().map(product => product.getId()),
             industryTiers: [],
@@ -246,6 +248,7 @@ class IndustryPlanService {
         }
         const loadedIndustryPlan = new IndustryPlan(
             industryPlanJSON.title,
+            industryPlanJSON.chainId,
             industryPlanJSON.scientistsInCrew,
             industryPlanJSON.id,
         );
@@ -314,6 +317,7 @@ class IndustryPlanService {
             id: this.generateIndustryPlanId(),
             title: `${plannedProductName} plan`,
             updatedTs: new Date().getTime(),
+            chainId: 'SN_MAIN',
             scientistsInCrew: 1,
             startupProductIds: plannedProductJSON.startupProductIds,
             industryTiers: [],

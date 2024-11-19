@@ -13,7 +13,7 @@ class ProductSelectable extends ProductAbstract {
         return this.isSelected;
     }
 
-    public setIsSelected(isSelected: boolean) {
+    public setIsSelected(isSelected: boolean): void {
         this.isSelected = isSelected;
     }
 }

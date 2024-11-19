@@ -46,7 +46,7 @@
     #industry-plan-header {
         align-items: center;
         display: flex;
-        gap: 64px;
+        gap: 32px;
         height: 48px;
         position: relative;
 
@@ -222,6 +222,20 @@
                 &::before {
                     content: '✓';
                     transform: unset;
+                }
+            }
+        }
+
+        .chain {
+            .chain-button {
+                &::before { content: '☯'; }
+                &::after { content: 'Mainnet'; }
+            }
+
+            &.chain-sepolia {
+                .chain-button {
+                    &::before { transform: scaleX(-1); }
+                    &::after { content: 'Sepolia'; }
                 }
             }
         }

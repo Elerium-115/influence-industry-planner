@@ -31,8 +31,8 @@ const SDK_RAW_MATERIAL_CATEGORIES_SORTED = [
 class ProductService {
     private static instance: ProductService;
 
-    private allProductsData: {[key in string]: I_PRODUCT_DATA};
-    private rawMaterialsByCategory: {[key in string]: ProductAbstract[]} = {};
+    private allProductsData: {[key: string]: I_PRODUCT_DATA};
+    private rawMaterialsByCategory: {[key: string]: ProductAbstract[]} = {};
 
     /**
      * Unsorted IDs of products which can be used as inputs for at least one process.

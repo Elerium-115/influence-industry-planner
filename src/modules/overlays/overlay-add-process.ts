@@ -114,7 +114,7 @@ class OverlayAddProcess extends OverlayAbstract {
         });
     }
 
-    private onChangeToggleAllAvailableInputs(event: InputEvent) {
+    private onChangeToggleAllAvailableInputs(event: InputEvent): void {
         const elToggleAllInput = event.target as HTMLInputElement;
         // Force-check/uncheck each available input (this will NOT trigger its "onchange" handler)
         ([...this.elAvailableInputsList.querySelectorAll('input[type="checkbox"]')] as HTMLInputElement[]).forEach(elInput => {
@@ -127,7 +127,7 @@ class OverlayAddProcess extends OverlayAbstract {
         this.filterProcesses();
     }
 
-    private onChangeAvailableInput(event: InputEvent, shouldUpdateProcesses: boolean = true) {
+    private onChangeAvailableInput(event: InputEvent, shouldUpdateProcesses: boolean = true): void {
         const elInput = event.target as HTMLInputElement;
         const productId = (elInput.closest('label') as HTMLElement).dataset.productId as string;
         const availableInput = this.availableInputs.find(product => product.getId() === productId);

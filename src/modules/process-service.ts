@@ -6,8 +6,8 @@ interface I_PROCESS_DATA {
     processorType: number,
     setupTime: number,
     recipeTime: number,
-    inputs: {[key in number]: number},
-    outputs: {[key in number|string]: number}, // key: string for injected outputs (ships, buildings)
+    inputs: {[key: number]: number},
+    outputs: {[key: number|string]: number}, // key: string for injected outputs (ships, buildings)
     batched?: boolean, // NOT defined for ship integrations and building constructions
 };
 
@@ -17,8 +17,8 @@ interface I_PROCESS_DATA {
 class ProcessService {
     private static instance: ProcessService;
 
-    private allProcessesData: {[key in number]: I_PROCESS_DATA};
-    private extractionProcessIdByRawMaterialId: {[key in string]: number} = {};
+    private allProcessesData: {[key: number]: I_PROCESS_DATA};
+    private extractionProcessIdByRawMaterialId: {[key: string]: number} = {};
     private penaltyForSecondaryOutputs: number;
 
     constructor() {
@@ -32,7 +32,7 @@ class ProcessService {
         return ProcessService.instance;
     }
 
-    public getAllProcessesData(): {[key in number]: I_PROCESS_DATA} {
+    public getAllProcessesData(): {[key: number]: I_PROCESS_DATA} {
         return this.allProcessesData;
     }
 
