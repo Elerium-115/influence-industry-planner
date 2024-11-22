@@ -1,5 +1,6 @@
 import axios, {AxiosResponse} from 'axios';
 import * as starknet from 'starknet';
+import {LotDataByIdResponse} from './types.js';
 import {type ChainId, isLocalhost} from './abstract-core.js';
 import {globalService} from './global-service.js';
 
@@ -66,7 +67,6 @@ class ApiService {
                     chainId,
                 },
             };
-            // console.log(`--- [generateMessageLogin] ${config.method.toUpperCase()} ${config.url} + body:`, config.data); //// TEST
             const response = await this.axios(config, 'Generating login message for your wallet...');
             const responseData = response.data as GenerateMessageLoginResponse;
             // console.log(`--- [generateMessageLogin] responseData:`, responseData); //// TEST
@@ -95,7 +95,6 @@ class ApiService {
                     token,
                 },
             };
-            // console.log(`--- [verifySignature] ${config.method.toUpperCase()} ${config.url} + body:`, config.data); //// TEST
             const response = await this.axios(config, 'Verifying your signature...');
             const responseData = response.data as VerifySignatureResponse;
             // console.log(`--- [verifySignature] responseData:`, responseData); //// TEST
@@ -109,28 +108,47 @@ class ApiService {
         }
     }
 
-    public async authTest(
-        data: any,
-        token?: string,
-    ): Promise<AuthedResponse> {
+    public async verifyToken(token: string): Promise<AuthedResponse> {
         try {
             const config = {
                 method: 'post',
-                url: `${apiUrl}/auth-test`,
-                data: {
-                    data,
-                },
+                url: `${apiUrl}/verify-token`,
                 headers: {
                     Authorization: `Bearer ${token}`,
-                }
+                },
             };
-            // console.log(`--- [authTest] ${config.method.toUpperCase()} ${config.url} + body:`, config.data); //// TEST
-            const response = await this.axios(config, 'Testing authenticated request...');
+            const response = await this.axios(config, 'Verifying your token...');
             const responseData = response.data as AuthedResponse;
-            // console.log(`--- [authTest] responseData:`, responseData); //// TEST
+            // console.log(`--- [verifyToken] responseData:`, responseData); //// TEST
             return responseData;
         } catch (error: any) {
-            // console.log(`--- [authTest] ERROR:`, error); //// TEST
+            // console.log(`--- [verifyToken] ERROR:`, error); //// TEST
+            if (error.response?.data?.error) {
+                throw new Error(error.response.data.error);
+            }
+            throw error;
+        }
+    }
+
+    public async fetchLotsData(
+        chainId: ChainId,
+        lotsIds: number[],
+    ): Promise<LotDataByIdResponse> {
+        try {
+            const config = {
+                method: 'post',
+                url: `${apiUrl}/lots-data`,
+                data: {
+                    chainId,
+                    lotsIds,
+                },
+            };
+            const response = await this.axios(config, 'Loading in-game lots data...');
+            const responseData = response.data as LotDataByIdResponse;
+            // console.log(`--- [fetchLotsData] responseData:`, responseData); //// TEST
+            return responseData;
+        } catch (error: any) {
+            console.log(`--- [fetchLotsData] ERROR:`, error); //// TEST
             if (error.response?.data?.error) {
                 throw new Error(error.response.data.error);
             }

@@ -223,7 +223,7 @@ class StarknetService {
 
     public async verifyToken(token: string): Promise<boolean> {
         try {
-            const apiResponse = await apiService.authTest(null, token);
+            const apiResponse = await apiService.verifyToken(token);
             if (apiResponse.success) {
                 return true;
             } else {
@@ -231,28 +231,6 @@ class StarknetService {
             }
         } catch (error: any) {
             return false;
-        }
-    }
-
-    public async apiAuthTest(): Promise<void> {
-        const token = localStorage.getItem('authToken') || '';
-        const data = {testRequest: 'Test Request'}; //// TEST
-        try {
-            const apiResponse = await apiService.authTest(data, token);
-            console.log(`--- [apiAuthTest] apiResponse:`, apiResponse); //// TEST
-            if (apiResponse.success) {
-                console.log(`---> [apiAuthTest] SUCESS`); //// TEST
-                alert('API Auth Test SUCCESS'); //// TEST
-                //// ...
-            } else {
-                console.log(`---> [apiAuthTest] FAILED`); //// TEST
-                alert(apiResponse.error); //// TEST
-                //// ...
-            }
-        } catch (error: any) {
-            console.log(`---> [apiAuthTest] ERROR during authenticated request:`, error); //// TEST
-            alert('ERROR during authenticated request'); //// TEST
-            //// ...
         }
     }
 
