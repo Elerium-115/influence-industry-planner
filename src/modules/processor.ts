@@ -54,18 +54,8 @@ class Processor {
         return this.asteroidId;
     }
 
-    public setAsteroidId(asteroidId: number|null): void {
-        this.asteroidId = asteroidId;
-        this.updateElProcessorLocation();
-    }
-
     public getLotIndex(): number|null {
         return this.lotIndex;
-    }
-
-    public setLotIndex(lotIndex: number|null): void {
-        this.lotIndex = lotIndex;
-        this.updateElProcessorLocation();
     }
 
     public getIsValidLocation(): boolean {
@@ -78,6 +68,15 @@ class Processor {
 
     private getElProcessesList(): HTMLElement {
         return this.htmlElement.querySelector('.processes-list') as HTMLElement;
+    }
+
+    public async setAsteroidIdAndLotIndex(
+        asteroidId: number|null,
+        lotIndex: number|null,
+    ): Promise<void> {
+        this.asteroidId = asteroidId;
+        this.lotIndex = lotIndex;
+        await this.updateElProcessorLocation();
     }
 
     private async updateElProcessorLocation(): Promise<void> {

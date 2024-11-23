@@ -242,7 +242,7 @@ class IndustryPlanService {
         localStorage.setItem('savedIndustryPlans', JSON.stringify(savedIndustryPlansJSON));
     }
 
-    public loadIndustryPlanJSON(industryPlanJSON: IndustryPlanJSON): void {
+    public async loadIndustryPlanJSON(industryPlanJSON: IndustryPlanJSON): Promise<void> {
         if (this.industryPlan) {
             this.industryPlan.onIndustryPlanUnloading();
         }
@@ -260,10 +260,9 @@ class IndustryPlanService {
         industryPlanJSON.industryTiers.forEach(industryTierJSON => {
             const industryTier = loadedIndustryPlan.getIndustryTierLast();
             // Add processors into this industry tier
-            industryTierJSON.processors.forEach(processorJSON => {
+            industryTierJSON.processors.forEach(async (processorJSON) => {
                 const processor = industryTier.addProcessorById(processorJSON.id);
-                processor.setAsteroidId(processorJSON.asteroidId);
-                processor.setLotIndex(processorJSON.lotIndex);
+                await processor.setAsteroidIdAndLotIndex(processorJSON.asteroidId, processorJSON.lotIndex);
                 // Add processes into this processor
                 processorJSON.processes.forEach(processJSON => {
                     processor.addProcessById(processJSON.id);
