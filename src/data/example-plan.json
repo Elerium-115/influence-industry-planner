@@ -48,7 +48,7 @@
                         }
                     ],
                     "asteroidId": 1,
-                    "lotId": 206085
+                    "lotIndex": 1372095
                 }
             ]
         },
@@ -73,7 +73,7 @@
                         }
                     ],
                     "asteroidId": 1,
-                    "lotId": 205098
+                    "lotIndex": 1359929
                 }
             ]
         },
@@ -90,7 +90,7 @@
                         }
                     ],
                     "asteroidId": 1,
-                    "lotId": 204111
+                    "lotIndex": 204111
                 },
                 {
                     "id": 3,
@@ -125,7 +125,7 @@
                         }
                     ],
                     "asteroidId": 1,
-                    "lotId": 203124
+                    "lotIndex": 203124
                 },
                 {
                     "id": 3,

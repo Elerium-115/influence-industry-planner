@@ -148,7 +148,7 @@ class ApiService {
             // console.log(`--- [fetchLotsData] responseData:`, responseData); //// TEST
             return responseData;
         } catch (error: any) {
-            console.log(`--- [fetchLotsData] ERROR:`, error); //// TEST
+            // console.log(`--- [fetchLotsData] ERROR:`, error); //// TEST
             if (error.response?.data?.error) {
                 throw new Error(error.response.data.error);
             }

@@ -37,7 +37,7 @@ interface ProcessorJSON {
     id: TYPE_PROCESSOR_BUILDING_IDS,
     processes: ProcessJSON[],
     asteroidId: number|null,
-    lotId: number|null,
+    lotIndex: number|null,
 };
 
 interface ProcessJSON {
@@ -210,7 +210,7 @@ class IndustryPlanService {
                     id: processor.getId(),
                     processes: [],
                     asteroidId: processor.getAsteroidId(),
-                    lotId: processor.getLotId(),
+                    lotIndex: processor.getLotIndex(),
                 };
                 processor.getProcesses().forEach(process => {
                     const processJSON: ProcessJSON = {
@@ -263,7 +263,7 @@ class IndustryPlanService {
             industryTierJSON.processors.forEach(processorJSON => {
                 const processor = industryTier.addProcessorById(processorJSON.id);
                 processor.setAsteroidId(processorJSON.asteroidId);
-                processor.setLotId(processorJSON.lotId);
+                processor.setLotIndex(processorJSON.lotIndex);
                 // Add processes into this processor
                 processorJSON.processes.forEach(processJSON => {
                     processor.addProcessById(processJSON.id);

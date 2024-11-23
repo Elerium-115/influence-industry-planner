@@ -30,6 +30,10 @@ class IndustryTier {
         return this.title;
     }
 
+    public getParentIndustryPlan(): IndustryPlan {
+        return this.parentIndustryPlan;
+    }
+
     public getProcessors(): Processor[] {
         return this.processors;
     }

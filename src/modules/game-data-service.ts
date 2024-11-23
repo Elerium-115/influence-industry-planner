@@ -1,3 +1,6 @@
+import * as InfluenceSDK from '@influenceth/sdk';
+import {LotData} from './types';
+
 const asteroidNameById = {
     1: 'Adalia Prime',
 };
@@ -21,6 +24,18 @@ class GameDataService {
         }
         const asteroidName = asteroidNameById[asteroidId];
         return asteroidName ? asteroidName : `Asteroid #${asteroidId}`;
+    }
+
+    public getLotId(asteroidId: number, lotIndex: number): number|null {
+        return InfluenceSDK.Lot.toId(asteroidId, lotIndex);
+    }
+
+    public getBuildingTypeFromLotData(lotData: LotData): number|null {
+        if (!lotData) {
+            return null;
+        }
+        const buildingType = lotData.buildingData?.buildingDetails?.buildingType as number;
+        return buildingType;
     }
 }
 

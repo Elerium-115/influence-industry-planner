@@ -9,6 +9,7 @@ import {
 } from './processor-service.js';
 import {Process} from './process.js';
 import {gameDataService} from './game-data-service.js';
+import {apiService} from './api-service.js';
 import {OverlayAddProcess} from './overlays/overlay-add-process.js';
 import {OverlayAddExtraction} from './overlays/overlay-add-extraction.js';
 
@@ -17,7 +18,7 @@ class Processor {
     private parentIndustryTier: IndustryTier;
     private processes: Process[] = [];
     private asteroidId: number|null = null;
-    private lotId: number|null = null;
+    private lotIndex: number|null = null;
     private hasLocation: boolean = false;
     private isValidLocation: boolean = true; // may become FALSE only if "hasLocation" TRUE
     private htmlElement: HTMLElement;
@@ -58,12 +59,12 @@ class Processor {
         this.updateElProcessorLocation();
     }
 
-    public getLotId(): number|null {
-        return this.lotId;
+    public getLotIndex(): number|null {
+        return this.lotIndex;
     }
 
-    public setLotId(lotId: number|null): void {
-        this.lotId = lotId;
+    public setLotIndex(lotIndex: number|null): void {
+        this.lotIndex = lotIndex;
         this.updateElProcessorLocation();
     }
 
@@ -79,18 +80,34 @@ class Processor {
         return this.htmlElement.querySelector('.processes-list') as HTMLElement;
     }
 
-    private updateElProcessorLocation(): void {
+    private async updateElProcessorLocation(): Promise<void> {
         let processorLocationHtml = '';
-        if (this.asteroidId && this.lotId) {
+        if (this.asteroidId && this.lotIndex) {
             this.hasLocation = true;
             const asteroidName = gameDataService.getAsteroidName(this.asteroidId);
-            const lotText = Intl.NumberFormat().format(this.lotId);
+            const lotText = Intl.NumberFormat().format(this.lotIndex);
             processorLocationHtml = /*html*/ `
                 <div class="location-asteroid">${asteroidName}</div>
                 <div class="location-lot">${lotText}</div>
             `;
-            //// TO DO: update "isValidLocation" based on in-game building matching this processor
-            this.isValidLocation = this.id >= 4 ? false : true; //// TEST invalid location
+            // Update "isValidLocation" based on in-game building-type matching this processor ID
+            const chainId = this.parentIndustryTier.getParentIndustryPlan().getChainId();
+            const lotId = gameDataService.getLotId(this.asteroidId, this.lotIndex) as number;
+            //// TO DO: use cached lot data for this "chainId" + "lotId" (if any)
+            try {
+                const lotDataByIdResponse = await apiService.fetchLotsData(chainId, [lotId]);
+                // console.log(`--- [updateElProcessorLocation] lotDataByIdResponse:`, lotDataByIdResponse); //// TEST
+                const lotDataById = lotDataByIdResponse.data;
+                if (lotDataById) {
+                    const lotData = lotDataById[lotId];
+                    const buildingType = gameDataService.getBuildingTypeFromLotData(lotData);
+                    // console.log(`--- buildingType = ${buildingType}, this id = ${this.id}`); //// TEST
+                    this.isValidLocation = buildingType === this.id;
+                }
+            } catch (error: any) {
+                // console.log(`--- [updateElProcessorLocation] ERROR:`, error); //// TEST
+                this.isValidLocation = false;
+            }
         } else {
             this.hasLocation = false;
             this.isValidLocation = true;
