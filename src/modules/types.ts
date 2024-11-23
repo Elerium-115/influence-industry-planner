@@ -1,8 +1,11 @@
+type ChainId = 'SN_MAIN'|'SN_SEPOLIA';
+
 // label = 4
 interface LotData {
     _raw?: any,
     lotId: string,
     buildingData: BuildingData,
+    _timestamp?: number,
 }
 
 interface LotDataByIdResponse extends StandardResponse {
@@ -30,6 +33,7 @@ interface StandardResponse {
 }
 
 export {
+    ChainId,
     BuildingData,
     LotData,
     LotDataByIdResponse,

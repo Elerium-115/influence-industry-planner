@@ -1,5 +1,6 @@
 import * as InfluenceSDK from '@influenceth/sdk';
-import {ChainId, uniquePushToArray} from './abstract-core.js';
+import {ChainId} from './types.js';
+import {uniquePushToArray} from './abstract-core.js';
 import {IndustryPlan} from './industry-plan.js';
 import {StartupProduct} from './startup-product.js';
 import {IndustryTier} from './industry-tier.js';
@@ -260,9 +261,11 @@ class IndustryPlanService {
         industryPlanJSON.industryTiers.forEach(industryTierJSON => {
             const industryTier = loadedIndustryPlan.getIndustryTierLast();
             // Add processors into this industry tier
-            industryTierJSON.processors.forEach(async (processorJSON) => {
+            industryTierJSON.processors.forEach(processorJSON => {
                 const processor = industryTier.addProcessorById(processorJSON.id);
-                await processor.setAsteroidIdAndLotIndex(processorJSON.asteroidId, processorJSON.lotIndex);
+                processor.setAsteroidIdAndLotIndex(processorJSON.asteroidId, processorJSON.lotIndex, false);
+                // Queue this processor for updating its location later
+                processorService.queueProcessorLocationUpdate(processor);
                 // Add processes into this processor
                 processorJSON.processes.forEach(processJSON => {
                     processor.addProcessById(processJSON.id);
@@ -274,6 +277,7 @@ class IndustryPlanService {
                 });
             });
         });
+        await processorService.consumeProcessorsLocationUpdateQueue();
         loadedIndustryPlan.setIsLoading(false);
         // Call "onIndustryPlanChanged" AFTER "isLoading" set to FALSE
         loadedIndustryPlan.onIndustryPlanChanged(true);
@@ -310,7 +314,7 @@ class IndustryPlanService {
         this.industryPlan?.onDuplicatedPlan();
     }
 
-    public generateIndustryPlanFromPlannedProductJSON(plannedProductJSON: PlannedProductJSON): void {
+    public async generateIndustryPlanFromPlannedProductJSON(plannedProductJSON: PlannedProductJSON): Promise<void> {
         const plannedProductName = productService.getProductNameById(plannedProductJSON.plannedProductId);
         const industryPlanJSON: IndustryPlanJSON = {
             id: this.generateIndustryPlanId(),
@@ -321,7 +325,7 @@ class IndustryPlanService {
             startupProductIds: plannedProductJSON.startupProductIds,
             industryTiers: [],
         };
-        this.loadIndustryPlanJSON(industryPlanJSON);
+        await this.loadIndustryPlanJSON(industryPlanJSON);
         // Add planned processes into the generated plan
         let noProcessAdded = false;
         const addedProcessIds: number[] = [];

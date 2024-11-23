@@ -1,3 +1,4 @@
+import {cache} from './cache.js';
 import {getItemNameSafe} from './abstract-core.js';
 import {createEl} from './dom-core.js';
 import {IndustryTier} from './industry-tier.js';
@@ -9,7 +10,6 @@ import {
 } from './processor-service.js';
 import {Process} from './process.js';
 import {gameDataService} from './game-data-service.js';
-import {apiService} from './api-service.js';
 import {OverlayAddProcess} from './overlays/overlay-add-process.js';
 import {OverlayAddExtraction} from './overlays/overlay-add-extraction.js';
 
@@ -70,16 +70,19 @@ class Processor {
         return this.htmlElement.querySelector('.processes-list') as HTMLElement;
     }
 
-    public async setAsteroidIdAndLotIndex(
+    public setAsteroidIdAndLotIndex(
         asteroidId: number|null,
         lotIndex: number|null,
-    ): Promise<void> {
+        shouldUpdateLocation: boolean = true,
+    ): void {
         this.asteroidId = asteroidId;
         this.lotIndex = lotIndex;
-        await this.updateElProcessorLocation();
+        if (shouldUpdateLocation) {
+            this.updateLocation();
+        }
     }
 
-    private async updateElProcessorLocation(): Promise<void> {
+    public updateLocation(): void {
         let processorLocationHtml = '';
         if (this.asteroidId && this.lotIndex) {
             this.hasLocation = true;
@@ -92,21 +95,10 @@ class Processor {
             // Update "isValidLocation" based on in-game building-type matching this processor ID
             const chainId = this.parentIndustryTier.getParentIndustryPlan().getChainId();
             const lotId = gameDataService.getLotId(this.asteroidId, this.lotIndex) as number;
-            //// TO DO: use cached lot data for this "chainId" + "lotId" (if any)
-            try {
-                const lotDataByIdResponse = await apiService.fetchLotsData(chainId, [lotId]);
-                // console.log(`--- [updateElProcessorLocation] lotDataByIdResponse:`, lotDataByIdResponse); //// TEST
-                const lotDataById = lotDataByIdResponse.data;
-                if (lotDataById) {
-                    const lotData = lotDataById[lotId];
-                    const buildingType = gameDataService.getBuildingTypeFromLotData(lotData);
-                    // console.log(`--- buildingType = ${buildingType}, this id = ${this.id}`); //// TEST
-                    this.isValidLocation = buildingType === this.id;
-                }
-            } catch (error: any) {
-                // console.log(`--- [updateElProcessorLocation] ERROR:`, error); //// TEST
-                this.isValidLocation = false;
-            }
+            // Use cached lot data, if any (even if NOT fresh)
+            const lotData = cache.getData().lotsDataByChainAndId[chainId][lotId];
+            const buildingType = gameDataService.getBuildingTypeFromLotData(lotData);
+            this.isValidLocation = buildingType === this.id;
         } else {
             this.hasLocation = false;
             this.isValidLocation = true;

@@ -1,7 +1,7 @@
 import axios, {AxiosResponse} from 'axios';
 import * as starknet from 'starknet';
-import {LotDataByIdResponse} from './types.js';
-import {type ChainId, isLocalhost} from './abstract-core.js';
+import {ChainId, LotDataByIdResponse} from './types.js';
+import {isLocalhost} from './abstract-core.js';
 import {globalService} from './global-service.js';
 
 const apiUrlV2Coolify = 'https://influence-api-v2.elerium.dev';

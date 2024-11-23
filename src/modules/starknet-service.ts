@@ -6,7 +6,8 @@ import {
 } from 'starknetkit';
 import * as starknet from 'starknet';
 import {type Signature} from 'starknet';
-import {type ChainId, getCompactAddress} from './abstract-core.js';
+import {ChainId} from './types.js';
+import {getCompactAddress} from './abstract-core.js';
 import {apiService} from './api-service.js';
 
 /**

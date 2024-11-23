@@ -1,4 +1,4 @@
-import {ChainId} from './abstract-core.js';
+import {ChainId} from './types.js';
 import {createEl} from './dom-core.js';
 import {globalService} from './global-service.js';
 import {RefiningPenalty} from './refining-penalty.js';
