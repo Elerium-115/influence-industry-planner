@@ -106,7 +106,7 @@ class ProcessorService {
         const chainId = this.processorsLocationUpdateQueue[0].getParentIndustryTier().getParentIndustryPlan().getChainId();
         // Parse only processors with linked in-game lots
         const lotsIds = this.processorsLocationUpdateQueue
-            .filter(processor => processor.getAsteroidId() && processor.getLotIndex())
+            .filter(processor => processor.getHasLocation())
             .map(processor => gameDataService.getLotId(processor.getAsteroidId() as number, processor.getLotIndex() as number) as number);
         // Fetch data from API only for lots without a FRESH cache
         const lotsIdsNotCached = lotsIds.filter(lotId => !cache.isFreshCacheLotsDataByChainAndId(chainId, lotId));
@@ -132,11 +132,16 @@ class ProcessorService {
         this.processorsLocationUpdateQueue.forEach(processor => {
             /**
              * Update location for ALL processors, even those without a linked in-game lot,
-             * in case their "updateLocation" has NOT been triggered yet - e.g. during "loadIndustryPlanJSON".
+             * in case their "updateLocation" was NOT triggered yet.
              */
             processor.updateLocation();
         });
         this.processorsLocationUpdateQueue = [];
+    }
+
+    public async updateLocationForProcessor(processor: Processor): Promise<void> {
+        this.setProcessorsLocationUpdateQueue([processor]);
+        await processorService.consumeProcessorsLocationUpdateQueue();
     }
 }
 

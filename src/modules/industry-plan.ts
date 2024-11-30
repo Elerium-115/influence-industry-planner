@@ -511,7 +511,7 @@ class IndustryPlan {
         // Add save-icon
         const elSaveIcon = createEl('div', null, ['save-icon']);
         elSaveIcon.dataset.tooltipPosition = 'bottom-left';
-        elSaveIcon.dataset.tooltip = 'Save this industry plan into local-storage';
+        elSaveIcon.dataset.tooltip = 'Save this industry plan';
         elSaveIcon.addEventListener('click', this.onClickSaveIcon.bind(this));
         this.industryPlanHeaderHtmlElement.append(elSaveIcon);
         // Add "Chain"

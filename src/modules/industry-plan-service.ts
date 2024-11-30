@@ -263,7 +263,7 @@ class IndustryPlanService {
             // Add processors into this industry tier
             industryTierJSON.processors.forEach(processorJSON => {
                 const processor = industryTier.addProcessorById(processorJSON.id);
-                processor.setAsteroidIdAndLotIndex(processorJSON.asteroidId, processorJSON.lotIndex, false);
+                processor.setAsteroidIdAndLotIndex(processorJSON.asteroidId, processorJSON.lotIndex);
                 // Add processes into this processor
                 processorJSON.processes.forEach(processJSON => {
                     processor.addProcessById(processJSON.id);

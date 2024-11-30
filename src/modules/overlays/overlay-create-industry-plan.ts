@@ -50,7 +50,7 @@ class OverlayCreateIndustryPlan extends OverlayAbstract {
                 <input type="text" name="plan-title" placeholder="Plan Title">
             </div>
             <div class="overlay-cta">
-                <div class="create-plan-button disabled">Create Plan</div>
+                <div class="cta-button create-plan-button disabled">Create Plan</div>
             </div>
         `;
         this.elInputPlanTitle = this.elOverlayContent.querySelector('input[name="plan-title"]') as HTMLInputElement;

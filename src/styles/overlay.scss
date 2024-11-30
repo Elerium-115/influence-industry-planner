@@ -8,8 +8,8 @@
     padding: 8px 16px;
 
     &.disabled {
-        cursor: not-allowed;
         opacity: 0.5;
+        pointer-events: none;
     }
 
     &:not(.disabled):hover { opacity: 1; }
@@ -92,6 +92,10 @@
             }
 
             .overlay-lists .overlay-list { min-width: 200px; }
+
+            .overlay-cta {
+                .cta-button { @include overlay-cta-button; }
+            }
         }
     }
 
@@ -538,8 +542,6 @@
     }
 
     .overlay-input input { width: 100%; }
-
-    .overlay-cta .create-plan-button { @include overlay-cta-button; }
 }
 
 .overlay-my-industry-plans {
@@ -579,3 +581,34 @@
 }
 
 .overlay-shared-industry-plans {}
+
+.overlay-link-lot {
+    .overlay-form {
+        align-items: flex-end;
+        display: flex;
+        gap: 16px;
+
+        .form-cell {
+            &.form-cell-max { flex-grow: 1; }
+
+            input[type='text'] {
+                margin-top: 8px;
+                width: 100px;
+            }
+    
+            .cta-button {
+                @include overlay-cta-button;
+
+                &.remove-button {
+                    color: var(--color-warning);
+                    opacity: 1;
+
+                    &:hover {
+                        background-color: var(--color-warning);
+                        color: white;
+                    }
+                }
+            }
+        }
+    }
+}

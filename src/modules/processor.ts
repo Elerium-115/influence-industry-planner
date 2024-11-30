@@ -10,6 +10,7 @@ import {
 } from './processor-service.js';
 import {Process} from './process.js';
 import {gameDataService} from './game-data-service.js';
+import {OverlayLinkLot} from './overlays/overlay-link-lot.js';
 import {OverlayAddProcess} from './overlays/overlay-add-process.js';
 import {OverlayAddExtraction} from './overlays/overlay-add-extraction.js';
 
@@ -56,6 +57,10 @@ class Processor {
 
     public getLotIndex(): number|null {
         return this.lotIndex;
+    }
+
+    public getHasLocation(): boolean {
+        return this.hasLocation;
     }
 
     public getIsValidLocation(): boolean {
@@ -105,7 +110,7 @@ class Processor {
         }
         this.elProcessorLocation.innerHTML = processorLocationHtml;
         if (this.isValidLocation) {
-            delete this.elProcessorLocation.dataset.tooltip;
+            this.elProcessorLocation.dataset.tooltip = 'Linked in-game lot';
         } else {
             this.elProcessorLocation.dataset.tooltip = 'Incorrect building for this in-game lot';
         }
@@ -128,6 +133,10 @@ class Processor {
         }
         this.parentIndustryTier.onProcessorChanged();
         return process;
+    }
+
+    private onClickLinkLot(): void {
+        new OverlayLinkLot(this);
     }
 
     private onClickRemoveProcessor(): void {
@@ -165,16 +174,18 @@ class Processor {
             <div class="processor-location"></div>
             <div class="processor-header">
                 <div class="processor-name">${this.getName()}</div>
-                <div class="processor-info" data-tooltip-position="top-right" data-tooltip="${tooltipText}"></div>
+                <div class="link-lot" data-tooltip-position="top-right" data-tooltip="${tooltipText}"></div>
                 <div class="remove-processor"></div>
             </div>
             <div class="processes-list"></div>
             <div class="add-process-button"></div>
         `;
+        el.querySelector('.link-lot')?.addEventListener('click', this.onClickLinkLot.bind(this));
         el.querySelector('.remove-processor')?.addEventListener('click', this.onClickRemoveProcessor.bind(this));
         el.querySelector('.add-process-button')?.addEventListener('click', this.onClickAddProcessButton.bind(this));
         this.elProcessorLocation = el.querySelector('.processor-location') as HTMLElement;
         this.elProcessorLocation.dataset.tooltipPosition = 'top-right';
+        this.elProcessorLocation.addEventListener('click', this.onClickLinkLot.bind(this));
         return el;
     }
 
