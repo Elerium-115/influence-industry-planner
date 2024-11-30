@@ -95,8 +95,8 @@ class ProcessorService {
         return Number(matchingProcessorBuildingId);
     }
 
-    public queueProcessorLocationUpdate(processor: Processor): void {
-        this.processorsLocationUpdateQueue.push(processor);
+    public setProcessorsLocationUpdateQueue(processors: Processor[]): void {
+        this.processorsLocationUpdateQueue = processors;
     }
 
     public async consumeProcessorsLocationUpdateQueue(): Promise<void> {

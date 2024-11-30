@@ -264,8 +264,6 @@ class IndustryPlanService {
             industryTierJSON.processors.forEach(processorJSON => {
                 const processor = industryTier.addProcessorById(processorJSON.id);
                 processor.setAsteroidIdAndLotIndex(processorJSON.asteroidId, processorJSON.lotIndex, false);
-                // Queue this processor for updating its location later
-                processorService.queueProcessorLocationUpdate(processor);
                 // Add processes into this processor
                 processorJSON.processes.forEach(processJSON => {
                     processor.addProcessById(processJSON.id);
@@ -277,7 +275,7 @@ class IndustryPlanService {
                 });
             });
         });
-        await processorService.consumeProcessorsLocationUpdateQueue();
+        await this.updateLocationForAllProcessors();
         loadedIndustryPlan.setIsLoading(false);
         // Call "onIndustryPlanChanged" AFTER "isLoading" set to FALSE
         loadedIndustryPlan.onIndustryPlanChanged(true);
@@ -908,6 +906,15 @@ class IndustryPlanService {
             });
         }
         return preferredSource;
+    }
+
+    public async updateLocationForAllProcessors(): Promise<void> {
+        if (!this.industryPlan) {
+            throw Error('ERROR: industryPlan not set @ updateLocationForAllProcessors');
+        }
+        const allProcessors = this.industryPlan.getAllProcessorsInPlan();
+        processorService.setProcessorsLocationUpdateQueue(allProcessors);
+        await processorService.consumeProcessorsLocationUpdateQueue();
     }
 }
 

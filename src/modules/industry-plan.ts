@@ -6,6 +6,7 @@ import {leaderLineService} from './leader-line-service.js';
 import {industryPlanService} from './industry-plan-service.js';
 import {StartupProduct} from './startup-product.js';
 import {IndustryTier} from './industry-tier.js';
+import {Processor} from './processor.js';
 import {Process} from './process.js';
 import {ProductIcon} from './product-icon.js';
 import {ProductAny, productService} from './product-service.js';
@@ -112,15 +113,25 @@ class IndustryPlan {
     }
 
     /**
+     * Get each instance of each "Processor" in this industry plan,
+     * including multiple instances for the same processor ID.
+     */
+    public getAllProcessorsInPlan(): Processor[] {
+        const processors: Processor[] = [];
+        this.industryTiers.forEach(industryTier => {
+            processors.push(...industryTier.getProcessors());
+        });
+        return processors;
+    }
+
+    /**
      * Get each instance of each "Process" in this industry plan,
      * including multiple instances for the same process ID.
      */
     public getAllProcessesInPlan(): Process[] {
         const processes: Process[] = [];
-        this.industryTiers.forEach(industryTier => {
-            industryTier.getProcessors().forEach(processor => {
-                processes.push(...processor.getProcesses());
-            });
+        this.getAllProcessorsInPlan().forEach(processor => {
+            processes.push(...processor.getProcesses());
         });
         return processes;
     }
@@ -430,12 +441,13 @@ class IndustryPlan {
         this.setSavedStatusAndIcon(true);
     }
 
-    private onClickChain(): void {
+    private async onClickChain(): Promise<void> {
         // Toggle between Mainnet and Sepolia
         this.chainId = this.chainId === 'SN_MAIN' ? 'SN_SEPOLIA' : 'SN_MAIN';
         const elChain = this.industryPlanHeaderHtmlElement.querySelector('.chain') as HTMLElement;
         elChain.classList.toggle('chain-sepolia', this.chainId === 'SN_SEPOLIA');
-        this.onIndustryPlanChanged(false);
+        await industryPlanService.updateLocationForAllProcessors();
+        this.onIndustryPlanChanged();
     }
 
     private onClickRemoveLines(): void {

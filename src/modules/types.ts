@@ -4,7 +4,7 @@ type ChainId = 'SN_MAIN'|'SN_SEPOLIA';
 interface LotData {
     _raw?: any,
     lotId: string,
-    buildingData: BuildingData,
+    buildingData: BuildingData|null, // null for Empty Lot
     _timestamp?: number,
 }
 
