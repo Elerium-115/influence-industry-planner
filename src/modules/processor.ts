@@ -1,4 +1,5 @@
 import {cache} from './cache.js';
+import {LotData} from './types.js';
 import {getItemNameSafe} from './abstract-core.js';
 import {createEl} from './dom-core.js';
 import {IndustryTier} from './industry-tier.js';
@@ -89,6 +90,7 @@ class Processor {
 
     public updateLocation(): void {
         let processorLocationHtml = '';
+        let lotData: LotData|null = null;
         if (this.asteroidId && this.lotIndex) {
             this.hasLocation = true;
             const asteroidName = gameDataService.getAsteroidName(this.asteroidId);
@@ -101,7 +103,7 @@ class Processor {
             const chainId = this.parentIndustryTier.getParentIndustryPlan().getChainId();
             const lotId = gameDataService.getLotId(this.asteroidId, this.lotIndex) as number;
             // Use cached lot data, if any (even if NOT fresh)
-            const lotData = cache.getData().lotsDataByChainAndId[chainId][lotId];
+            lotData = cache.getData().lotsDataByChainAndId[chainId][lotId];
             const buildingType = gameDataService.getBuildingTypeFromLotData(lotData);
             this.isValidLocation = buildingType === this.id;
         } else {
@@ -110,7 +112,13 @@ class Processor {
         }
         this.elProcessorLocation.innerHTML = processorLocationHtml;
         if (this.isValidLocation) {
-            this.elProcessorLocation.dataset.tooltip = 'Linked in-game lot';
+            this.elProcessorLocation.dataset.tooltip = 'Matching building';
+            if (lotData) {
+                const buildingName = gameDataService.getBuildingNameFromLotData(lotData);
+                if (buildingName) {
+                    this.elProcessorLocation.dataset.tooltip = `Matching building: ${buildingName}`;
+                }
+            }
         } else {
             this.elProcessorLocation.dataset.tooltip = 'Incorrect building for this in-game lot';
         }
