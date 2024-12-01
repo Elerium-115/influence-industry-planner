@@ -22,6 +22,12 @@
 }
 
 :root {
+    --rgb-processor-extractor: 220, 180, 40;
+    --rgb-processor-bioreactor: 136, 230, 117;
+    --rgb-processor-refinery: 87, 213, 255;
+    --rgb-processor-factory: 40, 120, 255;
+    --rgb-processor-shipyard: 129, 129, 255;
+    --rgb-processor-empty-lot: 241, 131, 97;
     --color-add-button: rgba(255, 255, 255, 0.25);
     --color-body-bg: #222;
     --color-dark-bg: #111;
@@ -37,12 +43,7 @@
     --color-category-fissile-bg: rgba(138, 21, 255, 0.1);
     --color-text-normal: rgba(255, 255, 255, 0.75);
     --color-warning: rgb(223, 67, 0);
-    --rgb-processor-extractor: 220, 180, 40;
-    --rgb-processor-bioreactor: 136, 230, 117;
-    --rgb-processor-refinery: 87, 213, 255;
-    --rgb-processor-factory: 40, 120, 255;
-    --rgb-processor-shipyard: 129, 129, 255;
-    --rgb-processor-empty-lot: 241, 131, 97;
+    --color-ok: rgb(var(--rgb-processor-bioreactor));
 }
 
 * {

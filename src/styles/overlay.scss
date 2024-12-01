@@ -619,10 +619,11 @@
         gap: 8px;
 
         > * {
-            &::before {
-                opacity: 0.5;
-                padding-right: 5px;
-            }
+            align-items: center;
+            display: flex;
+            gap: 8px;
+
+            &::before { opacity: 0.5; }
 
             &:empty::after {
                 content: 'N/A';
@@ -633,6 +634,17 @@
                 color: var(--color-warning);
 
                 &::before, &::after { opacity: 1; }
+            }
+
+            &.building-type:not(.warning)::after {
+                background-color: var(--color-ok);
+                border-radius: 50%;
+                color: var(--color-body-bg);
+                content: '✓';
+                display: inline-block;
+                height: 16px;
+                text-align: center;
+                width: 16px;
             }
 
             &.building-type::before { content: 'Building Type:'; }

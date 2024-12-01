@@ -109,7 +109,7 @@
                         }
 
                         &.-duplicate {
-                            color: rgb(var(--rgb-processor-bioreactor));
+                            color: var(--color-ok);
 
                             &::before { content: '❐'; }
                         }
@@ -169,7 +169,6 @@
             }
 
             .title-input {
-                --color-duplicated: rgb(var(--rgb-processor-bioreactor));
                 background-color: transparent;
                 color: var(--color-text-normal);
                 padding: 0;
@@ -183,9 +182,9 @@
                     animation: flash-title 500ms;
 
                     @keyframes flash-title {
-                        25% { color: var(--color-duplicated); }
+                        25% { color: var(--color-ok); }
                         50% { color: var(--color-text-normal); }
-                        75% { color: var(--color-duplicated); }
+                        75% { color: var(--color-ok); }
                     }
                 }
             }
@@ -212,10 +211,9 @@
             &:hover { opacity: 1; }
 
             &.saved {
-                --color-saved: rgb(var(--rgb-processor-bioreactor));
-                border: 2px solid var(--color-saved);
+                border: 2px solid var(--color-ok);
                 border-radius: 50%;
-                color: var(--color-saved);
+                color: var(--color-ok);
                 cursor: unset;
                 pointer-events: none;
 
