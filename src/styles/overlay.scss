@@ -611,4 +611,33 @@
             }
         }
     }
+
+    .lot-details {
+        display: flex;
+        flex-direction: column;
+        font-size: 90%;
+        gap: 8px;
+
+        > * {
+            &::before {
+                opacity: 0.5;
+                padding-right: 5px;
+            }
+
+            &:empty::after {
+                content: 'N/A';
+                opacity: 0.5;
+            }
+
+            &.warning {
+                color: var(--color-warning);
+
+                &::before, &::after { opacity: 1; }
+            }
+
+            &.building-type::before { content: 'Building Type:'; }
+            &.building-name::before { content: 'Building Name:'; }
+            &.building-crew-name::before { content: 'Building Crew Name:'; }
+        }
+    }
 }

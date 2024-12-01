@@ -34,8 +34,21 @@ class GameDataService {
         if (!lotData) {
             return null;
         }
-        const buildingType = lotData.buildingData?.buildingDetails?.buildingType as number;
-        return buildingType;
+        return lotData.buildingData?.buildingDetails?.buildingType as number;
+    }
+
+    public getBuildingNameFromLotData(lotData: LotData): string|null {
+        if (!lotData) {
+            return null;
+        }
+        return lotData.buildingData?.buildingName as string;
+    }
+
+    public getBuildingCrewNameFromLotData(lotData: LotData): string|null {
+        if (!lotData) {
+            return null;
+        }
+        return lotData.buildingData?.crewName as string;
     }
 }
 

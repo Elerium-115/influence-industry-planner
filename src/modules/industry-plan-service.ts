@@ -1,6 +1,9 @@
 import * as InfluenceSDK from '@influenceth/sdk';
-import {ChainId} from './types.js';
+import {cache} from './cache.js';
+import {ChainId, LotData} from './types.js';
 import {uniquePushToArray} from './abstract-core.js';
+import {apiService} from './api-service.js';
+import {gameDataService} from './game-data-service.js';
 import {IndustryPlan} from './industry-plan.js';
 import {StartupProduct} from './startup-product.js';
 import {IndustryTier} from './industry-tier.js';
@@ -915,6 +918,41 @@ class IndustryPlanService {
         const allProcessors = this.industryPlan.getAllProcessorsInPlan();
         processorService.setProcessorsLocationUpdateQueue(allProcessors);
         await processorService.consumeProcessorsLocationUpdateQueue();
+    }
+
+    public async getLotDataByAsteroidIdAndLotIndex(asteroidId: number, lotIndex: number): Promise<LotData|null> {
+        if (!this.industryPlan) {
+            throw Error('ERROR: industryPlan not set @ getLotDataByAsteroidIdAndLotIndex');
+        }
+        const chainId = this.industryPlan.getChainId();
+        const lotId = gameDataService.getLotId(asteroidId, lotIndex);
+        if (!lotId) {
+            return null;
+        }
+        if (cache.isFreshCacheLotsDataByChainAndId(chainId, lotId)) {
+            return cache.getData().lotsDataByChainAndId[chainId][lotId];
+        }
+        // Fetch data from API re: lot without a FRESH cache
+        try {
+            const lotDataByIdResponse = await apiService.fetchLotsData(chainId, [lotId]);
+            if (lotDataByIdResponse.error) {
+                alert(lotDataByIdResponse.error); //// TEST
+                return null;
+            } else {
+                // No error => assuming valid "data"
+                const lotDataById = lotDataByIdResponse.data;
+                if (lotDataById) {
+                    for (const [lotId, lotData] of Object.entries(lotDataById)) {
+                        cache.setCacheLotsDataByChainAndId(chainId, Number(lotId), lotData);
+                    }
+                }
+            }
+        } catch (error: any) {
+            console.log(`--- [getLotDataByAsteroidIdAndLotIndex] ERROR:`, error); //// TEST
+            return null;
+        }
+        // At this point, the data for "lotId" should be cached
+        return cache.getData().lotsDataByChainAndId[chainId][lotId];
     }
 }
 
