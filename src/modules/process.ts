@@ -1,7 +1,8 @@
-import {createEl} from './dom-core.js';
+import {I_PROCESS_DATA} from './types.js';
+import {createEl, fromNow} from './abstract-core.js';
 import {leaderLineService} from './leader-line-service.js';
 import {Processor} from './processor.js';
-import {I_PROCESS_DATA, processService} from './process-service.js';
+import {processService} from './process-service.js';
 import {ProductIcon} from './product-icon.js';
 import {productService} from './product-service.js';
 
@@ -14,6 +15,7 @@ class Process {
     private primaryOutput: ProductIcon;
     private isActiveLines: boolean = false;
     private isBroken: boolean = false;
+    private elProcessFinish: HTMLElement;
     private htmlElement: HTMLElement;
 
     constructor(id: number, parentProcessor: Processor) {
@@ -113,6 +115,16 @@ class Process {
 
     private getElOutputs(): HTMLElement {
         return this.htmlElement.querySelector('.outputs') as HTMLElement;
+    }
+
+    public markRunningProcess(isRunning: boolean, finishTime?: number): void {
+        this.htmlElement.classList.toggle('is-running', isRunning);
+        let processFinish: string = '';
+        if (finishTime) {
+            const endDate = new Date(finishTime * 1000);
+            processFinish = fromNow(endDate) || '';
+        }
+        this.elProcessFinish.textContent = processFinish ? `Done ${processFinish}` : '';
     }
 
     private isExtraction(): boolean {
@@ -255,6 +267,7 @@ class Process {
             <div class="process-header" data-tooltip-position="top-left" data-tooltip="${this.getName()}">
                 <div class="process-name">${this.getName()}</div>
             </div>
+            <div class="process-finish"></div>
             <div class="process-materials">
                 <div class="inputs"></div>
                 <div class="separator"></div>
@@ -262,6 +275,7 @@ class Process {
             </div>
             <div class="remove-process"></div>
         `;
+        this.elProcessFinish = el.querySelector('.process-finish') as HTMLElement;
         el.querySelector('.remove-process')?.addEventListener('click', this.onClickRemoveProcess.bind(this));
         el.addEventListener('click', this.onClickProcess.bind(this));
         return el;

@@ -1,5 +1,4 @@
-import {getFormattedRoundNumber} from './abstract-core.js';
-import {createEl} from './dom-core.js';
+import {createEl, getFormattedRoundNumber} from './abstract-core.js';
 import {Process} from './process.js';
 import {ProductAbstract} from './product-abstract.js';
 

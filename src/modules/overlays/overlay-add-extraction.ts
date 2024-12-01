@@ -1,5 +1,4 @@
-import {getItemNameSafe} from '../abstract-core.js';
-import {createEl} from '../dom-core.js';
+import {createEl, getItemNameSafe} from '../abstract-core.js';
 import {OverlayAbstract} from './overlay-abstract';
 import {Processor} from '../processor.js';
 import {processService} from '../process-service.js';

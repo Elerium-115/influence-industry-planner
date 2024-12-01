@@ -1,4 +1,4 @@
-import {createEl} from '../dom-core.js';
+import {createEl} from '../abstract-core.js';
 import {LineDataWithTarget} from '../leader-line-service.js';
 
 const overlaysActive: OverlayAbstract[] = [];

@@ -612,6 +612,15 @@
                                     .process-name { @include core.single-line-with-ellipsis; }
                                 }
 
+                                .process-finish {
+                                    color: var(--color-text-normal);
+                                    font-size: 90%;
+                                    margin: -8px 0 0 28px;
+                                    opacity: 0.5;
+
+                                    &:empty { display: none; }
+                                }
+
                                 .process-materials {
                                     align-items: center;
                                     display: flex;
@@ -729,6 +738,14 @@
                                 &.is-active-lines { outline: 1px dashed var(--color-text-normal); }
 
                                 &.broken { outline: 1px solid var(--color-warning); }
+
+                                &.is-running {
+                                    animation: flash-running-process 2s ease infinite;
+
+                                    @keyframes flash-running-process {
+                                        50% { background-color: var(--color-processor-highlight-bg); }
+                                    }
+                                }
                             }
 
                             &:empty + .add-process-button {

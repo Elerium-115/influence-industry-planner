@@ -1,12 +1,11 @@
-import {getFormattedRoundNumber} from '../abstract-core.js';
-import {createEl} from '../dom-core.js';
+import {I_PROCESS_DATA} from '../types.js';
+import {createEl, getFormattedRoundNumber} from '../abstract-core.js';
 import {OverlayAbstract} from './overlay-abstract';
 import {leaderLineService} from '../leader-line-service.js';
 import {industryPlanService} from '../industry-plan-service.js';
 import {IndustryTier} from '../industry-tier.js';
 import {Processor} from '../processor.js';
 import {PROCESSOR_BUILDING_IDS} from '../processor-service.js';
-import {I_PROCESS_DATA} from '../process-service.js';
 import {ProductSelectable} from '../product-selectable.js';
 import {productService} from '../product-service.js';
 

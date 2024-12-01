@@ -1,7 +1,6 @@
 import {cache} from './cache.js';
-import {LotData} from './types.js';
-import {getItemNameSafe} from './abstract-core.js';
-import {createEl} from './dom-core.js';
+import {LotData, RunningProcessData} from './types.js';
+import {createEl, getItemNameSafe} from './abstract-core.js';
 import {IndustryTier} from './industry-tier.js';
 import {leaderLineService} from './leader-line-service.js';
 import {
@@ -23,6 +22,7 @@ class Processor {
     private lotIndex: number|null = null;
     private hasLocation: boolean = false;
     private isValidLocation: boolean = true; // may become FALSE only if "hasLocation" TRUE
+    private runningProcessesData: RunningProcessData[] = [];
     private htmlElement: HTMLElement;
     private elProcessorLocation: HTMLElement;
 
@@ -105,10 +105,12 @@ class Processor {
             // Use cached lot data, if any (even if NOT fresh)
             lotData = cache.getData().lotsDataByChainAndId[chainId][lotId];
             const buildingType = gameDataService.getBuildingTypeFromLotData(lotData);
+            this.runningProcessesData = gameDataService.getRunningProcessesDataFromLotData(lotData);
             this.isValidLocation = buildingType === this.id;
         } else {
             this.hasLocation = false;
             this.isValidLocation = true;
+            this.runningProcessesData = [];
         }
         this.elProcessorLocation.innerHTML = processorLocationHtml;
         if (this.isValidLocation) {
@@ -124,6 +126,16 @@ class Processor {
         }
         this.htmlElement.classList.toggle('has-location', this.hasLocation);
         this.htmlElement.classList.toggle('invalid-location', !this.isValidLocation);
+        // Highlight currently-running processes
+        this.processes.forEach(process => {
+            process.markRunningProcess(false);
+        });
+        this.runningProcessesData.forEach(runningProcessData => {
+            const matchingProcess = this.processes.find(process => process.getId() === runningProcessData.processId);
+            if (matchingProcess) {
+                matchingProcess.markRunningProcess(true, runningProcessData.finishTime);
+            }
+        });
     }
 
     public addProcessById(processId: number): Process|null {

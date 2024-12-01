@@ -1,15 +1,5 @@
 import * as InfluenceSDK from '@influenceth/sdk';
-
-interface I_PROCESS_DATA {
-    i: number,
-    name: string,
-    processorType: number,
-    setupTime: number,
-    recipeTime: number,
-    inputs: {[key: number]: number},
-    outputs: {[key: number|string]: number}, // key: string for injected outputs (ships, buildings)
-    batched?: boolean, // NOT defined for ship integrations and building constructions
-};
+import {I_PROCESS_DATA} from './types.js';
 
 /**
  * Singleton
@@ -82,6 +72,5 @@ class ProcessService {
 const processService: ProcessService = ProcessService.getInstance(); // singleton
 
 export {
-    I_PROCESS_DATA,
     processService,
 }

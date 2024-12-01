@@ -52,7 +52,6 @@ class StarknetService {
     }
 
     public setIsAuthed(isAuthed: boolean): void {
-        console.log(`--- SET isAuthed:`, isAuthed); //// TEST
         this.isAuthed = isAuthed;
         this.elStarknetWallet.classList.toggle('is-authed', isAuthed);
     }

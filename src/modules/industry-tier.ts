@@ -1,5 +1,4 @@
-import {uniquePushToArray} from './abstract-core.js';
-import {createEl} from './dom-core.js';
+import {createEl, uniquePushToArray} from './abstract-core.js';
 import {IndustryPlan} from './industry-plan.js';
 import {Processor} from './processor.js';
 import {type TYPE_PROCESSOR_BUILDING_IDS} from './processor-service.js';

@@ -1,5 +1,11 @@
 import * as InfluenceSDK from '@influenceth/sdk';
-import {LotData} from './types';
+import {
+    ExtractorDataFromLotData,
+    LotData,
+    ProcessorDataFromLotData,
+    RunningProcessData,
+} from './types.js';
+import {processService} from './process-service.js';
 
 const asteroidNameById = {
     1: 'Adalia Prime',
@@ -49,6 +55,57 @@ class GameDataService {
             return null;
         }
         return lotData.buildingData?.crewName as string;
+    }
+
+    public getExtractorsDataFromLotData(lotData: LotData): ExtractorDataFromLotData[] {
+        if (!lotData) {
+            return [];
+        }
+        const extractorsData = lotData.buildingData?.extractors;
+        if (!extractorsData || !extractorsData.length) {
+            return [];
+        }
+        return extractorsData;
+    }
+
+    public getProcessorsDataFromLotData(lotData: LotData): ProcessorDataFromLotData[] {
+        if (!lotData) {
+            return [];
+        }
+        const processorsData = lotData.buildingData?.processors;
+        if (!processorsData || !processorsData.length) {
+            return [];
+        }
+        return processorsData;
+    }
+
+    public getRunningProcessesDataFromLotData(lotData: LotData): RunningProcessData[] {
+        const processesData: RunningProcessData[] = [];
+        const extractorsData = this.getExtractorsDataFromLotData(lotData);
+        const processorsData = this.getProcessorsDataFromLotData(lotData);
+        extractorsData.forEach(extractorData => {
+            if (!extractorData.outputProduct) {
+                // Not currently running
+                return;
+            }
+            const processData: RunningProcessData = {
+                finishTime: extractorData.finishTime,
+                processId: processService.getExtractionProcessIdByRawMaterialId(extractorData.outputProduct.toString()),
+            };
+            processesData.push(processData);
+        });
+        processorsData.forEach(processorData => {
+            if (!processorData.runningProcess) {
+                // Not currently running
+                return;
+            }
+            const processData: RunningProcessData = {
+                finishTime: processorData.finishTime,
+                processId: processorData.runningProcess,
+            };
+            processesData.push(processData);
+        });
+        return processesData;
     }
 }
 

@@ -1,11 +1,10 @@
-import {getItemNameSafe} from '../abstract-core.js';
-import {createEl} from '../dom-core.js';
+import {I_PROCESS_DATA} from '../types.js';
+import {createEl, getItemNameSafe} from '../abstract-core.js';
 import {OverlayAbstract} from './overlay-abstract';
 import {industryPlanService} from '../industry-plan-service.js';
 import {IndustryTier} from '../industry-tier.js';
 import {processorService} from '../processor-service.js';
 import {Process} from '../process.js';
-import {I_PROCESS_DATA} from '../process-service.js';
 import {ProductIcon} from '../product-icon.js';
 import {ProductSelectable} from '../product-selectable.js';
 import {I_PRODUCT_DATA, productService} from '../product-service.js';

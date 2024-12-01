@@ -1,9 +1,10 @@
-import {createEl} from '../dom-core.js';
+import {createEl, fromNow} from '../abstract-core.js';
 import {LotData} from '../types.js';
 import {OverlayAbstract} from './overlay-abstract';
 import {industryPlanService} from '../industry-plan-service.js';
 import {Processor} from '../processor.js';
 import {processorService} from '../processor-service.js';
+import {processService} from '../process-service.js';
 import {gameDataService} from '../game-data-service.js';
 
 class OverlayLinkLot extends OverlayAbstract {
@@ -16,6 +17,7 @@ class OverlayLinkLot extends OverlayAbstract {
     private elBuildingType: HTMLElement;
     private elBuildingName: HTMLElement;
     private elBuildingCrewName: HTMLElement;
+    private elRunningProcesses: HTMLElement;
     private elSaveButton: HTMLElement;
 
     constructor(parentProcessor: Processor) {
@@ -60,7 +62,7 @@ class OverlayLinkLot extends OverlayAbstract {
             return; // Abort action
         }
         this.parentProcessor.setAsteroidIdAndLotIndex(null, null);
-        this.parentProcessor.onProcessChanged();
+        this.parentProcessor.getParentIndustryTier().onProcessorChanged();
         this.remove();
     }
 
@@ -73,15 +75,16 @@ class OverlayLinkLot extends OverlayAbstract {
         } else {
             this.parentProcessor.setAsteroidIdAndLotIndex(null, null);
         }
-        this.parentProcessor.onProcessChanged();
+        this.parentProcessor.getParentIndustryTier().onProcessorChanged();
         this.remove();
     }
 
     private async updateLotData(): Promise<void> {
+        let isMatchingBuildingType = false;
         let buildingTypeText = '';
         let buildingName = '';
         let buildingCrewName = '';
-        let isMatchingBuildingType = false;
+        let runningProcessesHtml = '';
         if (this.elInputAsteroidId.value && this.elInputLotIndex.value) {
             const asteroidId = Number(this.elInputAsteroidId.value);
             const lotIndex = Number(this.elInputLotIndex.value);
@@ -94,6 +97,23 @@ class OverlayLinkLot extends OverlayAbstract {
                 }
                 buildingName = gameDataService.getBuildingNameFromLotData(this.lotData) || '';
                 buildingCrewName = gameDataService.getBuildingCrewNameFromLotData(this.lotData) || '';
+                const runningProcessesData = gameDataService.getRunningProcessesDataFromLotData(this.lotData);
+                if (runningProcessesData.length) {
+                    runningProcessesHtml = '<div class="processes-list">';
+                    runningProcessesHtml += runningProcessesData.map(processData => {
+                        const processId = processData.processId;
+                        const processName = processService.getProcessDataById(processId).name;
+                        const endDate = new Date(processData.finishTime * 1000);
+                        const processFinish = fromNow(endDate) || '';
+                        return /*html*/ `
+                            <div class="process-item">
+                                <div class="process-name">${processName}</div>
+                                <div class="process-finish">(done ${processFinish})</div>
+                            </div>
+                        `;
+                    }).join('');
+                    runningProcessesHtml += '</div>';
+                }
             }
         } else {
             this.lotData = null;
@@ -101,6 +121,7 @@ class OverlayLinkLot extends OverlayAbstract {
         this.elBuildingType.textContent = buildingTypeText;
         this.elBuildingName.textContent = buildingName;
         this.elBuildingCrewName.textContent = buildingCrewName;
+        this.elRunningProcesses.innerHTML = runningProcessesHtml;
         this.elBuildingType.classList.toggle('warning', !isMatchingBuildingType);
         this.elLotDetails.classList.toggle('hidden', !this.lotData);
         this.elCheckButton.classList.add('hidden');
@@ -142,6 +163,7 @@ class OverlayLinkLot extends OverlayAbstract {
                 <div class="building-type"></div>
                 <div class="building-name"></div>
                 <div class="building-crew-name"></div>
+                <div class="running-processes"></div>
             </div>
             <div class="overlay-cta">
                 <div class="cta-button save-button">Save</div>
@@ -155,6 +177,7 @@ class OverlayLinkLot extends OverlayAbstract {
         this.elBuildingType = this.elLotDetails.querySelector('.building-type') as HTMLElement;
         this.elBuildingName = this.elLotDetails.querySelector('.building-name') as HTMLElement;
         this.elBuildingCrewName = this.elLotDetails.querySelector('.building-crew-name') as HTMLElement;
+        this.elRunningProcesses = this.elLotDetails.querySelector('.running-processes') as HTMLElement;
         this.elSaveButton = this.elOverlayContent.querySelector('.save-button') as HTMLElement;
         this.elInputAsteroidId.addEventListener('input', this.onInputAsteroidId.bind(this));
         this.elInputLotIndex.addEventListener('input', this.onInputLotIndex.bind(this));

@@ -1,4 +1,4 @@
-import {createEl} from '../dom-core.js';
+import {createEl} from '../abstract-core.js';
 import {OverlayAbstract} from './overlay-abstract';
 
 class OverlaySharedIndustryPlans extends OverlayAbstract {

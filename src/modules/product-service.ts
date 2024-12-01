@@ -1,6 +1,5 @@
 import * as InfluenceSDK from '@influenceth/sdk';
-import {getProductImageSrc} from './abstract-core.js';
-import {createEl} from './dom-core.js';
+import {createEl, getProductImageSrc} from './abstract-core.js';
 import {StartupProduct} from './startup-product.js';
 import {ProductIcon} from './product-icon.js';
 import {ProductAbstract} from './product-abstract.js';

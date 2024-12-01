@@ -1,5 +1,4 @@
-import {getItemNameSafe} from './abstract-core.js';
-import {createEl} from './dom-core.js';
+import {createEl, getItemNameSafe} from './abstract-core.js';
 import {IndustryTier} from './industry-tier.js';
 import {
     PROCESSOR_BUILDING_IDS,

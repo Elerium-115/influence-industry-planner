@@ -1,4 +1,4 @@
-import {createEl} from './dom-core.js';
+import {createEl} from './abstract-core.js';
 import {IndustryPlan} from './industry-plan.js';
 import {leaderLineService} from './leader-line-service.js';
 import {ProductAbstract} from './product-abstract.js';

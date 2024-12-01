@@ -625,6 +625,11 @@
 
             &::before { opacity: 0.5; }
 
+            &.building-type::before { content: 'Building Type:'; }
+            &.building-name::before { content: 'Building Name:'; }
+            &.building-crew-name::before { content: 'Building Crew Name:'; }
+            &.running-processes::before { content: 'Running Processes:'; }
+
             &:empty::after {
                 content: 'N/A';
                 opacity: 0.5;
@@ -647,9 +652,18 @@
                 width: 16px;
             }
 
-            &.building-type::before { content: 'Building Type:'; }
-            &.building-name::before { content: 'Building Name:'; }
-            &.building-crew-name::before { content: 'Building Crew Name:'; }
+            &.running-processes {
+                align-items: flex-start;
+
+                .processes-list {
+                    .process-item {
+                        display: flex;
+                        gap: 8px;
+
+                        .process-finish { opacity: 0.5; }
+                    }
+                }
+            }
         }
     }
 }

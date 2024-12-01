@@ -1,6 +1,10 @@
 import * as InfluenceSDK from '@influenceth/sdk';
 import {cache} from './cache.js';
-import {ChainId, LotData} from './types.js';
+import {
+    ChainId,
+    I_PROCESS_DATA,
+    LotData,
+} from './types.js';
 import {uniquePushToArray} from './abstract-core.js';
 import {apiService} from './api-service.js';
 import {gameDataService} from './game-data-service.js';
@@ -15,7 +19,7 @@ import {
     processorService,
 } from './processor-service.js';
 import {Process} from './process.js';
-import {I_PROCESS_DATA, processService} from './process-service.js';
+import {processService} from './process-service.js';
 import {ProductIcon} from './product-icon.js';
 import {ProductSelectable} from './product-selectable.js';
 import {ProductAny, productService} from './product-service.js';

@@ -1,4 +1,4 @@
-import {createEl} from './dom-core.js';
+import {createEl} from './abstract-core.js';
 import {PROCESSOR_BUILDING_IDS, PROCESSOR_COLOR_SEMIFADED_BY_BUILDING_ID} from './processor-service.js';
 
 /**
