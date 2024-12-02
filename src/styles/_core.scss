@@ -113,6 +113,13 @@ input[type='text'] {
 
 input[type='checkbox'] { margin: 0; }
 
+a {
+    color: var(--color-text-normal);
+    text-decoration: none;
+
+    &:hover { color: white; }
+}
+
 .hidden { display: none !important; }
 
 .product-icon {
@@ -137,7 +144,7 @@ input[type='checkbox'] { margin: 0; }
         color: white;
         content: attr(data-tooltip);
         font-size: 0.9rem; // NOT using % value, as this needs to be independent of the parent element's font-size
-        outline: 4px solid rgba(255, 255, 255, 0.2);
+        outline: 4px solid #555;
         padding: 4px 8px;
         pointer-events: none; // prevent hover on tooltip
         position: absolute;

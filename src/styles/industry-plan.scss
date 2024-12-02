@@ -613,10 +613,15 @@
                                 }
 
                                 .process-finish {
+                                    animation: flash-process-finish 2s ease infinite;
                                     color: var(--color-text-normal);
                                     font-size: 90%;
                                     margin: -8px 0 0 28px;
                                     opacity: 0.5;
+
+                                    @keyframes flash-process-finish {
+                                        50% { opacity: 1; }
+                                    }
 
                                     &:empty { display: none; }
                                 }
@@ -739,13 +744,7 @@
 
                                 &.broken { outline: 1px solid var(--color-warning); }
 
-                                &.is-running {
-                                    animation: flash-running-process 2s ease infinite;
-
-                                    @keyframes flash-running-process {
-                                        50% { background-color: var(--color-processor-highlight-bg); }
-                                    }
-                                }
+                                &.is-running { background-color: var(--color-processor-highlight-bg); }
                             }
 
                             &:empty + .add-process-button {

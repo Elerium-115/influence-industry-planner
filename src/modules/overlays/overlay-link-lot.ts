@@ -13,6 +13,7 @@ class OverlayLinkLot extends OverlayAbstract {
     private elInputAsteroidId: HTMLInputElement;
     private elInputLotIndex: HTMLInputElement;
     private elCheckButton: HTMLElement;
+    private elViewButton: HTMLAnchorElement;
     private elLotDetails: HTMLElement;
     private elBuildingType: HTMLElement;
     private elBuildingName: HTMLElement;
@@ -40,8 +41,23 @@ class OverlayLinkLot extends OverlayAbstract {
     }
 
     private onChangedValues(): void {
-        const allValuesSet = Boolean(this.elInputAsteroidId.value && this.elInputLotIndex.value);
-        this.elCheckButton.classList.toggle('hidden', !allValuesSet);
+        let allValuesSet = false;
+        this.elViewButton.classList.add('hidden');
+        this.elViewButton.removeAttribute('href');
+        if (this.elInputAsteroidId.value && this.elInputLotIndex.value) {
+            allValuesSet = true;
+            const asteroidId = Number(this.elInputAsteroidId.value);
+            const lotIndex = Number(this.elInputLotIndex.value);
+            const lotId = gameDataService.getLotId(asteroidId, lotIndex);
+            if (lotId) {
+                // Set URL for "View In-Game" button, and make it visible
+                const chainId = industryPlanService.getIndustryPlan()?.getChainId();
+                const gameSubdomain = chainId === 'SN_SEPOLIA' ? 'game-prerelease' : 'game';
+                this.elViewButton.href = `https://${gameSubdomain}.influenceth.io/lot/${lotId}`;
+                this.elViewButton.classList.remove('hidden');
+            }
+        }
+        this.elCheckButton.parentElement?.classList.toggle('hidden', !allValuesSet);
         this.elSaveButton.classList.toggle('disabled', !allValuesSet);
     }
 
@@ -124,7 +140,7 @@ class OverlayLinkLot extends OverlayAbstract {
         this.elRunningProcesses.innerHTML = runningProcessesHtml;
         this.elBuildingType.classList.toggle('warning', !isMatchingBuildingType);
         this.elLotDetails.classList.toggle('hidden', !this.lotData);
-        this.elCheckButton.classList.add('hidden');
+        this.elCheckButton.parentElement?.classList.add('hidden');
     }
 
     private populateElOverlayContent(): void {
@@ -152,8 +168,11 @@ class OverlayLinkLot extends OverlayAbstract {
                     <div>Lot Index:</div>
                     <input type="text" name="lot-index" value="${lotIndex ? lotIndex : ''}">
                     </div>
-                <div class="form-cell form-cell-max">
+                <div class="form-cell hidden">
                     <div class="cta-button check-button">Check</div>
+                </div>
+                <div class="form-cell form-cell-max">
+                    <a class="cta-button view-button hidden" target="_blank">View In-Game</a>
                 </div>
                 <div class="form-cell">
                     <div class="cta-button remove-button">Remove</div>
@@ -172,6 +191,7 @@ class OverlayLinkLot extends OverlayAbstract {
         this.elInputAsteroidId = this.elOverlayContent.querySelector('input[name="asteroid-id"]') as HTMLInputElement;
         this.elInputLotIndex = this.elOverlayContent.querySelector('input[name="lot-index"]') as HTMLInputElement;
         this.elCheckButton = this.elOverlayContent.querySelector('.check-button') as HTMLElement;
+        this.elViewButton = this.elOverlayContent.querySelector('.view-button') as HTMLAnchorElement;
         const elRemoveButton = this.elOverlayContent.querySelector('.remove-button') as HTMLElement;
         this.elLotDetails = this.elOverlayContent.querySelector('.lot-details') as HTMLElement;
         this.elBuildingType = this.elLotDetails.querySelector('.building-type') as HTMLElement;
