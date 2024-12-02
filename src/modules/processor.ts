@@ -126,6 +126,8 @@ class Processor {
         }
         this.htmlElement.classList.toggle('has-location', this.hasLocation);
         this.htmlElement.classList.toggle('invalid-location', !this.isValidLocation);
+        const isIdle = this.hasLocation && !this.runningProcessesData.length;
+        this.htmlElement.classList.toggle('idle', isIdle);
         // Highlight currently-running processes
         this.processes.forEach(process => {
             process.markRunningProcess(false);
