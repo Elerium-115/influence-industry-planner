@@ -3,9 +3,9 @@ type ChainId = 'SN_MAIN'|'SN_SEPOLIA';
 // label = 4
 interface LotData {
     _raw?: any,
-    lotId: string,
-    buildingData: BuildingData|null, // null for Empty Lot
     _timestamp?: number,
+    lotId: string,
+    buildingData: BuildingData|BuildingDataForEmptyLot,
 }
 
 interface LotDataByIdResponse extends StandardResponse {
@@ -15,6 +15,7 @@ interface LotDataByIdResponse extends StandardResponse {
 // label = 5
 interface BuildingData {
     _raw?: any,
+    _timestamp?: number,
     buildingId: string,
     buildingDetails: any,
     buildingName: string|null,
@@ -23,6 +24,13 @@ interface BuildingData {
     dryDocks: any[],
     extractors: ExtractorDataFromLotData[],
     processors: ProcessorDataFromLotData[],
+    isEmptyLot: false,
+}
+
+interface BuildingDataForEmptyLot {
+    _timestamp?: number,
+    lotId: string,
+    isEmptyLot: true,
 }
 
 interface StandardResponse {
@@ -70,6 +78,7 @@ interface I_PROCESS_DATA {
 export {
     ChainId,
     BuildingData,
+    BuildingDataForEmptyLot,
     ExtractorDataFromLotData,
     I_PROCESS_DATA,
     LotData,

@@ -63,16 +63,19 @@ class Cache {
         localStorage.setItem('cache', JSON.stringify(this.data));
     }
 
+    private isFreshCache(data: any, cacheExpiresInMilliseconds: number): boolean {
+        if (!data || !data._timestamp) {
+            return false;
+        }
+        return Date.now() - data._timestamp < cacheExpiresInMilliseconds;
+    }
+
     public isFreshCacheLotsDataByChainAndId(
         chainId: ChainId,
         lotId: number,
     ): boolean {
-        const cacheExpiresInMilliseconds = HOUR_IN_MILLISECONDS;
         const lotData = this.data.lotsDataByChainAndId[chainId][lotId];
-        if (!lotData || !lotData._timestamp) {
-            return false;
-        }
-        return Date.now() - lotData._timestamp < cacheExpiresInMilliseconds;
+        return this.isFreshCache(lotData, HOUR_IN_MILLISECONDS);
     }
 
     public setCacheLotsDataByChainAndId(

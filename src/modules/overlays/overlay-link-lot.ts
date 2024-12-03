@@ -108,9 +108,7 @@ class OverlayLinkLot extends OverlayAbstract {
             if (this.lotData) {
                 const buildingType = gameDataService.getBuildingTypeFromLotData(this.lotData);
                 isMatchingBuildingType = buildingType === this.parentProcessor.getId();
-                if (buildingType) {
-                    buildingTypeText = processorService.getBuildingName(buildingType);
-                }
+                buildingTypeText = processorService.getBuildingName(buildingType);
                 buildingName = gameDataService.getBuildingNameFromLotData(this.lotData) || '';
                 buildingCrewName = gameDataService.getBuildingCrewNameFromLotData(this.lotData) || '';
                 const runningProcessesData = gameDataService.getRunningProcessesDataFromLotData(this.lotData);

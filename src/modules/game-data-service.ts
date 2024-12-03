@@ -1,11 +1,13 @@
 import * as InfluenceSDK from '@influenceth/sdk';
 import {
+    BuildingData,
     ExtractorDataFromLotData,
     LotData,
     ProcessorDataFromLotData,
     RunningProcessData,
 } from './types.js';
 import {processService} from './process-service.js';
+import {PROCESSOR_BUILDING_IDS} from './processor-service.js';
 
 const asteroidNameById = {
     1: 'Adalia Prime',
@@ -36,32 +38,40 @@ class GameDataService {
         return InfluenceSDK.Lot.toId(asteroidId, lotIndex);
     }
 
-    public getBuildingTypeFromLotData(lotData: LotData): number|null {
-        if (!lotData) {
-            return null;
+    private isEmptyLotData(lotData: LotData): boolean {
+        if (!lotData || !lotData.buildingData) {
+            return true;
         }
-        return lotData.buildingData?.buildingDetails?.buildingType as number;
+        return lotData.buildingData.isEmptyLot;
+    }
+
+    public getBuildingTypeFromLotData(lotData: LotData): number {
+        if (this.isEmptyLotData(lotData)) {
+            return PROCESSOR_BUILDING_IDS.EMPTY_LOT;
+        }
+        return (lotData.buildingData as BuildingData).buildingDetails?.buildingType as number;
     }
 
     public getBuildingNameFromLotData(lotData: LotData): string|null {
-        if (!lotData) {
+        if (this.isEmptyLotData(lotData)) {
             return null;
         }
-        return lotData.buildingData?.buildingName as string;
+        return (lotData.buildingData as BuildingData).buildingName as string;
     }
 
     public getBuildingCrewNameFromLotData(lotData: LotData): string|null {
-        if (!lotData) {
+        if (this.isEmptyLotData(lotData)) {
             return null;
         }
-        return lotData.buildingData?.crewName as string;
+        return (lotData.buildingData as BuildingData).crewName as string;
     }
 
     public getExtractorsDataFromLotData(lotData: LotData): ExtractorDataFromLotData[] {
-        if (!lotData) {
+        if (this.isEmptyLotData(lotData)) {
             return [];
         }
-        const extractorsData = lotData.buildingData?.extractors;
+
+        const extractorsData = (lotData.buildingData as BuildingData).extractors;
         if (!extractorsData || !extractorsData.length) {
             return [];
         }
@@ -69,10 +79,10 @@ class GameDataService {
     }
 
     public getProcessorsDataFromLotData(lotData: LotData): ProcessorDataFromLotData[] {
-        if (!lotData) {
+        if (this.isEmptyLotData(lotData)) {
             return [];
         }
-        const processorsData = lotData.buildingData?.processors;
+        const processorsData = (lotData.buildingData as BuildingData).processors;
         if (!processorsData || !processorsData.length) {
             return [];
         }
