@@ -51,6 +51,14 @@ class StarknetService {
         return StarknetService.instance;
     }
 
+    public getToken(): string {
+        return localStorage.getItem('authToken') || '';
+    }
+
+    public getIsAuthed(): boolean {
+        return this.isAuthed;
+    }
+
     public setIsAuthed(isAuthed: boolean): void {
         this.isAuthed = isAuthed;
         this.elStarknetWallet.classList.toggle('is-authed', isAuthed);
@@ -138,7 +146,7 @@ class StarknetService {
             wallet.on('networkChanged', this.onNetworkChanged.bind(this));
         }
         // Validate the auth token from local-storage (if any), before setting "isAuthed"
-        const token = localStorage.getItem('authToken') || '';
+        const token = this.getToken();
         if (!token) {
             // NO token in local-storage => trigger login flow
             this.setIsAuthed(false);
@@ -182,9 +190,9 @@ class StarknetService {
         let typedData: starknet.TypedData|undefined;
         let token: string|undefined;
         try {
-            const messageLoginResponse = await apiService.generateMessageLogin(this.connectedAddress, this.connectedChainId as ChainId);
-            typedData = messageLoginResponse.typedData;
-            token = messageLoginResponse.token;
+            const apiResponse = await apiService.generateMessageLogin(this.connectedAddress, this.connectedChainId as ChainId);
+            typedData = apiResponse.typedData;
+            token = apiResponse.token;
         } catch (error: any) {
             console.log(`---> [login] ERROR generating the message:`, error); //// TEST
             return;
@@ -226,12 +234,10 @@ class StarknetService {
             const apiResponse = await apiService.verifyToken(token);
             if (apiResponse.success) {
                 return true;
-            } else {
-                return false;
             }
         } catch (error: any) {
-            return false;
         }
+        return false;
     }
 
     private onAccountsChanged(accounts: string[]): void {

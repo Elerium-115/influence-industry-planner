@@ -938,17 +938,16 @@ class IndustryPlanService {
         }
         // Fetch data from API re: lot without a FRESH cache
         try {
-            const lotDataByIdResponse = await apiService.fetchLotsData(chainId, [lotId]);
-            if (lotDataByIdResponse.error) {
-                alert(lotDataByIdResponse.error); //// TEST
+            const apiResponse = await apiService.fetchLotsData(chainId, [lotId]);
+            if (apiResponse.error) {
+                alert(apiResponse.error); //// TEST
                 return null;
-            } else {
-                // No error => assuming valid "data"
-                const lotDataById = lotDataByIdResponse.data;
-                if (lotDataById) {
-                    for (const [lotId, lotData] of Object.entries(lotDataById)) {
-                        cache.setCacheLotsDataByChainAndId(chainId, Number(lotId), lotData);
-                    }
+            }
+            // No error => assuming valid "data"
+            const lotDataById = apiResponse.data;
+            if (lotDataById) {
+                for (const [lotId, lotData] of Object.entries(lotDataById)) {
+                    cache.setCacheLotsDataByChainAndId(chainId, Number(lotId), lotData);
                 }
             }
         } catch (error: any) {

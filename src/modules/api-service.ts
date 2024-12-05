@@ -1,6 +1,10 @@
 import axios, {AxiosResponse} from 'axios';
 import * as starknet from 'starknet';
-import {ChainId, LotDataByIdResponse} from './types.js';
+import {
+    ChainId,
+    LotDataByIdResponse,
+    StandardResponse,
+} from './types.js';
 import {isLocalhost} from './abstract-core.js';
 import {globalService} from './global-service.js';
 
@@ -19,13 +23,6 @@ interface VerifySignatureResponse {
     status: number,
     success: boolean,
     token?: string, // if "success" TRUE
-    error?: string, // if "success" FALSE
-}
-
-interface AuthedResponse {
-    status: number,
-    success: boolean,
-    data?: any, // if "success" TRUE
     error?: string, // if "success" FALSE
 }
 
@@ -108,7 +105,7 @@ class ApiService {
         }
     }
 
-    public async verifyToken(token: string): Promise<AuthedResponse> {
+    public async verifyToken(token: string): Promise<StandardResponse> {
         try {
             const config = {
                 method: 'post',
@@ -118,7 +115,7 @@ class ApiService {
                 },
             };
             const response = await this.axios(config, 'Verifying your token...');
-            const responseData = response.data as AuthedResponse;
+            const responseData = response.data as StandardResponse;
             // console.log(`--- [verifyToken] responseData:`, responseData); //// TEST
             return responseData;
         } catch (error: any) {
@@ -149,6 +146,28 @@ class ApiService {
             return responseData;
         } catch (error: any) {
             // console.log(`--- [fetchLotsData] ERROR:`, error); //// TEST
+            if (error.response?.data?.error) {
+                throw new Error(error.response.data.error);
+            }
+            throw error;
+        }
+    }
+
+    public async fetchBuildingsDataControlled(token: string): Promise<StandardResponse> {
+        try {
+            const config = {
+                method: 'post',
+                url: `${apiUrl}/buildings-data-controlled`,
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            };
+            const response = await this.axios(config, 'Loading data for buildings controlled by you in-game...');
+            const responseData = response.data as StandardResponse;
+            // console.log(`--- [fetchBuildingsDataControlled] responseData:`, responseData); //// TEST
+            return responseData;
+        } catch (error: any) {
+            // console.log(`--- [fetchBuildingsDataControlled] ERROR:`, error); //// TEST
             if (error.response?.data?.error) {
                 throw new Error(error.response.data.error);
             }

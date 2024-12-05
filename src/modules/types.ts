@@ -1,5 +1,12 @@
 type ChainId = 'SN_MAIN'|'SN_SEPOLIA';
 
+interface StandardResponse {
+    status: number,
+    success: boolean,
+    data?: any, // if "success" TRUE
+    error?: string, // if "success" FALSE
+}
+
 // label = 4
 interface LotData {
     _raw?: any,
@@ -31,13 +38,6 @@ interface BuildingDataForEmptyLot {
     _timestamp?: number,
     lotId: string,
     isEmptyLot: true,
-}
-
-interface StandardResponse {
-    status: number,
-    success: boolean,
-    data?: any, // if "success" TRUE
-    error?: string, // if "success" FALSE
 }
 
 /**

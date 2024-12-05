@@ -1,6 +1,5 @@
+import {MS} from './abstract-core.js'
 import {ChainId, LotData} from './types.js';
-
-const HOUR_IN_MILLISECONDS = 3_600_000; // 60 * 60 * 1000
 
 const lotsDataByChainAndIdDefault: {[key in ChainId]: {[key: string]: LotData}} = {
     'SN_MAIN': {},
@@ -75,7 +74,7 @@ class Cache {
         lotId: number,
     ): boolean {
         const lotData = this.data.lotsDataByChainAndId[chainId][lotId];
-        return this.isFreshCache(lotData, HOUR_IN_MILLISECONDS);
+        return this.isFreshCache(lotData, MS.HOUR);
     }
 
     public setCacheLotsDataByChainAndId(

@@ -1,12 +1,13 @@
 const isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
 
-const MS_SECOND = 1000;
-const MS_MINUTE = 60 * MS_SECOND;
-const MS_HOUR = 60 * MS_MINUTE;
-const MS_DAY = 24 * MS_HOUR;
-const MS_WEEK = 7 * MS_DAY;
-const MS_MONTH = 30 * MS_DAY;
-const MS_YEAR = 365 * MS_DAY;
+const MS: {[key: string]: number} = {};
+MS.SECOND = 1000;
+MS.MINUTE = 60 * MS.SECOND;
+MS.HOUR = 60 * MS.MINUTE;
+MS.DAY = 24 * MS.HOUR;
+MS.WEEK = 7 * MS.DAY;
+MS.MONTH = 30 * MS.DAY;
+MS.YEAR = 365 * MS.DAY;
 
 /**
  * Human readable elapsed or remaining time (example: 3 min. ago)
@@ -26,13 +27,13 @@ function fromNow(
     })
 ): string|undefined {
     const intervals = [
-        { ge: MS_YEAR, divisor: MS_YEAR, unit: 'year' },
-        { ge: MS_MONTH, divisor: MS_MONTH, unit: 'month' },
-        { ge: MS_WEEK, divisor: MS_WEEK, unit: 'week' },
-        { ge: MS_DAY, divisor: MS_DAY, unit: 'day' },
-        { ge: MS_HOUR, divisor: MS_HOUR, unit: 'hour' },
-        { ge: MS_MINUTE, divisor: MS_MINUTE, unit: 'minute' },
-        { ge: MS_SECOND, divisor: MS_SECOND, unit: 'seconds' },
+        { ge: MS.YEAR, divisor: MS.YEAR, unit: 'year' },
+        { ge: MS.MONTH, divisor: MS.MONTH, unit: 'month' },
+        { ge: MS.WEEK, divisor: MS.WEEK, unit: 'week' },
+        { ge: MS.DAY, divisor: MS.DAY, unit: 'day' },
+        { ge: MS.HOUR, divisor: MS.HOUR, unit: 'hour' },
+        { ge: MS.MINUTE, divisor: MS.MINUTE, unit: 'minute' },
+        { ge: MS.SECOND, divisor: MS.SECOND, unit: 'seconds' },
         { ge: 0, divisor: 1, text: 'just now' },
     ];
     const now = nowDate instanceof Date ? nowDate.getTime() : new Date(nowDate).getTime();
@@ -112,6 +113,7 @@ function createEl(
 }
 
 export {
+    MS,
     createEl,
     delay,
     fromNow,

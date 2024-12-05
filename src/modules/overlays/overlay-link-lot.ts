@@ -1,15 +1,18 @@
 import {createEl, fromNow} from '../abstract-core.js';
-import {LotData} from '../types.js';
+import {BuildingData, LotData} from '../types.js';
 import {OverlayAbstract} from './overlay-abstract';
 import {industryPlanService} from '../industry-plan-service.js';
 import {Processor} from '../processor.js';
 import {processorService} from '../processor-service.js';
 import {processService} from '../process-service.js';
 import {gameDataService} from '../game-data-service.js';
+import {starknetService} from '../starknet-service.js';
+import {apiService} from '../api-service.js';
 
 class OverlayLinkLot extends OverlayAbstract {
     private parentProcessor: Processor;
     private lotData: LotData|null = null;
+    private elControlledBuildings: HTMLElement;
     private elInputAsteroidId: HTMLInputElement;
     private elInputLotIndex: HTMLInputElement;
     private elCheckButton: HTMLElement;
@@ -141,6 +144,118 @@ class OverlayLinkLot extends OverlayAbstract {
         this.elCheckButton.parentElement?.classList.add('hidden');
     }
 
+    private selectBuildingLot(lotId: string): void {
+        const lotPosition = gameDataService.getAsteroidIdAndLotIndex(Number(lotId));
+        if (!lotPosition) {
+            return;
+        }
+        const {asteroidId, lotIndex} = lotPosition;
+        this.elInputAsteroidId.value = asteroidId.toString();
+        this.elInputLotIndex.value = lotIndex.toString();
+        this.onClickSaveButton();
+    }
+
+    /**
+     * This will be populated only if the user is authed,
+     * and if they control at least 1 matching building.
+     */
+    private async populateControlledBuildings(): Promise<void> {
+        if (!starknetService.getIsAuthed()) {
+            return;
+        }
+        const apiResponse = await apiService.fetchBuildingsDataControlled(starknetService.getToken());
+        if (apiResponse.error) {
+            alert(apiResponse.error); //// TEST
+            return;
+        }
+        // No error => assuming valid "data"
+        let buildingsData: BuildingData[] = apiResponse.data.buildingsData;
+        if (!buildingsData) {
+            return;
+        }
+        // Ensure matching building type
+        buildingsData = buildingsData.filter(buildingData => {
+            const buildingType = buildingData.buildingDetails.buildingType;
+            return buildingType === this.parentProcessor.getId();
+        });
+        if (!buildingsData.length) {
+            return;
+        }
+        // Sort buildings by asteroid ID and lot index
+        buildingsData.sort(this.compareBuildingsByAsteroidIdAndLotIndex);
+        const elBuildingsList = createEl('div', null, ['buildings-list']);
+        // Generate list-item header
+        const elListItemHeader = createEl('div', null, ['list-item', 'list-item-header']);
+        elListItemHeader.innerHTML = /*html*/ `
+            <div>Asteroid ID</div>
+            <div>Lot Index</div>
+            <div>Building Name</div>
+            <div>Crew Name</div>
+            <div>Running Processes</div>
+        `;
+        elBuildingsList.append(elListItemHeader);
+        // Generate list-item for each (filtered) building
+        buildingsData.forEach(buildingData => {
+            const fakeLotData: LotData = {
+                lotId: buildingData.lotId,
+                buildingData,
+            };
+            let runningProcessesHtml = '';
+            const runningProcessesData = gameDataService.getRunningProcessesDataFromLotData(fakeLotData);
+            if (runningProcessesData.length) {
+                runningProcessesData.forEach(processData => {
+                    const processId = processData.processId;
+                    const processName = processService.getProcessDataById(processId).name;
+                    const endDate = new Date(processData.finishTime * 1000);
+                    const processFinish = fromNow(endDate) || '';
+                    runningProcessesHtml += /*html*/ `
+                        <div>${processName} (done ${processFinish})</div>
+                    `;
+                })
+            }
+            let asteroidId = '';
+            let lotIndex = '';
+            const lotPosition = gameDataService.getAsteroidIdAndLotIndex(Number(buildingData.lotId));
+            if (lotPosition) {
+                asteroidId = lotPosition.asteroidId.toString();
+                lotIndex = lotPosition.lotIndex.toString();
+            }
+            const elListItem = createEl('div', null, ['list-item']);
+            elListItem.innerHTML = /*html*/ `
+                <div>${asteroidId}</div>
+                <div>${lotIndex}</div>
+                <div>${buildingData.buildingName || ''}</div>
+                <div>${buildingData.crewName || ''}</div>
+                <div>${runningProcessesHtml}</div>
+            `;
+            elListItem.addEventListener('click', () => this.selectBuildingLot(buildingData.lotId));
+            elBuildingsList.append(elListItem);
+        });
+        // Populate "elControlledBuildings"
+        const elText1 = createEl('div');
+        elText1.textContent = 'Select one of the matching buildings controlled by you in-game:';
+        const elText2 = createEl('div');
+        elText2.textContent = '... or lookup a specific lot:';
+        this.elControlledBuildings.append(elText1);
+        this.elControlledBuildings.append(elBuildingsList);
+        this.elControlledBuildings.append(elText2);
+    }
+
+    private compareBuildingsByAsteroidIdAndLotIndex(b1: BuildingData, b2: BuildingData): number {
+        const pos1 = gameDataService.getAsteroidIdAndLotIndex(Number(b1.lotId));
+        const pos2 = gameDataService.getAsteroidIdAndLotIndex(Number(b2.lotId));
+        if (!pos1 || !pos2) {
+            return 0;
+        }
+        // Compare by asteroid ID
+        let diff = pos1.asteroidId - pos2.asteroidId;
+        if (diff !== 0) {
+            return diff;
+        }
+        // Compare by lot index
+        return pos1.lotIndex - pos2.lotIndex;
+    }
+
     private populateElOverlayContent(): void {
         const processorClassName = this.parentProcessor.getProcessorClassName();
         const asteroidId = this.parentProcessor.getAsteroidId();
@@ -157,6 +272,7 @@ class OverlayLinkLot extends OverlayAbstract {
             <div class="overlay-info">
                 <div>By linking an in-game lot with a matching building, you can track processes running at that location.</div>
             </div>
+            <div class="controlled-buildings"></div>
             <div class="overlay-form">
                 <div class="form-cell">
                     <div>Asteroid ID:</div>
@@ -186,6 +302,7 @@ class OverlayLinkLot extends OverlayAbstract {
                 <div class="cta-button save-button">Save</div>
             </div>
         `;
+        this.elControlledBuildings = this.elOverlayContent.querySelector('.controlled-buildings') as HTMLElement;
         this.elInputAsteroidId = this.elOverlayContent.querySelector('input[name="asteroid-id"]') as HTMLInputElement;
         this.elInputLotIndex = this.elOverlayContent.querySelector('input[name="lot-index"]') as HTMLInputElement;
         this.elCheckButton = this.elOverlayContent.querySelector('.check-button') as HTMLElement;
@@ -205,6 +322,7 @@ class OverlayLinkLot extends OverlayAbstract {
         elRemoveButton.classList.toggle('hidden', !this.parentProcessor.getHasLocation());
         this.onChangedValues();
         this.updateLotData();
+        this.populateControlledBuildings();
     }
 
     protected makeElOverlayContent(): HTMLElement {

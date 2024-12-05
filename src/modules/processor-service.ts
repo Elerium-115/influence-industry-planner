@@ -112,12 +112,12 @@ class ProcessorService {
         const lotsIdsNotCached = lotsIds.filter(lotId => !cache.isFreshCacheLotsDataByChainAndId(chainId, lotId));
         if (lotsIdsNotCached.length) {
             try {
-                const lotDataByIdResponse = await apiService.fetchLotsData(chainId, lotsIdsNotCached);
-                if (lotDataByIdResponse.error) {
-                    alert(lotDataByIdResponse.error); //// TEST
+                const apiResponse = await apiService.fetchLotsData(chainId, lotsIdsNotCached);
+                if (apiResponse.error) {
+                    alert(apiResponse.error); //// TEST
                 } else {
                     // No error => assuming valid "data"
-                    const lotDataById = lotDataByIdResponse.data;
+                    const lotDataById = apiResponse.data;
                     if (lotDataById) {
                         for (const [lotId, lotData] of Object.entries(lotDataById)) {
                             cache.setCacheLotsDataByChainAndId(chainId, Number(lotId), lotData);

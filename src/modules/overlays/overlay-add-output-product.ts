@@ -66,7 +66,7 @@ class OverlayAddOutputProduct extends OverlayAbstract {
         // Compare by product name
         let diff = p1.name.localeCompare(p2.name);
         if (diff !== 0) {
-            return diff
+            return diff;
         }
         // Compare by process name, if multiple process variants for the same product
         return p1.processData.name.localeCompare(p2.processData.name);

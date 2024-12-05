@@ -46,6 +46,7 @@
             display: flex;
             flex-direction: column;
             gap: 32px;
+            max-width: 80vw;
             min-width: 600px;
 
             > * { width: 100%; }
@@ -583,6 +584,55 @@
 .overlay-shared-industry-plans {}
 
 .overlay-link-lot {
+    .controlled-buildings {
+        display: flex;
+        flex-direction: column;
+        gap: 32px;
+        max-width: 1000px;
+
+        &:empty { display: none; }
+
+        .buildings-list {
+            max-height: 25vh;
+            overflow-y: auto;
+            position: relative;
+
+            .list-item {
+                align-items: center;
+                background-color: var(--color-dark-bg);
+                color: var(--color-text-normal);
+                display: grid;
+                gap: 16px;
+                grid-template-columns:
+                    minmax(0, 1fr) // asteroid ID
+                    minmax(0, 1fr) // lot index
+                    minmax(0, 2fr) // building name
+                    minmax(0, 2fr) // crew name
+                    minmax(0, 4fr) // running processes
+                    ;
+                padding: 8px 16px;
+
+                &.list-item-header {
+                    background-color: var(--color-semi-dark-bg);
+                    font-size: 90%;
+                    position: sticky;
+                    top: 0;
+                }
+
+                &:not(.list-item-header) {
+                    border-top: 1px solid rgba(255, 255, 255, 0.05);
+                    cursor: pointer;
+                    font-size: 80%;
+                }
+
+                &:hover:not(.list-item-header) {
+                    @include core.hover-lighten-bg;
+                    color: white;
+                }
+            }
+        }
+    }
+
     .overlay-form {
         align-items: flex-end;
         display: flex;

@@ -38,6 +38,10 @@ class GameDataService {
         return InfluenceSDK.Lot.toId(asteroidId, lotIndex);
     }
 
+    public getAsteroidIdAndLotIndex(lotId: number): {asteroidId: number, lotIndex: number}|null {
+        return InfluenceSDK.Lot.toPosition(lotId);
+    }
+
     private isEmptyLotData(lotData: LotData): boolean {
         if (!lotData || !lotData.buildingData) {
             return true;
