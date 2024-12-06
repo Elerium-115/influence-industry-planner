@@ -40,6 +40,15 @@ interface BuildingDataForEmptyLot {
     isEmptyLot: true,
 }
 
+interface BuildingsDataList {
+    _timestamp?: number,
+    buildingsData: BuildingData[],
+}
+
+interface BuildingsDataListResponse extends StandardResponse {
+    data?: BuildingsDataList,
+}
+
 /**
  * Relevant process data from each item in "lotData.buildingData.exctractors"
  */
@@ -89,6 +98,8 @@ interface I_PROCESS_DATA {
 export {
     BuildingData,
     BuildingDataForEmptyLot,
+    BuildingsDataList,
+    BuildingsDataListResponse,
     ChainId,
     DryDockDataFromLotData,
     ExtractorDataFromLotData,

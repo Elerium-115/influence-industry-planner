@@ -26,7 +26,7 @@ class StarknetService {
     private wallet: StarknetWindowObject|null|undefined = null;
     private connector: StarknetkitConnector|null = null;
     private connectorData: ConnectorData|null = null;
-    private connectedAddress: string|'' = ''; // 64-bit address prefixed by "0x"
+    private connectedAddress: string = ''; // 64-bit address prefixed by "0x"
     private connectedChainId: ChainId|'' = '';
     private elStarknetConnect: HTMLElement;
     private elStarknetWallet: HTMLElement;
@@ -62,6 +62,10 @@ class StarknetService {
     public setIsAuthed(isAuthed: boolean): void {
         this.isAuthed = isAuthed;
         this.elStarknetWallet.classList.toggle('is-authed', isAuthed);
+    }
+
+    public getAddress(): string {
+        return this.connectedAddress;
     }
 
     private updateAddress(): void {

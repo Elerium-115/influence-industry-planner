@@ -1,6 +1,7 @@
 import axios, {AxiosResponse} from 'axios';
 import * as starknet from 'starknet';
 import {
+    BuildingsDataListResponse,
     ChainId,
     LotDataByIdResponse,
     StandardResponse,
@@ -153,7 +154,7 @@ class ApiService {
         }
     }
 
-    public async fetchBuildingsDataControlled(token: string): Promise<StandardResponse> {
+    public async fetchBuildingsDataControlled(token: string): Promise<BuildingsDataListResponse> {
         try {
             const config = {
                 method: 'post',
@@ -163,7 +164,7 @@ class ApiService {
                 },
             };
             const response = await this.axios(config, 'Loading data for buildings controlled by you in-game...');
-            const responseData = response.data as StandardResponse;
+            const responseData = response.data as BuildingsDataListResponse;
             // console.log(`--- [fetchBuildingsDataControlled] responseData:`, responseData); //// TEST
             return responseData;
         } catch (error: any) {

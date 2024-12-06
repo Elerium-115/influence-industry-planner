@@ -1,5 +1,14 @@
 import {MS} from './abstract-core.js'
-import {ChainId, LotData} from './types.js';
+import {
+    BuildingsDataList,
+    ChainId,
+    LotData,
+} from './types.js';
+
+const buildingsDataControlledByChainAndAddressDefault: {[key in ChainId]: {[key: string]: BuildingsDataList}} = {
+    'SN_MAIN': {},
+    'SN_SEPOLIA': {},
+};
 
 const lotsDataByChainAndIdDefault: {[key in ChainId]: {[key: string]: LotData}} = {
     'SN_MAIN': {},
@@ -7,10 +16,12 @@ const lotsDataByChainAndIdDefault: {[key in ChainId]: {[key: string]: LotData}} 
 };
 
 interface CacheData {
+    buildingsDataControlledByChainAndAddress: {[key in ChainId]: {[key: string]: BuildingsDataList}},
     lotsDataByChainAndId: {[key in ChainId]: {[key: string]: LotData}},
 }
 
 const cacheDataDefault: CacheData = {
+    buildingsDataControlledByChainAndAddress: buildingsDataControlledByChainAndAddressDefault,
     lotsDataByChainAndId: lotsDataByChainAndIdDefault,
 };
 
@@ -84,6 +95,24 @@ class Cache {
     ): void {
         this.data.lotsDataByChainAndId[chainId][lotId] = lotData;
         this.data.lotsDataByChainAndId[chainId][lotId]._timestamp = Date.now();
+        this.saveCache();
+    }
+
+    public isFreshCacheBuildingsDataControlledByChainAndAddress(
+        chainId: ChainId,
+        address: string,
+    ): boolean {
+        const buildingsDataList = this.data.buildingsDataControlledByChainAndAddress[chainId][address];
+        return this.isFreshCache(buildingsDataList, MS.HOUR);
+    }
+
+    public setCacheBuildingsDataControlledByChainAndAddress(
+        chainId: ChainId,
+        address: string,
+        buildingsDataList: BuildingsDataList,
+    ): void {
+        this.data.buildingsDataControlledByChainAndAddress[chainId][address] = buildingsDataList;
+        this.data.buildingsDataControlledByChainAndAddress[chainId][address]._timestamp = Date.now();
         this.saveCache();
     }
 }

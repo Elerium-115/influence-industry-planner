@@ -313,7 +313,7 @@ class IndustryPlan {
              * logic has NOT been executed while "isPending" was TRUE.
              */
             this.onIndustryPlanChanged();
-        });
+        }, 10);
     }
 
     private addIndustryTier(): void {

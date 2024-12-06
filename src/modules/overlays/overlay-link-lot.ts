@@ -1,5 +1,11 @@
 import {createEl, fromNow} from '../abstract-core.js';
-import {BuildingData, LotData} from '../types.js';
+import {cache} from '../cache.js';
+import {
+    BuildingData,
+    BuildingsDataList,
+    ChainId,
+    LotData,
+} from '../types.js';
 import {OverlayAbstract} from './overlay-abstract';
 import {industryPlanService} from '../industry-plan-service.js';
 import {Processor} from '../processor.js';
@@ -12,6 +18,7 @@ import {apiService} from '../api-service.js';
 class OverlayLinkLot extends OverlayAbstract {
     private parentProcessor: Processor;
     private lotData: LotData|null = null;
+    private chainId: ChainId;
     private elControlledBuildings: HTMLElement;
     private elInputAsteroidId: HTMLInputElement;
     private elInputLotIndex: HTMLInputElement;
@@ -28,6 +35,7 @@ class OverlayLinkLot extends OverlayAbstract {
         super();
 
         this.parentProcessor = parentProcessor;
+        this.chainId = parentProcessor.getParentIndustryTier().getParentIndustryPlan().getChainId();
         this.populateElOverlayContent();
     }
 
@@ -54,8 +62,7 @@ class OverlayLinkLot extends OverlayAbstract {
             const lotId = gameDataService.getLotId(asteroidId, lotIndex);
             if (lotId) {
                 // Set URL for "View In-Game" button, and make it visible
-                const chainId = industryPlanService.getIndustryPlan()?.getChainId();
-                const gameSubdomain = chainId === 'SN_SEPOLIA' ? 'game-prerelease' : 'game';
+                const gameSubdomain = this.chainId === 'SN_SEPOLIA' ? 'game-prerelease' : 'game';
                 this.elViewButton.href = `https://${gameSubdomain}.influenceth.io/lot/${lotId}`;
                 this.elViewButton.classList.remove('hidden');
             }
@@ -163,21 +170,34 @@ class OverlayLinkLot extends OverlayAbstract {
         if (!starknetService.getIsAuthed()) {
             return;
         }
-        const apiResponse = await apiService.fetchBuildingsDataControlled(starknetService.getToken());
-        if (apiResponse.error) {
-            alert(apiResponse.error); //// TEST
-            return;
+        const address = starknetService.getAddress();
+        if (!cache.isFreshCacheBuildingsDataControlledByChainAndAddress(this.chainId, address)) {
+            // Fetch data from API re: address without a FRESH cache
+            try {
+                const apiResponse = await apiService.fetchBuildingsDataControlled(starknetService.getToken());
+                if (apiResponse.error) {
+                    alert(apiResponse.error); //// TEST
+                    return;
+                }
+                // No error => assuming valid "data"
+                const buildingsDataList = apiResponse.data;
+                if (!buildingsDataList) {
+                    return;
+                }
+                cache.setCacheBuildingsDataControlledByChainAndAddress(this.chainId, address, buildingsDataList);
+            } catch (error: any) {
+                console.log(`--- [populateControlledBuildings] ERROR:`, error); //// TEST
+                return;
+            }
         }
-        // No error => assuming valid "data"
-        let buildingsData: BuildingData[] = apiResponse.data.buildingsData;
-        if (!buildingsData) {
-            return;
-        }
-        // Ensure matching building type
-        buildingsData = buildingsData.filter(buildingData => {
-            const buildingType = buildingData.buildingDetails.buildingType;
-            return buildingType === this.parentProcessor.getId();
-        });
+        // At this point, the data for "address" should be cached
+        const buildingsDataList = cache.getData().buildingsDataControlledByChainAndAddress[this.chainId][address];
+        const buildingsData = buildingsDataList.buildingsData
+            .filter(buildingData => {
+                // Ensure matching building type
+                const buildingType = buildingData.buildingDetails.buildingType;
+                return buildingType === this.parentProcessor.getId();
+            });
         if (!buildingsData.length) {
             return;
         }
