@@ -320,8 +320,10 @@ class OverlayLinkLot extends OverlayAbstract {
         elRemoveButton.addEventListener('click', this.onClickRemoveButton.bind(this));
         this.elSaveButton.addEventListener('click', this.onClickSaveButton.bind(this));
         elRemoveButton.classList.toggle('hidden', !this.parentProcessor.getHasLocation());
+        // Load the data for the pre-set asteroid ID and lot index (if any)
         this.onChangedValues();
         this.updateLotData();
+        // Load the matching buildings controlled by the connected wallet (if any)
         this.populateControlledBuildings();
     }
 

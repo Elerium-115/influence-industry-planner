@@ -32,6 +32,8 @@ class ProductService {
 
     private allProductsData: {[key: string]: I_PRODUCT_DATA};
     private rawMaterialsByCategory: {[key: string]: ProductAbstract[]} = {};
+    private productIdByShipType: {[key: string]: string} = {};
+    private productIdByBuildingType: {[key: string]: string} = {};
 
     /**
      * Unsorted IDs of products which can be used as inputs for at least one process.
@@ -102,6 +104,10 @@ class ProductService {
         return this.rawMaterialsByCategory[category] || [];
     }
 
+    public getProductIdByShipType(shipType: number): string {
+        return this.productIdByShipType[shipType];
+    }
+
     public getSpectralTypesForRawMaterialId(rawMaterialId: string, onlyPureSpectrals: boolean = false): string[] {
         const spectralTypes: string[] = [];
         Object.values(InfluenceSDK.Asteroid.SPECTRAL_TYPES).forEach(spectralData => {
@@ -149,6 +155,9 @@ class ProductService {
                     name: shipData.name,
                 };
                 this.allProductsData[shipId] = productData;
+                // Also map ship types to the newly generated product ID
+                const shipType = shipData.i;
+                this.productIdByShipType[shipType] = shipId;
             });
     }
 
@@ -164,6 +173,9 @@ class ProductService {
                     name: buildingData.name,
                 };
                 this.allProductsData[buildingId] = productData;
+                // Also map building types to the newly generated product ID
+                const buildingType = buildingData.i;
+                this.productIdByBuildingType[buildingType] = buildingId;
             });
     }
 

@@ -28,7 +28,7 @@ interface BuildingData {
     buildingName: string|null,
     crewName: string|null,
     lotId: string,
-    dryDocks: any[],
+    dryDocks: DryDockDataFromLotData[],
     extractors: ExtractorDataFromLotData[],
     processors: ProcessorDataFromLotData[],
     isEmptyLot: false,
@@ -41,7 +41,7 @@ interface BuildingDataForEmptyLot {
 }
 
 /**
- * Relevant extractor data from each item in "lotData.buildingData.exctractors"
+ * Relevant process data from each item in "lotData.buildingData.exctractors"
  */
 interface ExtractorDataFromLotData {
     finishTime: number,
@@ -49,11 +49,22 @@ interface ExtractorDataFromLotData {
 }
 
 /**
- * Relevant processor data from each item in "lotData.buildingData.processors"
+ * Relevant process data from each item in "lotData.buildingData.processors"
  */
 interface ProcessorDataFromLotData {
     finishTime: number,
     runningProcess: number,
+}
+
+/**
+ * Relevant process data from each item in "lotData.buildingData.dryDocks" (ship integrations)
+ */
+interface DryDockDataFromLotData {
+    finishTime: number,
+    outputShip: {
+        id: number,
+        type: number,
+    }|undefined,
 }
 
 interface RunningProcessData {
@@ -76,14 +87,15 @@ interface I_PROCESS_DATA {
 };
 
 export {
-    ChainId,
     BuildingData,
     BuildingDataForEmptyLot,
+    ChainId,
+    DryDockDataFromLotData,
     ExtractorDataFromLotData,
     I_PROCESS_DATA,
     LotData,
     LotDataByIdResponse,
-    RunningProcessData,
     ProcessorDataFromLotData,
+    RunningProcessData,
     StandardResponse,
 }

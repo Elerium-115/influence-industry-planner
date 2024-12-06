@@ -33,7 +33,7 @@ class Cache {
         // Load cached data from local-storage
         try {
             this.data = JSON.parse(localStorage.getItem('cache') as string);
-        } catch (error) {
+        } catch (error: any) {
             // Swallow this error
             this.data = cacheDataDefault;
         }

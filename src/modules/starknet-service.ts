@@ -235,8 +235,7 @@ class StarknetService {
             if (apiResponse.success) {
                 return true;
             }
-        } catch (error: any) {
-        }
+        } catch (error: any) {}
         return false;
     }
 

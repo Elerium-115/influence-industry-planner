@@ -924,7 +924,10 @@ class IndustryPlanService {
         await processorService.consumeProcessorsLocationUpdateQueue();
     }
 
-    public async getLotDataByAsteroidIdAndLotIndex(asteroidId: number, lotIndex: number): Promise<LotData|null> {
+    public async getLotDataByAsteroidIdAndLotIndex(
+        asteroidId: number,
+        lotIndex: number,
+    ): Promise<LotData|null> {
         if (!this.industryPlan) {
             throw Error('ERROR: industryPlan not set @ getLotDataByAsteroidIdAndLotIndex');
         }

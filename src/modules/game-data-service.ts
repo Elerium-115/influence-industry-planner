@@ -1,13 +1,15 @@
 import * as InfluenceSDK from '@influenceth/sdk';
 import {
     BuildingData,
+    DryDockDataFromLotData,
     ExtractorDataFromLotData,
     LotData,
     ProcessorDataFromLotData,
     RunningProcessData,
 } from './types.js';
-import {processService} from './process-service.js';
 import {PROCESSOR_BUILDING_IDS} from './processor-service.js';
+import {processService} from './process-service.js';
+import {productService} from './product-service.js';
 
 const asteroidNameById = {
     1: 'Adalia Prime',
@@ -93,10 +95,23 @@ class GameDataService {
         return processorsData;
     }
 
+    public getDryDocksDataFromLotData(lotData: LotData): DryDockDataFromLotData[] {
+        if (this.isEmptyLotData(lotData)) {
+            return [];
+        }
+        const dryDocksData = (lotData.buildingData as BuildingData).dryDocks;
+        if (!dryDocksData || !dryDocksData.length) {
+            return [];
+        }
+        return dryDocksData;
+    }
+
     public getRunningProcessesDataFromLotData(lotData: LotData): RunningProcessData[] {
         const processesData: RunningProcessData[] = [];
         const extractorsData = this.getExtractorsDataFromLotData(lotData);
         const processorsData = this.getProcessorsDataFromLotData(lotData);
+        const dryDocksData = this.getDryDocksDataFromLotData(lotData);
+        // Extraction processes
         extractorsData.forEach(extractorData => {
             if (!extractorData.outputProduct) {
                 // Not currently running
@@ -108,6 +123,7 @@ class GameDataService {
             };
             processesData.push(processData);
         });
+        // Processes from refinery / factory / bioreactor / shipyard (excluding ship integrations)
         processorsData.forEach(processorData => {
             if (!processorData.runningProcess) {
                 // Not currently running
@@ -116,6 +132,30 @@ class GameDataService {
             const processData: RunningProcessData = {
                 finishTime: processorData.finishTime,
                 processId: processorData.runningProcess,
+            };
+            processesData.push(processData);
+        });
+        // Ship integration processes from shipyard (excluding module assemblies)
+        dryDocksData.forEach(async dryDockData => {
+            if (!dryDockData.outputShip) {
+                // Not currently running
+                return;
+            }
+            const shipType = dryDockData.outputShip.type;
+            // Get process ID matching "shipType"
+            const shipProductId = productService.getProductIdByShipType(shipType);
+            const processVariants = processService.getProcessVariantsForProductId(shipProductId);
+            if (!processVariants.length) {
+                return;
+            }
+            // Assuming single process variant for each ship integration
+            const processId = processVariants[0].i;
+            if (!processId) {
+                return;
+            }
+            const processData: RunningProcessData = {
+                finishTime: dryDockData.finishTime,
+                processId,
             };
             processesData.push(processData);
         });
