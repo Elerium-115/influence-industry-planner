@@ -167,7 +167,29 @@ class OverlayLinkLot extends OverlayAbstract {
      * and if they control at least 1 matching building.
      */
     private async populateControlledBuildings(): Promise<void> {
-        if (!starknetService.getIsAuthed()) {
+        const connectedChainId = starknetService.getChainId();
+        if (!starknetService.getIsAuthed() || !connectedChainId) {
+            return;
+        }
+        if (connectedChainId !== this.chainId) {
+            // Chain ID not matching between industry plan and connected wallet
+            const planChainText = starknetService.getChainText(this.chainId);
+            const walletChainText = starknetService.getChainText(connectedChainId);
+            this.elControlledBuildings.innerHTML = /*html*/ `
+                <div class="chain-warning">
+                    <div>
+                        <div>Buildings controlled by you in-game are not shown, due to a Starknet chain mismatch:</div>
+                        <ul>
+                            <li>The current industry plan is for ${planChainText}.</li>
+                            <li>But your connected wallet is on ${walletChainText}.</li>
+                        </ul>
+                        <div>
+                            You can either connect a wallet on ${planChainText}, or change the industry plan's chain,<br>
+                            using the "${planChainText}" / "${walletChainText}" toggle (look for it next to the plan's title).
+                        </div>
+                    </div>
+                </div>
+            `;
             return;
         }
         const address = starknetService.getAddress();

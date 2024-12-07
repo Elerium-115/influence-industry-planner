@@ -592,6 +592,26 @@
 
         &:empty { display: none; }
 
+        .chain-warning {
+            background-color: var(--color-dark-bg);
+            color: var(--color-text-normal);
+            display: flex;
+            font-size: 90%;
+            gap: 16px;
+            padding: 16px;
+            width: fit-content;
+
+            &::before {
+                background-color: var(--color-warning);
+                color: white;
+                content: 'Warning';
+                height: fit-content;
+                padding: 8px;
+            }
+
+            ul { padding: 8px 16px; }
+        }
+
         .buildings-list {
             max-height: 25vh;
             overflow-y: auto;

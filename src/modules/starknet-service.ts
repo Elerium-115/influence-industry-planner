@@ -51,6 +51,17 @@ class StarknetService {
         return StarknetService.instance;
     }
 
+    public getChainText(chainId: ChainId): string {
+        switch (chainId) {
+            case 'SN_MAIN':
+                return 'Mainnet';
+            case 'SN_SEPOLIA':
+                return 'Sepolia';
+            default:
+                return 'Unknown';
+        }
+    }
+
     public getToken(): string {
         return localStorage.getItem('authToken') || '';
     }
@@ -76,6 +87,10 @@ class StarknetService {
         let address = this.connectorData.account as string;
         // Remove any "0x" prefix, then pad to 64 hex characters and add back "0x"
         this.connectedAddress = '0x' + address.replace(/^0x/, '').padStart(64, '0');
+    }
+
+    public getChainId(): ChainId|'' {
+        return this.connectedChainId;
     }
 
     private async updateChainId(): Promise<void> {
