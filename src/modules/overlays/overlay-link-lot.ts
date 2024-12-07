@@ -1,8 +1,11 @@
-import {createEl, fromNow} from '../abstract-core.js';
+import {
+    createEl,
+    fromNow,
+    uniquePushToArray,
+} from '../abstract-core.js';
 import {cache} from '../cache.js';
 import {
     BuildingData,
-    BuildingsDataList,
     ChainId,
     LotData,
 } from '../types.js';
@@ -162,6 +165,13 @@ class OverlayLinkLot extends OverlayAbstract {
         this.onClickSaveButton();
     }
 
+    private onChangeFilterByAsteroidId(event: InputEvent): void {
+        const elInput = event.target as HTMLInputElement;
+        this.elControlledBuildings.querySelectorAll(`.list-item[data-asteroid-id="${elInput.value}"]`).forEach(elListItem => {
+            elListItem.classList.toggle('hidden', !elInput.checked);
+        });
+    }
+
     /**
      * This will be populated only if the user is authed,
      * and if they control at least 1 matching building.
@@ -223,6 +233,7 @@ class OverlayLinkLot extends OverlayAbstract {
         if (!buildingsData.length) {
             return;
         }
+        const asteroidIds: string[] = [];
         // Sort buildings by asteroid ID and lot index
         buildingsData.sort(this.compareBuildingsByAsteroidIdAndLotIndex);
         const elBuildingsList = createEl('div', null, ['buildings-list']);
@@ -255,13 +266,13 @@ class OverlayLinkLot extends OverlayAbstract {
                     `;
                 })
             }
-            let asteroidId = '';
-            let lotIndex = '';
             const lotPosition = gameDataService.getAsteroidIdAndLotIndex(Number(buildingData.lotId));
-            if (lotPosition) {
-                asteroidId = lotPosition.asteroidId.toString();
-                lotIndex = lotPosition.lotIndex.toString();
+            if (!lotPosition) {
+                return;
             }
+            const asteroidId = lotPosition.asteroidId.toString();
+            const lotIndex = lotPosition.lotIndex.toString();
+            uniquePushToArray(asteroidIds, asteroidId);
             const elListItem = createEl('div', null, ['list-item']);
             elListItem.innerHTML = /*html*/ `
                 <div>${asteroidId}</div>
@@ -270,15 +281,32 @@ class OverlayLinkLot extends OverlayAbstract {
                 <div>${buildingData.crewName || ''}</div>
                 <div>${runningProcessesHtml}</div>
             `;
+            elListItem.dataset.asteroidId = asteroidId;
             elListItem.addEventListener('click', () => this.selectBuildingLot(buildingData.lotId));
             elBuildingsList.append(elListItem);
         });
+        // Generate filters based on asteroid IDs (if multiple distinct asteroids)
+        const elFilters = createEl('div', null, ['overlay-filters']);
+        if (asteroidIds.length >= 2) {
+            const elCheckboxes = createEl('div', null, ['filter-checkboxes']);
+            asteroidIds.forEach(asteroidId => {
+                const elLabel = createEl('label');
+                elLabel.innerHTML = /*html*/ `
+                    <input type="checkbox" name="filter-by-asteroid-id" value="${asteroidId}" checked>
+                    ${asteroidId}
+                `;
+                elLabel.querySelector('input[type="checkbox"]')?.addEventListener('change', this.onChangeFilterByAsteroidId.bind(this));
+                elCheckboxes.append(elLabel);
+            });
+            elFilters.append(elCheckboxes);
+        }
         // Populate "elControlledBuildings"
         const elText1 = createEl('div');
         elText1.textContent = 'Select one of the matching buildings controlled by you in-game:';
         const elText2 = createEl('div');
         elText2.textContent = '... or lookup a specific lot:';
         this.elControlledBuildings.append(elText1);
+        this.elControlledBuildings.append(elFilters);
         this.elControlledBuildings.append(elBuildingsList);
         this.elControlledBuildings.append(elText2);
     }

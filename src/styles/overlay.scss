@@ -73,6 +73,7 @@
 
                 .filter-checkboxes {
                     display: flex;
+                    flex-wrap: wrap;
                     margin: -8px -16px;
 
                     label {
@@ -612,6 +613,27 @@
             ul { padding: 8px 16px; }
         }
 
+        .overlay-filters {
+            align-items: center;
+            border: 1px solid var(--color-semi-dark-bg);
+            color: var(--color-text-normal);
+            flex-direction: row !important;
+            font-size: 90%;
+            gap: unset !important;
+            margin-bottom: -32px;
+
+            &:empty { display: none; }
+
+            &::before {
+                content: 'Filter by asteroid ID';
+                padding: 0 16px;
+            }
+
+            .filter-checkboxes {
+                margin: unset !important;
+            }
+        }
+
         .buildings-list {
             max-height: 25vh;
             overflow-y: auto;
@@ -637,6 +659,7 @@
                     font-size: 90%;
                     position: sticky;
                     top: 0;
+                    white-space: nowrap;
                 }
 
                 &:not(.list-item-header) {
