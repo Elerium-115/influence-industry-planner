@@ -492,7 +492,7 @@
 
                         &.idle:not(.invalid-location) {
                             outline: 1px solid black;
-                            
+
                             &::before {
                                 animation: flash-idle 1s ease infinite;
                                 background-color: black;

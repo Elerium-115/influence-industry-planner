@@ -114,12 +114,11 @@ class Processor {
         }
         this.elProcessorLocation.innerHTML = processorLocationHtml;
         if (this.isValidLocation) {
-            this.elProcessorLocation.dataset.tooltip = 'Matching building';
             if (lotData) {
                 const buildingName = gameDataService.getBuildingNameFromLotData(lotData);
-                if (buildingName) {
-                    this.elProcessorLocation.dataset.tooltip = buildingName;
-                }
+                this.elProcessorLocation.dataset.tooltip = buildingName;
+            } else {
+                this.elProcessorLocation.dataset.tooltip = 'Empty Lot';
             }
         } else {
             this.elProcessorLocation.dataset.tooltip = 'Incorrect building for this in-game lot';

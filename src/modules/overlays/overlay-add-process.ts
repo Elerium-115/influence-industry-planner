@@ -124,6 +124,7 @@ class OverlayAddProcess extends OverlayAbstract {
         // Update the processes only after all inputs have been checked/unchecked
         this.updateAndRenderEligibleProcesses();
         this.filterProcesses();
+        this.removeAllLines(); // fix for bug re: auto-triggered lines
     }
 
     private onChangeAvailableInput(event: InputEvent, shouldUpdateProcesses: boolean = true): void {

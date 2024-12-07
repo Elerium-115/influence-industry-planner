@@ -108,6 +108,10 @@ class ProductService {
         return this.productIdByShipType[shipType];
     }
 
+    public getProductIdByBuildingType(buildingType: number): string {
+        return this.productIdByBuildingType[buildingType];
+    }
+
     public getSpectralTypesForRawMaterialId(rawMaterialId: string, onlyPureSpectrals: boolean = false): string[] {
         const spectralTypes: string[] = [];
         Object.values(InfluenceSDK.Asteroid.SPECTRAL_TYPES).forEach(spectralData => {

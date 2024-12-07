@@ -56,15 +56,28 @@ class GameDataService {
         return InfluenceSDK.Lot.toPosition(lotId);
     }
 
-    private isEmptyLotData(lotData: LotData): boolean {
+    /**
+     * Check if pseudo-empty lot with building planned or under construction
+     */
+    private isPseudoEmptyLotData(lotData: LotData): boolean {
+        return lotData
+            && lotData.buildingData
+            && !lotData.buildingData.isEmptyLot
+            && [1, 2].includes(lotData.buildingData.buildingDetails.status);
+    }
+
+    private isEmptyLotData(lotData: LotData, includePseudoEmptyLot: boolean): boolean {
         if (!lotData || !lotData.buildingData) {
+            return true;
+        }
+        if (includePseudoEmptyLot && this.isPseudoEmptyLotData(lotData)) {
             return true;
         }
         return lotData.buildingData.isEmptyLot;
     }
 
     public getBuildingTypeFromLotData(lotData: LotData): number {
-        if (this.isEmptyLotData(lotData)) {
+        if (this.isEmptyLotData(lotData, true)) {
             return PROCESSOR_BUILDING_IDS.EMPTY_LOT;
         }
         return (lotData.buildingData as BuildingData).buildingDetails?.buildingType as number;
@@ -74,22 +87,35 @@ class GameDataService {
         if (buildingData.buildingName) {
             return buildingData.buildingName;
         }
-        // Generate default building name - e.g. "Refinery #20,110"
+        // Generate default building name
         const buildingTypeText = processorService.getBuildingName(buildingData.buildingDetails.buildingType);
         const buildingIdText = Intl.NumberFormat().format(Number(buildingData.buildingId));
-        return `${buildingTypeText} #${buildingIdText}`;
+        let buildingNameDefault = `${buildingTypeText} #${buildingIdText}`; // e.g. "Refinery #20,110"
+        // Check if building planned or under construction
+        const fakeLotData: LotData = {
+            lotId: buildingData.lotId,
+            buildingData,
+        };
+        if (this.isPseudoEmptyLotData(fakeLotData)) {
+            buildingNameDefault += ' (Site)'; // e.g. "Refinery #20,110 (Site)"
+        }
+        return buildingNameDefault;
     }
 
     public getBuildingNameFromLotData(lotData: LotData): string {
-        return this.isEmptyLotData(lotData) ? '' : this.getBuildingNameFromBuildingData(lotData.buildingData as BuildingData);
+        return this.isEmptyLotData(lotData, false) ? 'Empty Lot' : this.getBuildingNameFromBuildingData(lotData.buildingData as BuildingData);
     }
 
+    /**
+     * NOTE: This will also return the (construction-) crew name if
+     * pseudo-empty lot with building planned or under construction.
+     */
     public getBuildingCrewNameFromLotData(lotData: LotData): string {
-        return this.isEmptyLotData(lotData) ? '' : (lotData.buildingData as BuildingData).crewName;
+        return this.isEmptyLotData(lotData, false) ? '' : (lotData.buildingData as BuildingData).crewName;
     }
 
     public getExtractorsDataFromLotData(lotData: LotData): ExtractorDataFromLotData[] {
-        if (this.isEmptyLotData(lotData)) {
+        if (this.isEmptyLotData(lotData, true)) {
             return [];
         }
 
@@ -101,7 +127,7 @@ class GameDataService {
     }
 
     public getProcessorsDataFromLotData(lotData: LotData): ProcessorDataFromLotData[] {
-        if (this.isEmptyLotData(lotData)) {
+        if (this.isEmptyLotData(lotData, true)) {
             return [];
         }
         const processorsData = (lotData.buildingData as BuildingData).processors;
@@ -112,7 +138,7 @@ class GameDataService {
     }
 
     public getDryDocksDataFromLotData(lotData: LotData): DryDockDataFromLotData[] {
-        if (this.isEmptyLotData(lotData)) {
+        if (this.isEmptyLotData(lotData, true)) {
             return [];
         }
         const dryDocksData = (lotData.buildingData as BuildingData).dryDocks;
@@ -175,6 +201,25 @@ class GameDataService {
             };
             processesData.push(processData);
         });
+        // Building construction process
+        if (this.isPseudoEmptyLotData(lotData)) {
+            const buildingData = lotData.buildingData as BuildingData;
+            const buildingType = buildingData.buildingDetails.buildingType as number;
+            // Get process ID matching "buildingType"
+            const buildingProductId = productService.getProductIdByBuildingType(buildingType);
+            const processVariants = processService.getProcessVariantsForProductId(buildingProductId);
+            if (processVariants.length) {
+                // Assuming single process variant for each building construction
+                const processId = processVariants[0].i;
+                if (processId) {
+                    const processData: RunningProcessData = {
+                        finishTime: buildingData.buildingDetails.finishTime,
+                        processId,
+                    };
+                    processesData.push(processData);
+                }
+            }
+        }
         return processesData;
     }
 }
