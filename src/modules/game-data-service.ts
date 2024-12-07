@@ -7,12 +7,24 @@ import {
     ProcessorDataFromLotData,
     RunningProcessData,
 } from './types.js';
-import {PROCESSOR_BUILDING_IDS} from './processor-service.js';
+import {PROCESSOR_BUILDING_IDS, processorService} from './processor-service.js';
 import {processService} from './process-service.js';
 import {productService} from './product-service.js';
 
+/**
+ * Top asteroids by buildings count
+ */
 const asteroidNameById = {
     1: 'Adalia Prime',
+    441: 'APEX DYNAMICS',
+    465: 'The Keystone',
+    652: 'Urza',
+    690: 'Galatia',
+    1409: 'Greytower',
+    1967: 'Perpetual Forge',
+    2250: 'Phyrexia',
+    2651: 'Congo',
+    8809: 'Lorwyn',
 };
 
 /**
@@ -58,18 +70,22 @@ class GameDataService {
         return (lotData.buildingData as BuildingData).buildingDetails?.buildingType as number;
     }
 
-    public getBuildingNameFromLotData(lotData: LotData): string|null {
-        if (this.isEmptyLotData(lotData)) {
-            return null;
+    public getBuildingNameFromBuildingData(buildingData: BuildingData): string {
+        if (buildingData.buildingName) {
+            return buildingData.buildingName;
         }
-        return (lotData.buildingData as BuildingData).buildingName as string;
+        // Generate default building name - e.g. "Refinery #20,110"
+        const buildingTypeText = processorService.getBuildingName(buildingData.buildingDetails.buildingType);
+        const buildingIdText = Intl.NumberFormat().format(Number(buildingData.buildingId));
+        return `${buildingTypeText} #${buildingIdText}`;
     }
 
-    public getBuildingCrewNameFromLotData(lotData: LotData): string|null {
-        if (this.isEmptyLotData(lotData)) {
-            return null;
-        }
-        return (lotData.buildingData as BuildingData).crewName as string;
+    public getBuildingNameFromLotData(lotData: LotData): string {
+        return this.isEmptyLotData(lotData) ? '' : this.getBuildingNameFromBuildingData(lotData.buildingData as BuildingData);
+    }
+
+    public getBuildingCrewNameFromLotData(lotData: LotData): string {
+        return this.isEmptyLotData(lotData) ? '' : (lotData.buildingData as BuildingData).crewName;
     }
 
     public getExtractorsDataFromLotData(lotData: LotData): ExtractorDataFromLotData[] {

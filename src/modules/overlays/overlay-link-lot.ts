@@ -122,8 +122,8 @@ class OverlayLinkLot extends OverlayAbstract {
                 const buildingType = gameDataService.getBuildingTypeFromLotData(this.lotData);
                 isMatchingBuildingType = buildingType === this.parentProcessor.getId();
                 buildingTypeText = processorService.getBuildingName(buildingType);
-                buildingName = gameDataService.getBuildingNameFromLotData(this.lotData) || '';
-                buildingCrewName = gameDataService.getBuildingCrewNameFromLotData(this.lotData) || '';
+                buildingName = gameDataService.getBuildingNameFromLotData(this.lotData);
+                buildingCrewName = gameDataService.getBuildingCrewNameFromLotData(this.lotData);
                 const runningProcessesData = gameDataService.getRunningProcessesDataFromLotData(this.lotData);
                 if (runningProcessesData.length) {
                     runningProcessesHtml = '<div class="processes-list">';
@@ -277,7 +277,7 @@ class OverlayLinkLot extends OverlayAbstract {
             elListItem.innerHTML = /*html*/ `
                 <div>${asteroidId}</div>
                 <div>${lotIndex}</div>
-                <div>${buildingData.buildingName || ''}</div>
+                <div>${gameDataService.getBuildingNameFromBuildingData(buildingData)}</div>
                 <div>${buildingData.crewName || ''}</div>
                 <div>${runningProcessesHtml}</div>
             `;

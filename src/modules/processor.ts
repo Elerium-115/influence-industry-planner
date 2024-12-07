@@ -118,7 +118,7 @@ class Processor {
             if (lotData) {
                 const buildingName = gameDataService.getBuildingNameFromLotData(lotData);
                 if (buildingName) {
-                    this.elProcessorLocation.dataset.tooltip = `Matching building: ${buildingName}`;
+                    this.elProcessorLocation.dataset.tooltip = buildingName;
                 }
             }
         } else {
