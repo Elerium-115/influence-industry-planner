@@ -660,6 +660,7 @@
                     position: sticky;
                     top: 0;
                     white-space: nowrap;
+                    z-index: 1;
                 }
 
                 &:not(.list-item-header) {
@@ -672,6 +673,8 @@
                     @include core.hover-lighten-bg;
                     color: white;
                 }
+
+                .process-finish { opacity: 0.5; }
             }
         }
     }

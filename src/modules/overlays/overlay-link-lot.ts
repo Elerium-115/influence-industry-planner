@@ -262,7 +262,7 @@ class OverlayLinkLot extends OverlayAbstract {
                     const endDate = new Date(processData.finishTime * 1000);
                     const processFinish = fromNow(endDate) || '';
                     runningProcessesHtml += /*html*/ `
-                        <div>${processName} (done ${processFinish})</div>
+                        <div>${processName} <span class="process-finish">(done ${processFinish})</span></div>
                     `;
                 })
             }

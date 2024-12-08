@@ -134,14 +134,29 @@ class StarknetService {
         this.elStarknetWallet.classList.remove('hidden');
     }
 
-    private async starknetConnect(modalMode: 'alwaysAsk'|'canAsk'|'neverAsk' = 'alwaysAsk'): Promise<void> {
+    private async starknetConnect(
+        modalMode: 'alwaysAsk'|'canAsk'|'neverAsk' = 'alwaysAsk',
+        attemptCount: number = 1,
+    ): Promise<void> {
         const wasConnected = Boolean(this.wallet);
-        const {wallet, connector, connectorData} = await connect({modalMode});
-        this.wallet = wallet;
-        this.connector = connector;
-        this.connectorData = connectorData;
+        try {
+            const {wallet, connector, connectorData} = await connect({modalMode});
+            this.wallet = wallet;
+            this.connector = connector;
+            this.connectorData = connectorData;
+        } catch (error: any) {
+            console.log(`--- [starknetConnect] ERROR:`, error);
+            if (attemptCount <= 3) {
+                // Retry a few times, with delay
+                setTimeout(() => {
+                    attemptCount++;
+                    this.starknetConnect(modalMode, attemptCount);
+                }, 1000);
+            }
+            return;
+        }
         await this.starknetUpdate();
-        if (!wallet || !connector || !connectorData) {
+        if (!this.wallet || !this.connector || !this.connectorData) {
             this.setIsAuthed(false);
             return;
         }
@@ -161,8 +176,8 @@ class StarknetService {
              * This avoids re-adding the listeners multiple times, when this
              * function is called from one of the existing event listeners.
              */
-            wallet.on('accountsChanged', this.onAccountsChanged.bind(this));
-            wallet.on('networkChanged', this.onNetworkChanged.bind(this));
+            this.wallet.on('accountsChanged', this.onAccountsChanged.bind(this));
+            this.wallet.on('networkChanged', this.onNetworkChanged.bind(this));
         }
         // Validate the auth token from local-storage (if any), before setting "isAuthed"
         const token = this.getToken();
