@@ -212,8 +212,15 @@ class GameDataService {
                 // Assuming single process variant for each building construction
                 const processId = processVariants[0].i;
                 if (processId) {
+                    let finishTime = buildingData.buildingDetails.finishTime;
+                    if (finishTime === 0 && buildingData.buildingDetails.plannedAt) {
+                        //// TO DO: include "totalBonus" arg. = "The crew bonus to apply to the construction time"
+                        const constructionTime = InfluenceSDK.Building.getConstructionTime(buildingType);
+                        //// TO DO: verify this formula re: not sure about "constructionTime / 8"
+                        finishTime = buildingData.buildingDetails.plannedAt + (constructionTime / 8);
+                    }
                     const processData: RunningProcessData = {
-                        finishTime: buildingData.buildingDetails.finishTime,
+                        finishTime,
                         processId,
                     };
                     processesData.push(processData);

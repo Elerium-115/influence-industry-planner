@@ -150,6 +150,7 @@ class StarknetService {
                 // Retry a few times, with delay
                 setTimeout(() => {
                     attemptCount++;
+                    console.log(`--- [starknetConnect] RETRY #${attemptCount}`); //// TEST
                     this.starknetConnect(modalMode, attemptCount);
                 }, 1000);
             }
